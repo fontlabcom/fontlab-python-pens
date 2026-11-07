@@ -82,6 +82,17 @@ The fast path over the native `fgPen` is not implemented. That pen binds to a
 glyph's work shape, which conflicts with the layer/element rule; see the
 upstream issue.
 
+## FontLab notes
+
+- FontLab keeps a smooth flag only where the geometry allows it (`node.canBeSmooth()`);
+  a smooth point between two lines reads back as a corner.
+- A closed quadratic contour whose first point is an on-curve `qcurve` with no
+  preceding off-curves reads back as `line`. The geometry is identical; FontLab
+  stores both as "on".
+- To move a FontGate-pen result into the live font, wrap the element:
+  `layer.addShape(fontlab.flShape(fg_shape))`. `flGlyph.fgGlyph` is a detached copy,
+  and `flLayer.assignFgLayer` currently raises `IndexError: Unexpected SeqBase<T> length.`
+
 ## What is included
 
 | Module | Names |

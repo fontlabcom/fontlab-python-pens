@@ -105,16 +105,20 @@ class FlPointPen(StagingPointPen):
         else:
             mapping = Identity
         nodes = []
-        for (position, _, smooth, name), kind in zip(points, node_kinds(points), strict=True):
+        for (position, _, _, name), kind in zip(points, node_kinds(points), strict=True):
             node = native.flNode(
                 native.QPointF(*mapping.transformPoint(position)), nodeType=_NATIVE_KIND[kind]
             )
-            node.smooth = smooth
             node.name = name or ""
             nodes.append(node)
         if not self._contours:
             self._ops.append("shape")
-        self._contours.append(native.flContour(nodes, closed=points[0][1] != "move"))
+        contour = native.flContour(nodes, closed=points[0][1] != "move")
+        # FontLab ignores `smooth` on a node that is not yet inside a contour.
+        for node, point in zip(contour.nodes(), points, strict=True):
+            if point[2]:
+                node.smooth = True
+        self._contours.append(contour)
 
     def addComponent(
         self,
@@ -199,7 +203,10 @@ class FlPen(SegmentToPointPen):
         return self
 
     def __exit__(self, exc_type: Any, exc: Any, tb: Any) -> None:
-        self.pointPen.__exit__(exc_type, exc, tb)
+        if exc_type is None:
+            self.close()  # raises PenError on an unfinished contour
+        else:
+            self.pointPen.__exit__(exc_type, exc, tb)
 
 
 def draw_points(

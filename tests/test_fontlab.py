@@ -129,6 +129,25 @@ def test_point_pen_when_node_metadata_given_then_smooth_and_name_are_set():
     assert [n.type for n in nodes] == ["on", "curve", "curve", "on", "on"], "types wrong"
 
 
+def test_point_pen_when_smooth_point_then_flag_set_on_contour_node():
+    shape = flShape()
+    with FlPointPen(shape, native=fontlab_native()) as pen:
+        play(DRAWINGS["closed_cubic"], pen)
+    nodes = shape.contours[0].nodes()
+    assert nodes[0].smooth is True, "smooth must be set after the node joins its contour"
+    expected = [point[2] for point in DRAWINGS["closed_cubic"][0]]
+    assert [n.smooth for n in nodes] == expected, "smooth flags must match the drawing"
+
+
+def test_segment_pen_context_when_contour_unfinished_then_pen_error():
+    layer = flLayer()
+    with pytest.raises(PenError, match="Unfinished contour"):
+        with FlPen(layer, native=fontlab_native()) as pen:
+            pen.moveTo((0, 0))
+            pen.lineTo((10, 0))
+    assert layer.shapes == [], "an unfinished contour must not commit"
+
+
 def test_add_component_when_layer_then_live_component_round_trips():
     layer = flLayer()
     matrix = (1, 0.25, -0.5, 0.75, 120, -30)

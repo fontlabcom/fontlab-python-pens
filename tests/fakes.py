@@ -151,13 +151,25 @@ class flNode(_Native):
     def __init__(self, pos, nodeType="on"):
         self.x, self.y = pos.x(), pos.y()
         self.type = nodeType
-        self.smooth = False
+        self.attached = False  # FontLab ignores smooth on a free node
+        self._smooth = False
         self.name = ""
+
+    @property
+    def smooth(self):
+        return self._smooth
+
+    @smooth.setter
+    def smooth(self, value):
+        if self.attached:
+            self._smooth = value
 
 
 class flContour(_Native):
     def __init__(self, nodes, closed=False):
         self._nodes = list(nodes)
+        for node in self._nodes:
+            node.attached = True
         self.closed = closed
 
     def nodes(self):
