@@ -6,6 +6,10 @@ this_file: CHANGELOG.md
 
 ## Unreleased
 
+- Clarified raw payload preservation for default-no-notify layer appends:
+  cached glyph snapshots and dependent expanded views may remain stale.
+  Fresh per-layer FontGate conversion reflects current FontLab shapes and
+  does not refresh dependent views.
 - Set FlPointPen smooth metadata with the named raw native Smooth bit instead
   of the property setter, which can move neighboring handles. Preserve exact
   input coordinates, names, types and unrelated node-state bits. The previous

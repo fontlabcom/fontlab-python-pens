@@ -91,6 +91,11 @@ upstream issue.
 - A native commit can leave partial geometry if a later write or notification
   fails. The exception propagates and the pen stays spent; repeating the drawing
   with another pen can duplicate geometry. A drawing-body exception commits nothing.
+- With default `notify=None`, verified layer appends preserve existing raw
+  element payloads. Cached `glyph.fgGlyph` snapshots and expanded dependent
+  component views may stay stale until native reconstruction. Fresh per-layer
+  FontGate conversion reflects current FontLab shapes without refreshing
+  dependent views.
 - History initialization fixes the measured first-Undo geometry failure; it does
   not establish whole-font history safety. FontLab's first notification changed
   40 unrelated glyph timestamps in the owned fixture, even with an empty pending
