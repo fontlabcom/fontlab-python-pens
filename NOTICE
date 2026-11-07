@@ -1,0 +1,45 @@
+fontlab-python-pens
+Copyright 2026 FontLab Ltd. Licensed under the Apache License 2.0 (see LICENSE).
+
+This product includes code derived from fontTools
+(https://github.com/fonttools/fonttools), licensed under the MIT License
+reproduced below. The following files are derived from fontTools:
+
+- src/fontlab_pens/base.py       <- Lib/fontTools/pens/basePen.py
+- src/fontlab_pens/point.py      <- Lib/fontTools/pens/pointPen.py
+- src/fontlab_pens/filter.py     <- Lib/fontTools/pens/filterPen.py
+- src/fontlab_pens/recording.py  <- Lib/fontTools/pens/recordingPen.py
+- src/fontlab_pens/transform.py  <- Lib/fontTools/misc/transform.py,
+                                    Lib/fontTools/pens/transformPen.py
+- src/fontlab_pens/reverse.py    <- Lib/fontTools/pens/reverseContourPen.py,
+                                    Lib/fontTools/misc/arrayTools.py (pairwise)
+- src/fontlab_pens/rounding.py   <- Lib/fontTools/pens/roundingPen.py,
+                                    Lib/fontTools/misc/roundTools.py (otRound, noRound)
+- src/fontlab_pens/measure.py    <- Lib/fontTools/pens/boundsPen.py, areaPen.py,
+                                    pointInsidePen.py, Lib/fontTools/misc/arrayTools.py,
+                                    Lib/fontTools/misc/bezierTools.py
+- tests/ported/*.py              <- Tests/pens/*_test.py, Tests/misc/transform_test.py
+
+--- fontTools licence ---
+
+MIT License
+
+Copyright (c) 2017 Just van Rossum
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
