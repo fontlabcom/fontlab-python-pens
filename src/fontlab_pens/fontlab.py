@@ -5,10 +5,13 @@ Targets are an `flLayer` or an `flShape` (element), never an `flGlyph`.
 Contours are staged and validated in Python; `close()` (or leaving the `with`
 block) writes them: a layer gets one new `flShape` holding all of them, an
 element gets them appended. On a layer, `addComponent` is staged too and
-`close()` adds the component elements and the contour shape in call order,
-so a failed drawing writes nothing. An element cannot hold components, and a
-component element cannot take contours.
-No undo history is recorded unless `notify="title"` is given.
+`close()` adds the component elements and the contour shape in call order.
+An exception in the drawing body writes nothing; a native commit failure may
+leave partial geometry. The pen is spent even when a commit or notify fails.
+An element cannot hold components, and a component element cannot take contours.
+No undo history is recorded unless `notify="title"` is given for an attached
+layer. Notification can change unrelated native timestamps; whole-font history
+preservation is not guaranteed. Bare elements do not support notification.
 """
 
 from __future__ import annotations
@@ -134,7 +137,11 @@ class FlPointPen(StagingPointPen):
         self._ops.append(("component", baseGlyphName, values))
 
     def close(self) -> None:
-        """Write the staged contours and components (once), then notify if asked."""
+        """Attempt the staged writes once; enrolled history is finalized on failure too.
+
+        Native writes are not atomic. A write or final-notify failure may leave
+        geometry changed; retrying this drawing with a new pen can duplicate it.
+        """
         if self._closed:
             return
         if self._points is not None:
@@ -144,23 +151,43 @@ class FlPointPen(StagingPointPen):
         ops, self._ops = self._ops, []
         if not ops:
             return
+        if self._target_kind == "layer" and self.target.autoLayer:
+            raise PenError("Cannot write into an automatic flLayer")
         native = self._native()
-        if self._target_kind == "element":
-            self.target.addContours(contours, True)
-            ops = []  # an element pen stages contours only
-        for op in ops:
-            if op == "shape":
-                shape = native.flShape()
-                shape.addContours(contours, True)
-                self.target.addShape(shape)
-            else:
-                _, name, values = op
-                self.target.addComponent((name, native.QTransform(*values)))
         if self.notify:
-            if self._target_kind == "layer":
-                items = [self.target, self.target.glyph]
-            else:
-                items = [self.target]
+            if self._target_kind == "element":
+                raise PenError("Element notification needs an owning layer; pass its flLayer")
+            glyph = self.target.glyph
+            if glyph is None:
+                raise PenError("Notification requires an flLayer attached to an flGlyph")
+            items = [self.target, glyph]
+            for item in items:
+                item.checkInitHistoryState(0)
+        attempted = False
+        try:
+            if self._target_kind == "element":
+                attempted = True
+                self.target.addContours(contours, True)
+                ops = []  # an element pen stages contours only
+            for op in ops:
+                if op == "shape":
+                    shape = native.flShape()
+                    shape.addContours(contours, True)
+                    attempted = True
+                    self.target.addShape(shape)
+                else:
+                    _, name, values = op
+                    component = (name, native.QTransform(*values))
+                    attempted = True
+                    self.target.addComponent(component)
+        except BaseException as error:
+            if self.notify and attempted:
+                try:
+                    native.flItems.notifyChangesApplied(self.notify, items)
+                except BaseException as notify_error:
+                    raise error from notify_error
+            raise
+        if self.notify:
             native.flItems.notifyChangesApplied(self.notify, items)
 
     def __enter__(self) -> FlPointPen:

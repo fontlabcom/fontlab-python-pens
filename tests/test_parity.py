@@ -546,3 +546,20 @@ def test_native_pens_when_move_is_not_first_then_pen_error(case, family):
     with pytest.raises(fl.PenError, match="only start"):
         pen.endPath()
     assert len(shape.contours) == 0, "rejected contour reached the element"
+
+
+def test_fontlab_pen_when_history_enabled_then_geometry_matches_fonttools():
+    from tests import fakes
+    from fontlab_pens.fontlab import draw
+
+    layer = fakes.flLayer()
+    glyph = fakes.flGlyph([layer])
+    native = fakes.fontlab_native()
+    with fl.FlPen(layer, native=native, notify="Draw") as pen:
+        draw_cubics(pen)
+    ours, theirs = fl.RecordingPen(), ft_rec.RecordingPen()
+    draw(layer, ours)
+    draw_cubics(theirs)
+    assert ours.value == theirs.value, "history enrollment changed the fontTools geometry"
+    assert layer.history == glyph.history == [0], "history enrollment must cover both owners"
+    assert native.flItems.calls == [("Draw", [layer, glyph])], "history must finalize once"

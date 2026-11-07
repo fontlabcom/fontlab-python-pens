@@ -6,6 +6,12 @@ this_file: CHANGELOG.md
 
 ## Unreleased
 
+- Initialize attached layer/glyph history before notified FlPointPen/FlPen
+  writes; finalize once after attempted writes, preserving native write errors
+  and chained finalization failures. Refuse notified bare elements and direct
+  automatic-layer writes. Failed native commits remain partial and cannot replay
+  through the spent pen. This fixes the measured first-Undo geometry failure;
+  FontLab's 40 unrelated timestamp changes and whole-font history safety remain open.
 - Added native pens over layers and elements, never glyphs.
   - FontGate: `FontGatePointPen`, `FontGatePen` and the
     `fontlab_pens.fontgate` readers.

@@ -72,6 +72,10 @@ How the native pens behave:
 - **Coordinates** are mapped through the inverse of the target's matrix, so
   reading the same target returns what you wrote.
 - **Identifiers** raise `PenError`, because FontLab stores none.
+- **History is opt-in:** `notify="Draw"` requires an attached `flLayer` and
+  initializes the layer and glyph history before writing, then notifies once.
+  A bare element with `notify` is refused; use its explicitly known layer.
+  Nonempty writes to a direct automatic layer are refused, even without notify.
 - **Components:**
   - `flLayer` adds a live component element.
   - An element target raises `ComponentError`.
@@ -84,6 +88,13 @@ upstream issue.
 
 ## FontLab notes
 
+- A native commit can leave partial geometry if a later write or notification
+  fails. The exception propagates and the pen stays spent; repeating the drawing
+  with another pen can duplicate geometry. A drawing-body exception commits nothing.
+- History initialization fixes the measured first-Undo geometry failure; it does
+  not establish whole-font history safety. FontLab's first notification changed
+  40 unrelated glyph timestamps in the owned fixture, even with an empty pending
+  queue and with recursion disabled. Glyph-window history scope remains a limit.
 - FontLab keeps a smooth flag only where the geometry allows it (`node.canBeSmooth()`);
   a smooth point between two lines reads back as a corner.
 - A closed quadratic contour whose first point is an on-curve `qcurve` with no

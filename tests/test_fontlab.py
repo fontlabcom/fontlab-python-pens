@@ -110,14 +110,265 @@ def test_notify_when_layer_then_layer_and_glyph_are_notified():
     with FlPointPen(layer, native=native, notify="Draw") as pen:
         play(DRAWINGS["open_lines"], pen)
     assert native.flItems.calls == [("Draw", [layer, glyph])], "notify targets wrong"
+    assert layer.history == glyph.history == [0], "both histories must be initialized"
 
 
-def test_notify_when_element_then_element_is_notified():
+def test_notify_when_element_then_refused_before_mutation():
     native = fontlab_native()
     shape = flShape()
-    with FlPointPen(shape, native=native, notify="Draw") as pen:
+    with pytest.raises(PenError, match="owning layer"), FlPointPen(
+        shape, native=native, notify="Draw"
+    ) as pen:
         play(DRAWINGS["open_lines"], pen)
-    assert native.flItems.calls == [("Draw", [shape])], "element notify targets wrong"
+    assert shape.contours == [], "unsupported notify target must not be written"
+    assert native.flItems.calls == [], "bare elements must not be notified"
+
+
+@pytest.mark.parametrize("notify", [None, "Draw"])
+def test_close_when_layer_becomes_automatic_then_refused_before_history(notify):
+    native = fontlab_native()
+    layer = flLayer()
+    glyph = flGlyph([layer])
+    pen = FlPointPen(layer, native=native, notify=notify)
+    play(DRAWINGS["open_lines"], pen)
+    layer.autoLayer = True
+    with pytest.raises(PenError, match="automatic"):
+        pen.close()
+    pen.close()
+    assert layer.shapes == [] and native.flItems.calls == [], "automatic target was changed"
+    assert layer.history == glyph.history == [], "refusal must precede history enrollment"
+
+
+def test_notify_when_layer_detached_then_refused_before_history():
+    layer = flLayer()
+    native = fontlab_native()
+    pen = FlPointPen(layer, native=native, notify="Draw")
+    play(DRAWINGS["open_lines"], pen)
+    with pytest.raises(PenError, match="attached"):
+        pen.close()
+    assert layer.shapes == layer.history == [], "detached notify must not mutate or enroll"
+    assert native.flItems.calls == [], "detached layer must not be notified"
+
+
+@pytest.mark.parametrize("notify", [None, "Draw"])
+def test_close_when_empty_automatic_layer_then_no_history_or_mutation(notify):
+    layer = flLayer()
+    layer.autoLayer = True
+    native = fontlab_native()
+    FlPointPen(layer, native=native, notify=notify).close()
+    assert layer.shapes == layer.history == native.flItems.calls == [], "empty close has effects"
+
+
+@pytest.mark.parametrize("pen_class", [FlPointPen, FlPen])
+def test_notify_when_layer_written_then_history_precedes_mutation_and_one_notify(pen_class):
+    events = []
+    layer = flLayer()
+    glyph = flGlyph([layer])
+    native = fontlab_native()
+    add_shape = layer.addShape
+    layer.checkInitHistoryState = lambda state: events.append(("layer", state))
+    glyph.checkInitHistoryState = lambda state: events.append(("glyph", state))
+
+    def write(shape):
+        events.append("write")
+        add_shape(shape)
+
+    layer.addShape = write
+    native.flItems.notifyChangesApplied = lambda title, items: events.append((title, items))
+    pen = pen_class(layer, native=native, notify="Draw")
+    if pen_class is FlPen:
+        pen.moveTo((0, 0))
+        pen.lineTo((10, 0))
+        pen.endPath()
+    else:
+        play(DRAWINGS["open_lines"], pen)
+    pen.close()
+    pen.close()
+    assert events == [("layer", 0), ("glyph", 0), "write", ("Draw", [layer, glyph])], (
+        "history must surround the live mutation exactly once"
+    )
+
+
+@pytest.mark.parametrize("owner", ["layer", "glyph"])
+def test_notify_when_history_initialization_fails_then_no_live_write_or_notify(owner):
+    layer = flLayer()
+    glyph = flGlyph([layer])
+    native = fontlab_native()
+    error = RuntimeError("history failed")
+
+    def fail(state):
+        raise error
+
+    target = layer if owner == "layer" else glyph
+    target.checkInitHistoryState = fail
+    pen = FlPointPen(layer, native=native, notify="Draw")
+    play(DRAWINGS["open_lines"], pen)
+    with pytest.raises(RuntimeError) as caught:
+        pen.close()
+    pen.close()
+    assert caught.value is error, "history exception must be preserved"
+    assert layer.shapes == native.flItems.calls == [], "failed preflight reached live write"
+
+
+@pytest.mark.parametrize("notify", [None, "Draw"])
+@pytest.mark.parametrize("fail_notify", [False, True])
+def test_close_when_later_live_mutation_fails_then_partial_geometry_is_not_replayed(
+    notify, fail_notify
+):
+    layer = flLayer()
+    glyph = flGlyph([layer])
+    native = fontlab_native()
+    error = RuntimeError("live component failed")
+    notifications = []
+
+    def fail_component(spec):
+        raise error
+
+    def final_notify(title, items):
+        notifications.append((title, items))
+        if fail_notify:
+            raise RuntimeError("notification also failed")
+
+    layer.addComponent = fail_component
+    native.flItems.notifyChangesApplied = final_notify
+    pen = FlPointPen(layer, native=native, notify=notify)
+    play(DRAWINGS["open_lines"], pen)
+    pen.addComponent("A", (1, 0, 0, 1, 0, 0))
+    with pytest.raises(RuntimeError) as caught:
+        pen.close()
+    pen.close()
+    assert caught.value is error, "a notification failure must not replace the write error"
+    if notify and fail_notify:
+        assert str(error.__cause__) == "notification also failed", "secondary error was lost"
+    assert len(layer.shapes) == 1, "completed writes must remain and must not be replayed"
+    assert notifications == ([("Draw", [layer, glyph])] if notify else []), (
+        "an attempted notified write must finalize once, including failure"
+    )
+    assert layer.history == glyph.history == ([0] if notify else []), "history opt-in changed"
+
+
+def test_notify_when_first_live_mutation_fails_then_finalize_and_keep_original_error():
+    layer = flLayer()
+    glyph = flGlyph([layer])
+    native = fontlab_native()
+    error = RuntimeError("first write failed")
+
+    def fail(shape):
+        raise error
+
+    layer.addShape = fail
+    pen = FlPointPen(layer, native=native, notify="Draw")
+    play(DRAWINGS["open_lines"], pen)
+    with pytest.raises(RuntimeError) as caught:
+        pen.close()
+    pen.close()
+    assert caught.value is error and layer.shapes == [], "first write error was hidden"
+    assert native.flItems.calls == [("Draw", [layer, glyph])], "attempted write not finalized"
+
+
+def test_notify_when_final_notification_fails_then_geometry_remains_and_pen_is_spent():
+    layer = flLayer()
+    flGlyph([layer])
+    native = fontlab_native()
+    error = RuntimeError("notification failed")
+    calls = []
+
+    def fail(title, items):
+        calls.append(title)
+        raise error
+
+    native.flItems.notifyChangesApplied = fail
+    pen = FlPointPen(layer, native=native, notify="Draw")
+    play(DRAWINGS["open_lines"], pen)
+    with pytest.raises(RuntimeError) as caught:
+        pen.close()
+    pen.close()
+    assert caught.value is error, "final notification error must propagate"
+    assert len(layer.shapes) == 1 and calls == ["Draw"], "failed finalization must not replay"
+
+
+def test_close_when_notify_none_then_no_history_is_initialized():
+    layer = flLayer()
+    glyph = flGlyph([layer])
+    native = fontlab_native()
+    with FlPointPen(layer, native=native) as pen:
+        play(DRAWINGS["open_lines"], pen)
+    assert len(layer.shapes) == 1, "default history-free write was lost"
+    assert layer.history == glyph.history == native.flItems.calls == [], "history is opt-in"
+
+
+@pytest.mark.parametrize("preparation", ["constructor", "contours", "transform"])
+def test_close_when_detached_preparation_fails_then_live_target_is_not_notified(preparation):
+    native = fontlab_native()
+    layer = flLayer()
+    flGlyph([layer])
+    error = RuntimeError("detached preparation failed")
+    live_calls = []
+
+    def fail(*args):
+        raise error
+
+    layer.addShape = lambda shape: live_calls.append("shape")
+    layer.addComponent = lambda spec: live_calls.append("component")
+    pen = FlPointPen(layer, native=native, notify="Draw")
+    if preparation == "transform":
+        pen.addComponent("A", (1, 0, 0, 1, 0, 0))
+        native.QTransform = fail
+    else:
+        play(DRAWINGS["open_lines"], pen)
+        if preparation == "constructor":
+            native.flShape = fail
+        else:
+            shape = flShape()
+            shape.addContours = fail
+            native.flShape = lambda: shape
+    with pytest.raises(RuntimeError) as caught:
+        pen.close()
+    pen.close()
+    assert caught.value is error, "preparation exception must be preserved"
+    assert live_calls == layer.shapes == [], "detached preparation reached live geometry"
+    assert native.flItems.calls == [], "preparation-only failure must not notify live owners"
+
+
+def test_notify_when_live_target_mutates_then_raises_then_finalizes_once_without_replay():
+    native = fontlab_native()
+    layer = flLayer()
+    glyph = flGlyph([layer])
+    error = RuntimeError("mutated before failing")
+    add_shape = layer.addShape
+
+    def fail(shape):
+        add_shape(shape)
+        raise error
+
+    layer.addShape = fail
+    pen = FlPointPen(layer, native=native, notify="Draw")
+    play(DRAWINGS["open_lines"], pen)
+    with pytest.raises(RuntimeError) as caught:
+        pen.close()
+    pen.close()
+    assert caught.value is error and len(layer.shapes) == 1, "partial native change was hidden"
+    assert native.flItems.calls == [("Draw", [layer, glyph])], "live attempt must finalize once"
+
+
+def test_close_when_later_preparation_fails_then_prior_live_write_is_finalized():
+    native = fontlab_native()
+    layer = flLayer()
+    glyph = flGlyph([layer])
+    error = RuntimeError("later transform preparation failed")
+
+    def fail(*args):
+        raise error
+
+    native.QTransform = fail
+    pen = FlPointPen(layer, native=native, notify="Draw")
+    play(DRAWINGS["open_lines"], pen)
+    pen.addComponent("A", (1, 0, 0, 1, 0, 0))
+    with pytest.raises(RuntimeError) as caught:
+        pen.close()
+    pen.close()
+    assert caught.value is error and len(layer.shapes) == 1, "prior live change must remain"
+    assert native.flItems.calls == [("Draw", [layer, glyph])], "prior live attempt not finalized"
 
 
 def test_point_pen_when_node_metadata_given_then_smooth_and_name_are_set():

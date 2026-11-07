@@ -192,8 +192,20 @@ Measured facts: `.superpowers/sdd/PLAN/native-facts.md`.
   `layer.addShape`; for an flShape call `shape.addContours(contours, True)`.
   `addComponent(name, t)` on a layer → `layer.addComponent((name,
   QTransform(t)))`; on an element → `ComponentError`. No history by
-  default; `notify="title"` calls `flItems.notifyChangesApplied(title,
-  [layer, glyph])` where `glyph = layer.glyph` (never notify auto layers).
+  default; `notify="title"` requires an attached layer, initializes that layer
+  and its glyph with `checkInitHistoryState(0)` before writes, and calls
+  `flItems.notifyChangesApplied(title, [layer, glyph])` once after attempted
+  writes, including native write failures. A bare element with notify is
+  refused because no owning-layer accessor is exposed. Direct automatic-layer
+  writes are refused at nonempty close, with or without notify. Native commits
+  may remain partial on failure; the pen stays spent and preserves write errors.
+
+Remaining native history acceptance: initialization repairs the measured first
+Undo geometry failure, but the first notification changed 40 unrelated glyph
+timestamps in the owned fixture. Neither an empty pending queue nor an explicit
+nonrecursive notifier prevented it. Whole-font preservation, active Glyph-window
+history scope and upstream timestamp side effects remain separate open gates.
+Do not add guessed queue/window guards, duplicate notifications or a rollback.
 
 Tests with fake `fontlab`/`PythonQt` doubles.
 

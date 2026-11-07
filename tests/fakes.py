@@ -198,7 +198,12 @@ class flLayer(_Native):
         self.name = name
         self.shapes = []
         self.glyph = None
+        self.autoLayer = False
+        self.history = []
         self.components = []  # base contours a component element would show
+
+    def checkInitHistoryState(self, state):
+        self.history.append(state)
 
     def addShape(self, shape):
         self.shapes.append(shape)
@@ -215,8 +220,12 @@ class flLayer(_Native):
 class flGlyph(_Native):
     def __init__(self, layers=()):
         self.layers = list(layers)
+        self.history = []
         for layer in self.layers:
             layer.glyph = self
+
+    def checkInitHistoryState(self, state):
+        self.history.append(state)
 
     def findLayer(self, name):
         return next((layer for layer in self.layers if layer.name == name), None)
