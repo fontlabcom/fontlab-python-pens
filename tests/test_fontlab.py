@@ -170,6 +170,28 @@ def test_reader_when_components_false_then_base_contours_are_transformed():
     assert raw == [(1, 2)], "transform=False must not map"
 
 
+def test_component_when_shear_then_qtransform_convention_applies():
+    layer = flLayer()
+    layer.components = [flContour([flNode(SimpleNamespace(x=lambda: 0, y=lambda: 10), "on")], True)]
+    with FlPointPen(layer, native=fontlab_native()) as pen:
+        pen.addComponent("A", (1, 0, 0.5, 1, 0, 0))
+    assert layer.shapes[0].transform.m21() == 0.5, "yx must map to QTransform m21"
+    pts = [a[0] for op, a, _ in read(layer, components=False) if op == "addPoint"]
+    assert pts == [(5, 10)], "reader must use x' = m11 x + m21 y + dx"
+
+
+def test_element_pen_when_shear_transform_then_write_is_inverse():
+    shape = flShape()
+    shape.transform = QTransform(1, 0, 0.5, 1, 0, 0)
+    with FlPointPen(shape, native=fontlab_native()) as pen:
+        pen.beginPath()
+        pen.addPoint((5, 10), "move")
+        pen.addPoint((2, 0), "line")
+        pen.endPath()
+    stored = [(n.x, n.y) for n in shape.contours[0].nodes()]
+    assert stored == [(0, 10), (2, 0)], "write mapping is not the inverse QTransform"
+
+
 def test_segment_pen_when_drawing_then_round_trip_matches():
     shape = flShape()
     with FlPen(shape, native=fontlab_native()) as pen:

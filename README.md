@@ -79,7 +79,8 @@ How the native pens behave:
     are glyph-level only.
 
 The fast path over the native `fgPen` is not implemented. That pen binds to a
-glyph's work shape, which conflicts with the layer/element rule.
+glyph's work shape, which conflicts with the layer/element rule; see the
+upstream issue.
 
 ## What is included
 

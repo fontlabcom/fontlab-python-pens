@@ -182,6 +182,22 @@ def test_layer_reader_when_matrices_set_then_layer_times_element_is_applied():
     assert points(layer, transform=False) == [(10, 20), (30, 40)], "transform=False must not map"
 
 
+def test_element_reader_when_shear_matrix_then_fonttools_convention_applies():
+    shape = element_with((1, 0, 0.5, 1, 0, 0))  # (xx, xy, yx, yy): x' = x + 0.5 y
+    contour = fgContour()
+    contour.nodes = [fgNode("Move", fgPoint(0, 10), "", False), fgNode("On", fgPoint(2, 0), "", False)]
+    contour.open = True
+    shape.contours.append(contour)
+    assert points(shape) == [(5, 10), (2, 0)], "xy/yx swapped in the fgMatrix mapping"
+    pen = FontGatePointPen(element_with((1, 0, 0.5, 1, 0, 0)), native=N)
+    pen.beginPath()
+    pen.addPoint((5, 10), "move")
+    pen.addPoint((2, 0), "line")
+    pen.endPath()
+    stored = [(n.point.x, n.point.y) for n in pen.target.contours[0].nodes]
+    assert stored == [(0, 10), (2, 0)], "write mapping is not the inverse fgMatrix"
+
+
 def test_reader_when_closed_contour_repeats_move_start_then_duplicate_is_dropped():
     contour = fgContour()
     contour.nodes = [
@@ -364,16 +380,3 @@ def test_point_pen_when_native_omitted_then_fontgate_is_imported_lazily(monkeypa
     shape = fgShape()
     play(DRAWINGS["open_lines"], FontGatePointPen(shape))
     assert len(shape.contours) == 1, "lazy fontgate import did not write"
-
-
-def test_point_pen_when_fonttools_oracle_replays_then_ufo_points_agree():
-    from fontTools.pens.pointPen import PointToSegmentPen as FtPointToSegmentPen
-    from fontTools.pens.recordingPen import RecordingPen as FtRecordingPen
-
-    for name, drawing in DRAWINGS.items():
-        shape = element_with()
-        play(drawing, FontGatePointPen(shape, native=N))
-        ours, theirs = RecordingPen(), FtRecordingPen()
-        draw(shape, ours)
-        play(drawing, FtPointToSegmentPen(theirs))
-        assert ours.value == theirs.value, f"{name} disagrees with fontTools"

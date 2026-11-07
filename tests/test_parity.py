@@ -476,3 +476,29 @@ def test_transform_when_composed_then_equals_fonttools_transform():
     theirs = FtTransform(*SHEAR).rotate(0.3).scale(2, 3).translate(5, -7).inverse()
     assert tuple(ours) == pytest.approx(tuple(theirs)), "Transform chain differs"
     assert repr(fl.Identity.skew(0.1, 0.2)) == repr(FtTransform().skew(0.1, 0.2)), "repr differs"
+
+
+# --- native pens: write through the pen, read back, compare with fontTools ------
+
+
+@pytest.mark.parametrize("family", ["fontgate", "fontlab"])
+def test_native_pens_when_drawn_back_then_segments_equal_fonttools(family):
+    from fontlab_pens import fontgate as fg_pens
+    from fontlab_pens import fontlab as fl_pens
+    from tests import fakes
+    from tests.test_fontgate import DRAWINGS, play
+
+    for name, drawing in DRAWINGS.items():
+        if family == "fontgate":
+            shape = fakes.fgShape()
+            play(drawing, fl.FontGatePointPen(shape, native=fakes.FONTGATE))
+            reader = fg_pens.draw
+        else:
+            shape = fakes.flShape()
+            with fl.FlPointPen(shape, native=fakes.fontlab_native()) as pen:
+                play(drawing, pen)
+            reader = fl_pens.draw
+        ours, theirs = fl.RecordingPen(), ft_rec.RecordingPen()
+        reader(shape, ours)
+        play(drawing, ft_point.PointToSegmentPen(theirs))
+        assert ours.value == theirs.value, f"{family} {name} disagrees with fontTools"
