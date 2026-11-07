@@ -49,17 +49,18 @@ bindings, and replaces the ad-hoc pen code in fontport, glyport and fontlabapp.
 
 ## Rulings (controller, recorded before execution)
 
-1. TypeRig: the spec says "especially check TypeRig/.../pens"; root AGENTS.md
-   permanently forbids reading TypeRig and says exclusions take precedence.
-   TypeRig is not opened. `_vendor` covers the protocol references.
+1. TypeRig: the owner (2026-11-07) allows viewing TypeRig read-only; never
+   write into it. Its `Lib/typerig/proxy/fl/pens` is a reference only; no code
+   is copied without its licence.
 2. Native access: the owner's follow-up message asks for tests inside the
    running FontLab with real fonts and screenshots. The host was probed: zero
    open documents, no fence. Native runs use owned copies of fixture fonts,
    never save over sources, close without saving, and go through
    `verification/issue-104/fl-native.sh --mutating`.
-3. The C++ tree `github.fontlab-cpp/fontlab` is not a Git repository, so no
-   pull request is possible. Native defects are filed in fontlab/fl (private)
-   with source locations and a proposed patch in the issue body.
+3. Native defects are filed in fontlab/fl issues; fixes go as pull requests
+   to Fontlab/pyfontgate (bindings: fgpen, fgcontour, fgglyph, fgpencaller),
+   cloned into an isolated directory, never by editing the local non-Git
+   snapshot. PRs state that no native build was available.
 4. Consumer migrations (fontport, glyport, fontlabapp) happen on isolated
    worktrees/branches. Their canonical checkouts are editable-installed in
    FontLab; nothing is merged into them, nothing is pushed without the owner.
@@ -107,50 +108,88 @@ reverseContourPen, filterPen, roundingPen, pointInsidePen), plus parity
 tests that run the same scripted drawings through fontTools and fontlab_pens
 and compare recordings (fontTools imported only in tests).
 
+## Pen targets: layers and elements, never glyphs (owner, 2026-11-07)
+
+In FontLab a glyph contains layers (one per master, plus mask/service
+layers) and a layer contains elements (shapes). Every native pen and reader
+therefore targets a **layer** or an **element**, never a glyph:
+
+- Writing to a layer creates **one new element** on that layer for the pen
+  session (all contours of the session go into it); components become their
+  own component elements on that layer.
+- Writing to an element appends contours to that existing element; an
+  element has no components, so `addComponent` on an element pen raises
+  `ComponentError` (a `PenError` subclass) with a clear message.
+- Reading a layer walks all its elements (layer matrix × element matrix),
+  reporting component elements through `addComponent`; reading an element
+  draws only that element's contours (element matrix applied unless
+  `transform=False`).
+- Passing a glyph (fgGlyph/flGlyph) raises `TypeError` naming the fix
+  ("pass glyph.layers[...] / glyph.findLayer(master) / layer.shapes[i]").
+  A small helper `layer_of(glyph, master=None)` resolves a layer explicitly
+  for callers that start from a glyph; it never picks a layer silently.
+- Target type is detected by **type name**, never by `hasattr`/`getattr`
+  probing: `type(obj).__name__` in {"fgLayer", "fgShape", "fgGlyph",
+  "flLayer", "flShape", "flGlyph"} (fakes in tests use the same class
+  names). Measured 2026-11-07: an attribute lookup on a FontGate `fgShape`
+  that falls through `pyfgShape::getattro` recursed until stack overflow and
+  crashed FontLab three times. Native code must only touch documented
+  attributes, never probe optional ones on fg objects.
+
 ## Task 2: FontGate pens (`src/fontlab_pens/fontgate.py`)
 
 Lift `fontlab-fontport/src/fontlab_fontport/pens.py` semantics, without
-fontTools, generalised to any layer:
+fontTools, retargeted to layers/elements:
 
-- `FontGatePointPen(glyph, layer=None, *, native=None, identifiers="raise")`:
-  stages a contour, validates it through `PointToSegmentPen(NullPen-like
-  checker)`, then writes one `contour.nodes = [...]` assignment (speed). Open
-  contours (`move`), names, smooth, qcurve vs cubic controls, the inverse of
-  layer/shape matrix. Single named point → anchor when `anchors=True`.
-  `addComponent` → `glyph.components.append`. `layer` may be `None`
-  (glyph's working layer), a layer name, or an `fgLayer`.
-- `FontGatePen(glyph, ...)` = segment pen via `SegmentToPointPen`.
-- `FontGateNativePen(glyph)`: fast path wrapping native `glyph.getPen()` for
-  closed cubic/line/single-quad drawing; forces `pen.smooth = False`; rejects
-  (raises `PenError`) what the native pen gets wrong (open contours, multi-off
-  qcurves, components) — documented, not silently wrong.
-- Readers: `draw_points(glyph, pointPen, layer=None, *, anchors=True,
-  components=True)`, `draw(glyph, pen, ...)` via `PointToSegmentPen`,
-  `draw_contour_points(contour, pointPen)` (the fontport `_draw_contour` rule:
-  drop a closing node that repeats a Move start), all-off-curve TrueType
-  contours handled.
-- `edit_geometry_ready(glyph)` and `IncompleteContour` kept with fontport's
+- `FontGatePointPen(target, *, native=None)` where `target` is an `fgLayer`
+  or an `fgShape`: stages a contour, validates it with the Task 1
+  `PointToSegmentPen` over a checking pen, then writes one
+  `contour.nodes = [...]` assignment per contour (speed). Open contours
+  (`move`), names, smooth, qcurve vs cubic controls, coordinates mapped by the
+  inverse of the target's matrix chain. A layer target gets one new fgShape
+  for the session (created lazily on the first contour; `fgShape()` +
+  `layer.shapes.append` or `layer.addContour` — measure which works natively
+  in Task 5 and keep the fake doubles in step). `addComponent` on an fgLayer:
+  supported only if a native fontgate route is measured; otherwise
+  `ComponentError`. Identifiers raise `PenError` (FontGate stores none).
+- `FontGatePen(target, ...)` = segment pen via `SegmentToPointPen`.
+- `FontGateNativePen(target_layer)`: fast path over the native fgPen only
+  where it is correct (closed line/cubic/single-quad paths), forces
+  `pen.smooth = False`, raises `PenError` for open contours, multi-off
+  qcurves, components. Native fgPen binds to a glyph's work shape, so it is
+  offered only when the target layer is the glyph's work layer; otherwise it
+  raises `PenError` explaining why.
+- Readers: `draw_points(target, pointPen, *, components=True)`,
+  `draw(target, pen, ...)` via `PointToSegmentPen`,
+  `draw_contour_points(contour, pointPen, transform=None)` (fontport's
+  `_draw_contour` rule: drop a closing node that repeats a Move start), all-off
+  TrueType contours handled. Empty contours skipped.
+- `edit_geometry_ready(target)` and `IncompleteContour` keep fontport's
   semantics.
 
-Tests: port `fontlab-fontport/tests/test_pens.py` cases with the same fake
-native doubles (no fontTools in the code under test), round trips through
-every segment type, open/closed, names, smooth, anchors, components, layer
-selection by name, matrices.
+Tests: port `fontlab-fontport/tests/test_pens.py` cases using fake fgLayer/
+fgShape doubles (no fontTools in the code under test); round trips through
+every segment type, open/closed, names, smooth, matrices on layer and
+element, element-vs-layer targets, glyph rejection.
 
 ## Task 3: FontLab pens (`src/fontlab_pens/fontlab.py`)
 
-- `draw_layer_points(layer, pointPen, *, components=True)`: walk
-  `layer.shapes`; contours of each shape mapped by `shape.transform`; node
-  types `on`/`off`/`curve` to UFO segment types (same rules as Task 2), smooth
-  and names; component shapes reported through `addComponent` (base glyph
-  name, transform) when detectable, otherwise drawn as contours.
-- `draw_layer(layer, pen, ...)`.
-- `FlLayerPointPen(layer, *, native=None)` and `FlLayerPen(layer)`: collect
-  `flContour`s; `close()` (and context manager exit) adds them as one new
-  `flShape` to the layer. No history notification by default; optional
-  `notify="Undo title"` calls `flItems.notifyChangesApplied(title, [layer,
-  glyph])` when a glyph is given/known. `addComponent` raises a clear
-  `NotImplementedError`-subclass unless a supported route exists.
+Measured facts: `.superpowers/sdd/PLAN/native-facts.md`.
+
+- `draw_points(target, pointPen, *, components=True)` for an `flLayer` or
+  `flShape`; contours mapped by `shape.transform` (QTransform m11..dy); node
+  types `on`/`off`/`curve` → UFO segment types (same rules as Task 2), smooth
+  and names; on a layer, element whose `shapeData.isComponent` is true →
+  `addComponent(shapeData.componentGlyph, transform)` when
+  `components=True`, else its contours. `draw(target, pen, ...)`.
+- `FlPointPen(target, *, native=None)` / `FlPen(target)`: build `flNode`/
+  `flContour`; on `close()` (and context-manager exit): for an flLayer add
+  one new `flShape()` with `addContours(contours, True)` via
+  `layer.addShape`; for an flShape call `shape.addContours(contours, True)`.
+  `addComponent(name, t)` on a layer → `layer.addComponent((name,
+  QTransform(t)))`; on an element → `ComponentError`. No history by
+  default; `notify="title"` calls `flItems.notifyChangesApplied(title,
+  [layer, glyph])` where `glyph = layer.glyph` (never notify auto layers).
 
 Tests with fake `fontlab`/`PythonQt` doubles.
 
@@ -164,12 +203,15 @@ Tests with fake `fontlab`/`PythonQt` doubles.
 ## Task 5: Native qualification (controller)
 
 Driver under `native/` run via `fl-native.sh --mutating` in the empty
-session: open an owned copy of a real multi-master fixture font; for every
-glyph layer of every master, read through `draw_layer_points` /
-`draw_points` and compare with the native node data; write recorded outlines
-into fresh glyphs per master through `FlLayerPointPen` and `FontGatePointPen`;
-read back and compare; screenshot Glyph windows; close without saving.
-Evidence JSON + PNGs under `verification/issue-235/`.
+session: open an owned copy of a real multi-master fixture font (Plum:
+Light/Regular/Bold). For every master layer of the sample glyphs, read each
+layer and each element through the fontlab and fontgate readers and compare
+with native node data (count, types, coordinates incl. element transforms,
+components). Write recorded outlines through `FlPointPen` and
+`FontGatePointPen` into each master layer of fresh owned glyphs, both as a
+new element on a layer and appended into an existing element; read back
+and compare; screenshot Glyph windows; close without saving. Evidence JSON +
+PNGs under `verification/issue-235/`.
 
 ## Task 6: Consumer migrations (isolated branches)
 

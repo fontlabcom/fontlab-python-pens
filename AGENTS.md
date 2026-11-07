@@ -15,8 +15,15 @@ this_file: AGENTS.md
 - **Headers.** Every source file starts with `# this_file: <path>`, and Markdown
   files carry `this_file` frontmatter. Ported files name their fontTools source on
   line 2. Keep `NOTICE` in step with ported files.
-- **Never copy** FontLab C++ or `fgPen.py` bodies into this repository. Never read
-  the TypeRig, FontRig or TypeRig-Icons directories.
+- **Never copy** FontLab C++ or `fgPen.py` bodies into this repository. TypeRig may
+  be read as a reference but never written into; never read FontRig or TypeRig-Icons.
+- **Layers and elements, never glyphs.** Native pens and readers take an
+  `fgLayer`/`fgShape` or `flLayer`/`flShape`; a glyph raises `TypeError`.
+- **No attribute probing on native objects.** Detect native types by
+  `type(obj).__name__`; never `hasattr`/`getattr(..., default)` on fg objects
+  (a missed lookup on `fgShape` recursed and crashed FontLab).
+- **Upstream:** issues in fontlab/fl; fixes as PRs to Fontlab/pyfontgate,
+  Fontlab/FontGate or Fontlab/Proteus.
 - **Tests.** Run `./test.sh` (Python 3.11 via `uv`, 80% coverage gate). New test
   names follow `test_function_when_condition_then_result` and carry assertion messages.
 - Python 3.11 syntax, type hints on public signatures, docstrings that say what
