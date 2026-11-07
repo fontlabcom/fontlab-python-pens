@@ -21,7 +21,7 @@ this_file: AGENTS.md
   `fgLayer`/`fgShape` or `flLayer`/`flShape`; a glyph raises `TypeError`.
 - **No attribute probing on native objects.** Detect native types by
   `type(obj).__name__`; never `hasattr`/`getattr(..., default)` on fg objects
-  (a missed lookup on `fgShape` recursed and crashed FontLab).
+  and never `repr()`/`str()` them: `fgShape.angle/width/calligraphic/cap_type/join_type` recurse forever and crash FontLab.
 - **Upstream:** issues in fontlab/fl; fixes as PRs to Fontlab/pyfontgate,
   Fontlab/FontGate or Fontlab/Proteus.
 - **Tests.** Run `./test.sh` (Python 3.11 via `uv`, 80% coverage gate). New test

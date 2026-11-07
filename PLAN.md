@@ -133,8 +133,12 @@ therefore targets a **layer** or an **element**, never a glyph:
   "flLayer", "flShape", "flGlyph"} (fakes in tests use the same class
   names). Measured 2026-11-07: an attribute lookup on a FontGate `fgShape`
   that falls through `pyfgShape::getattro` recursed until stack overflow and
-  crashed FontLab three times. Native code must only touch documented
-  attributes, never probe optional ones on fg objects.
+  crashed FontLab three times. Root cause (source): `fgShape` registers
+  getset members `angle`, `width`, `calligraphic`, `cap_type`,
+  `join_type` whose `getattro` cases are commented out, so reading them
+  (or `repr()`/`str()` of an fgShape/fgLayer, which prints all attributes)
+  recurses forever. Native code touches only the attributes it needs and never
+  formats native objects (no repr/str/f-string of fg objects in messages).
 
 ## Task 2: FontGate pens (`src/fontlab_pens/fontgate.py`)
 
