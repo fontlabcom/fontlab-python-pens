@@ -2,12 +2,16 @@
 """fontTools-compatible Pen and PointPen protocol for FontLab, with no dependencies.
 
 Class and function names and their behaviour match `fontTools.pens` so code
-written for fontTools pens works unchanged. Native FontLab pens (added later)
-import `fontgate`/`fontlab` lazily, so importing this package works anywhere.
+written for fontTools pens works unchanged. The native pens (`FontGatePointPen`,
+`FlPointPen` and friends) target layers and elements and import
+`fontgate`/`fontlab` lazily, so importing this package works anywhere. Their
+readers live in `fontlab_pens.fontgate` and `fontlab_pens.fontlab`
+(`draw_points`, `draw`).
 """
 
 from importlib.metadata import PackageNotFoundError, version
 
+from fontlab_pens._native import ComponentError, IncompleteContour, layer_of
 from fontlab_pens.base import (
     AbstractPen,
     BasePen,
@@ -26,6 +30,8 @@ from fontlab_pens.filter import (
     FilterPointPen,
     OnCurveFirstPointPen,
 )
+from fontlab_pens.fontgate import FontGatePen, FontGatePointPen, edit_geometry_ready
+from fontlab_pens.fontlab import FlPen, FlPointPen
 from fontlab_pens.measure import AreaPen, BoundsPen, ControlBoundsPen, PointInsidePen
 from fontlab_pens.point import (
     AbstractPointPen,
@@ -68,6 +74,7 @@ __all__ = [
     "BasePen",
     "BasePointToSegmentPen",
     "BoundsPen",
+    "ComponentError",
     "ContourFilterPen",
     "ContourFilterPointPen",
     "ControlBoundsPen",
@@ -77,8 +84,13 @@ __all__ = [
     "DecomposingRecordingPointPen",
     "FilterPen",
     "FilterPointPen",
+    "FlPen",
+    "FlPointPen",
+    "FontGatePen",
+    "FontGatePointPen",
     "GuessSmoothPointPen",
     "Identity",
+    "IncompleteContour",
     "MissingComponentError",
     "NullPen",
     "Offset",
@@ -102,6 +114,8 @@ __all__ = [
     "__version__",
     "decomposeQuadraticSegment",
     "decomposeSuperBezierSegment",
+    "edit_geometry_ready",
+    "layer_of",
     "lerpRecordings",
     "noRound",
     "otRound",

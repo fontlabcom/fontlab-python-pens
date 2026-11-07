@@ -8,9 +8,9 @@ The fontTools Pen and PointPen protocol for FontLab 9, with no dependencies.
 
 Code written against `fontTools.pens` runs unchanged: the same class names, the
 same calls and the same recordings. Inside FontLab you do not have to install
-fontTools to draw, measure, transform or reverse outlines. Native FontLab pens
-(FontGate and `fontlab` layers) build on this core in later releases and import
-the native modules lazily, so `import fontlab_pens` works anywhere.
+fontTools to draw, measure, transform or reverse outlines. The native pens for
+FontGate and `fontlab` layers import the native modules lazily, so
+`import fontlab_pens` works anywhere.
 
 ## Install
 
@@ -38,6 +38,48 @@ bounds = BoundsPen(None)
 rec.replay(bounds)
 bounds.bounds  # (10, 0, 210, 200)
 ```
+
+## Native pens: layers and elements
+
+In FontLab a glyph holds layers, and each layer holds elements (shapes). The
+native pens and readers take a layer or an element. If you pass a glyph, they
+raise `TypeError`. To pick a layer explicitly, use `layer_of(glyph, master)`.
+
+```python
+from fontlab_pens import FlPointPen, RecordingPointPen, layer_of
+from fontlab_pens.fontlab import draw_points
+
+layer = layer_of(glyph, "Regular")         # an flGlyph's flLayer
+with FlPointPen(layer, notify="Draw") as pen:
+    pen.beginPath()
+    pen.addPoint((0, 0), "line")
+    pen.addPoint((0, 100), "line")
+    pen.addPoint((100, 100), "line")
+    pen.endPath()                           # one new element on close
+rec = RecordingPointPen()
+draw_points(layer, rec)                     # components reported via addComponent
+```
+
+| Module | Writers | Readers |
+| --- | --- | --- |
+| `fontgate` | `FontGatePointPen`, `FontGatePen` (`fgLayer`/`fgShape`) | `draw_points`, `draw`, `draw_contour_points`, `edit_geometry_ready` |
+| `fontlab` | `FlPointPen`, `FlPen` (`flLayer`/`flShape`) | `draw_points`, `draw` |
+
+How the native pens behave:
+
+- **Writing to a layer** adds one new element for the pen session. Writing to an
+  element appends contours to that element.
+- **Coordinates** are mapped through the inverse of the target's matrix, so
+  reading the same target returns what you wrote.
+- **Identifiers** raise `PenError`, because FontLab stores none.
+- **Components:**
+  - `flLayer` adds a live component element.
+  - An element target raises `ComponentError`.
+  - Every FontGate target raises `ComponentError`, because FontGate components
+    are glyph-level only.
+
+The fast path over the native `fgPen` is not implemented. That pen binds to a
+glyph's work shape, which conflicts with the layer/element rule.
 
 ## What is included
 
