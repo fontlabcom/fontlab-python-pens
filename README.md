@@ -6,9 +6,10 @@ this_file: README.md
 
 The fontTools Pen and PointPen protocol for FontLab 9, with no dependencies.
 
-Code written against `fontTools.pens` runs unchanged: the same class names, the
-same calls and the same recordings. Inside FontLab you do not have to install
-fontTools to draw, measure, transform or reverse outlines. The native pens for
+For the selected APIs listed below, protocol-compatible callers use the same
+class names and calls as `fontTools.pens`, with parity tests comparing recordings.
+This package does not implement every fontTools pen API. Inside FontLab you do
+not have to install fontTools to draw, measure, transform or reverse outlines. The native pens for
 FontGate and `fontlab` layers import the native modules lazily, so
 `import fontlab_pens` works anywhere.
 

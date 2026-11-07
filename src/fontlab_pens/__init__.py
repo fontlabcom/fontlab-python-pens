@@ -1,8 +1,9 @@
 # this_file: src/fontlab_pens/__init__.py
 """fontTools-compatible Pen and PointPen protocol for FontLab, with no dependencies.
 
-Class and function names and their behaviour match `fontTools.pens` so code
-written for fontTools pens works unchanged. The native pens (`FontGatePointPen`,
+The selected implemented APIs use the class and function names of
+`fontTools.pens`, with parity tests for protocol-compatible calls. This is not
+the complete fontTools pen API set; see README for included and unported APIs. The native pens (`FontGatePointPen`,
 `FlPointPen` and friends) target layers and elements and import
 `fontgate`/`fontlab` lazily, so importing this package works anywhere. Their
 readers live in `fontlab_pens.fontgate` and `fontlab_pens.fontlab`

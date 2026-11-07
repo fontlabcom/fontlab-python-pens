@@ -157,12 +157,13 @@ fontTools, retargeted to layers/elements:
   supported only if a native fontgate route is measured; otherwise
   `ComponentError`. Identifiers raise `PenError` (FontGate stores none).
 - `FontGatePen(target, ...)` = segment pen via `SegmentToPointPen`.
-- `FontGateNativePen(target_layer)`: fast path over the native fgPen only
-  where it is correct (closed line/cubic/single-quad paths), forces
-  `pen.smooth = False`, raises `PenError` for open contours, multi-off
-  qcurves, components. Native fgPen binds to a glyph's work shape, so it is
-  offered only when the target layer is the glyph's work layer; otherwise it
-  raises `PenError` explaining why.
+- **Deferred requirement:** `FontGateNativePen(target_layer)` fast path for
+  closed line/cubic/single-quad paths, rejecting open contours, multi-off
+  qcurves and components. No implementation is delivered: the current native
+  fgPen binds to a glyph's work shape and provides no qualified explicit
+  layer-bound route. A measured upstream layer-bound API is a prerequisite;
+  selecting a glyph work layer does not satisfy the layer/element contract.
+  Retain this requirement for upstream resolution and later qualification.
 - Readers: `draw_points(target, pointPen, *, components=True)`,
   `draw(target, pen, ...)` via `PointToSegmentPen`,
   `draw_contour_points(contour, pointPen, transform=None)` (fontport's
