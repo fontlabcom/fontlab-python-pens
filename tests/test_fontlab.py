@@ -134,8 +134,47 @@ def test_add_component_when_layer_then_live_component_round_trips():
     matrix = (1, 0.25, -0.5, 0.75, 120, -30)
     with FlPointPen(layer, native=fontlab_native()) as pen:
         pen.addComponent("A", matrix)
-        assert len(layer.shapes) == 1, "component must be added at addComponent time"
+        assert layer.shapes == [], "components must be staged until close()"
     assert read(layer) == [("addComponent", ("A", matrix), {})], "component transform changed"
+
+
+def test_close_when_components_and_contours_mixed_then_layer_follows_call_order():
+    layer = flLayer()
+    with FlPointPen(layer, native=fontlab_native()) as pen:
+        pen.addComponent("A", (1, 0, 0, 1, 0, 0))
+        play(DRAWINGS["open_lines"], pen)
+        pen.addComponent("B", (1, 0, 0, 1, 0, 0))
+        play(DRAWINGS["closed_lines"], pen)
+    names = [s.shapeData.componentGlyph for s in layer.shapes]
+    assert names == ["A", None, "B"], "element order must follow the first call of each"
+    assert len(layer.shapes[1].contours) == 2, "all session contours go into one shape"
+
+
+def test_context_manager_when_body_raises_after_component_then_nothing_is_written():
+    native = fontlab_native()
+    layer = flLayer()
+    with pytest.raises(RuntimeError), FlPointPen(layer, native=native, notify="Draw") as pen:
+        pen.addComponent("A", (1, 0, 0, 1, 0, 0))
+        play(DRAWINGS["closed_lines"], pen)
+        raise RuntimeError("boom")
+    assert layer.shapes == [] and native.flItems.calls == [], "failed drawing committed data"
+
+
+def test_point_pen_when_element_is_a_component_then_component_error():
+    layer = flLayer()
+    layer.addComponent(("A", QTransform()))
+    with pytest.raises(ComponentError, match="component flShape"):
+        FlPointPen(layer.shapes[0], native=fontlab_native())
+
+
+def test_segment_pen_when_closed_with_unfinished_contour_then_pen_error():
+    layer = flLayer()
+    pen = FlPen(layer, native=fontlab_native())
+    pen.moveTo((0, 0))
+    pen.lineTo((10, 0))
+    with pytest.raises(PenError, match="Unfinished contour"):
+        pen.close()
+    assert layer.shapes == [], "unfinished contour must not commit"
 
 
 def test_add_component_when_invalid_then_nothing_reaches_the_layer():

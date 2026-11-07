@@ -158,7 +158,14 @@ class StagingPointPen(AbstractPointPen):
 
 
 def validate(points: list[StagedPoint]) -> None:
-    """Raise IncompleteContour/PenError unless `points` form a valid pen contour."""
+    """Raise IncompleteContour/PenError unless `points` form a valid pen contour.
+
+    A "move" after the first point is rejected. fontTools raises for it after a
+    leading move but silently re-reads [line, move, ...] as an open contour;
+    natively it would store a mid-contour Move node, so it is refused here.
+    """
+    if any(p[1] == "move" for p in points[1:]):
+        raise PenError("A 'move' point may only start a contour")
     for index, (_, kind, _, _) in enumerate(points):
         if kind != "curve":
             continue

@@ -4,8 +4,10 @@
 Targets are an `flLayer` or an `flShape` (element), never an `flGlyph`.
 Contours are staged and validated in Python; `close()` (or leaving the `with`
 block) writes them: a layer gets one new `flShape` holding all of them, an
-element gets them appended. On a layer, `addComponent` creates a live
-component element immediately; an element cannot hold components.
+element gets them appended. On a layer, `addComponent` is staged too and
+`close()` adds the component elements and the contour shape in call order,
+so a failed drawing writes nothing. An element cannot hold components, and a
+component element cannot take contours.
 No undo history is recorded unless `notify="title"` is given.
 """
 
@@ -71,12 +73,17 @@ class FlPointPen(StagingPointPen):
     def __init__(self, target: Any, *, native: Any = None, notify: str | None = None) -> None:
         super().__init__()
         self._target_kind = _kind(target)
+        if self._target_kind == "element" and target.shapeData.isComponent:
+            # Its contours are the base glyph's: writing would edit shared data.
+            raise ComponentError("A component flShape cannot take contours; use its flLayer")
         self.target = target
         self.native = native
         self.notify = notify
         self._contours: list = []
+        # Layer writes in call order: "shape" marks where the session shape goes,
+        # ("component", name, values) a component. Nothing is written before close().
+        self._ops: list = []
         self._closed = False
-        self._touched = False
 
     def _native(self) -> Any:
         if self.native is None:
@@ -105,6 +112,8 @@ class FlPointPen(StagingPointPen):
             node.smooth = smooth
             node.name = name or ""
             nodes.append(node)
+        if not self._contours:
+            self._ops.append("shape")
         self._contours.append(native.flContour(nodes, closed=points[0][1] != "move"))
 
     def addComponent(
@@ -118,32 +127,37 @@ class FlPointPen(StagingPointPen):
         values = self._check_component(transformation, identifier)
         if self._target_kind == "element":
             raise ComponentError("An flShape element cannot hold a component; use its flLayer")
-        native = self._native()
-        self.target.addComponent((baseGlyphName, native.QTransform(*values)))
-        self._touched = True
+        self._ops.append(("component", baseGlyphName, values))
 
     def close(self) -> None:
-        """Write the staged contours (once) and notify FontLab if asked."""
+        """Write the staged contours and components (once), then notify if asked."""
         if self._closed:
             return
         if self._points is not None:
             raise PenError("Cannot close the pen inside an open contour")
         self._closed = True
         contours, self._contours = self._contours, []
-        if contours:
-            if self._target_kind == "element":
-                self.target.addContours(contours, True)
-            else:
-                shape = self._native().flShape()
+        ops, self._ops = self._ops, []
+        if not ops:
+            return
+        native = self._native()
+        if self._target_kind == "element":
+            self.target.addContours(contours, True)
+            ops = []  # an element pen stages contours only
+        for op in ops:
+            if op == "shape":
+                shape = native.flShape()
                 shape.addContours(contours, True)
                 self.target.addShape(shape)
-            self._touched = True
-        if self.notify and self._touched:
+            else:
+                _, name, values = op
+                self.target.addComponent((name, native.QTransform(*values)))
+        if self.notify:
             if self._target_kind == "layer":
                 items = [self.target, self.target.glyph]
             else:
                 items = [self.target]
-            self._native().flItems.notifyChangesApplied(self.notify, items)
+            native.flItems.notifyChangesApplied(self.notify, items)
 
     def __enter__(self) -> FlPointPen:
         return self
@@ -152,8 +166,9 @@ class FlPointPen(StagingPointPen):
         if exc_type is None:
             self.close()
         else:
-            # A failed drawing commits nothing further.
+            # A failed drawing commits nothing.
             self._contours = []
+            self._ops = []
             self._points = None
             self._closed = True
 
@@ -176,6 +191,8 @@ class FlPen(SegmentToPointPen):
         self.pointPen.addComponent(glyphName, transformation)
 
     def close(self) -> None:
+        if self.contour is not None:
+            raise PenError("Unfinished contour: call closePath() or endPath() before close()")
         self.pointPen.close()
 
     def __enter__(self) -> FlPen:

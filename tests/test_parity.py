@@ -502,3 +502,47 @@ def test_native_pens_when_drawn_back_then_segments_equal_fonttools(family):
         reader(shape, ours)
         play(drawing, ft_point.PointToSegmentPen(theirs))
         assert ours.value == theirs.value, f"{family} {name} disagrees with fontTools"
+
+
+LATE_MOVE = {
+    "after_move": [((0, 0), "move"), ((1, 1), "move")],
+    "after_line": [((0, 0), "line"), ((1, 1), "move"), ((2, 2), "line")],
+}
+
+
+@pytest.mark.parametrize("case", sorted(LATE_MOVE))
+def test_point_to_segment_when_move_is_not_first_then_matches_fonttools(case):
+    def run(pen_class, rec):
+        pen = pen_class(rec)
+        pen.beginPath()
+        for pt, kind in LATE_MOVE[case]:
+            pen.addPoint(pt, kind)
+        try:
+            pen.endPath()
+        except Exception as error:  # compare the failure, not just success
+            return type(error).__name__
+        return rec.value
+
+    ours = run(fl.PointToSegmentPen, fl.RecordingPen())
+    theirs = run(ft_point.PointToSegmentPen, ft_rec.RecordingPen())
+    assert ours == theirs, f"PointToSegmentPen differs from fontTools for {case}"
+
+
+@pytest.mark.parametrize("case", sorted(LATE_MOVE))
+@pytest.mark.parametrize("family", ["fontgate", "fontlab"])
+def test_native_pens_when_move_is_not_first_then_pen_error(case, family):
+    # Stricter than fontTools for "after_line": a mid-contour Move node is bad native data.
+    from tests import fakes
+
+    if family == "fontgate":
+        shape = fakes.fgShape()
+        pen = fl.FontGatePointPen(shape, native=fakes.FONTGATE)
+    else:
+        shape = fakes.flShape()
+        pen = fl.FlPointPen(shape, native=fakes.fontlab_native())
+    pen.beginPath()
+    for pt, kind in LATE_MOVE[case]:
+        pen.addPoint(pt, kind)
+    with pytest.raises(fl.PenError, match="only start"):
+        pen.endPath()
+    assert len(shape.contours) == 0, "rejected contour reached the element"
