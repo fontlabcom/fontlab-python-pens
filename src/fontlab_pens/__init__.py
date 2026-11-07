@@ -43,6 +43,7 @@ from fontlab_pens.point import (
     ReverseFlipped,
     SegmentToPointPen,
 )
+from fontlab_pens.qt import QPainterPathPen, draw_onoff_contours
 from fontlab_pens.recording import (
     DecomposingRecordingPen,
     DecomposingRecordingPointPen,
@@ -99,6 +100,7 @@ __all__ = [
     "PenError",
     "PointInsidePen",
     "PointToSegmentPen",
+    "QPainterPathPen",
     "RecordingPen",
     "RecordingPointPen",
     "ReverseContourPen",
@@ -114,6 +116,7 @@ __all__ = [
     "__version__",
     "decomposeQuadraticSegment",
     "decomposeSuperBezierSegment",
+    "draw_onoff_contours",
     "edit_geometry_ready",
     "layer_of",
     "lerpRecordings",

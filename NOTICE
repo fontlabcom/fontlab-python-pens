@@ -18,6 +18,7 @@ reproduced below. The following files are derived from fontTools:
 - src/fontlab_pens/measure.py    <- Lib/fontTools/pens/boundsPen.py, areaPen.py,
                                     pointInsidePen.py, Lib/fontTools/misc/arrayTools.py,
                                     Lib/fontTools/misc/bezierTools.py
+- src/fontlab_pens/qt.py         <- Lib/fontTools/pens/qtPen.py
 - tests/ported/*.py              <- Tests/pens/*_test.py, Tests/misc/transform_test.py
 
 --- fontTools licence ---
