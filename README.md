@@ -95,8 +95,10 @@ upstream issue.
   not establish whole-font history safety. FontLab's first notification changed
   40 unrelated glyph timestamps in the owned fixture, even with an empty pending
   queue and with recursion disabled. Glyph-window history scope remains a limit.
-- FontLab keeps a smooth flag only where the geometry allows it (`node.canBeSmooth()`);
-  a smooth point between two lines reads back as a corner.
+- FontLab's smooth property setter can move neighboring handles. FlPointPen
+  writes the named raw Smooth flag after contour construction to keep supplied
+  coordinates unchanged. Advanced G2/Hobby and raw control-node flags are not
+  represented by the point protocol's boolean smooth value.
 - A closed quadratic contour whose first point is an on-curve `qcurve` with no
   preceding off-curves reads back as `line`. The geometry is identical; FontLab
   stores both as "on".

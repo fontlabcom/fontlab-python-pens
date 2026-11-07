@@ -563,3 +563,23 @@ def test_fontlab_pen_when_history_enabled_then_geometry_matches_fonttools():
     assert ours.value == theirs.value, "history enrollment changed the fontTools geometry"
     assert layer.history == glyph.history == [0], "history enrollment must cover both owners"
     assert native.flItems.calls == [("Draw", [layer, glyph])], "history must finalize once"
+
+
+def test_fontlab_pen_when_smooth_endpoint_has_noncollinear_handles_then_point_parity():
+    from tests import fakes
+    from fontlab_pens.fontlab import draw_points
+
+    expected = ft_rec.RecordingPointPen()
+    shape = fakes.flShape()
+    with fl.FlPointPen(shape, native=fakes.fontlab_native()) as actual:
+        for pen in (expected, actual):
+            pen.beginPath()
+            pen.addPoint((0, 0), "move", name="entry")
+            pen.addPoint((25, 45))
+            pen.addPoint((65, 55), name="handle")
+            pen.addPoint((100, 0), "curve", smooth=True, name="exit")
+            pen.addPoint((160, -40), "line")
+            pen.endPath()
+    got = fl.RecordingPointPen()
+    draw_points(shape, got)
+    assert got.value == expected.value, "raw smooth metadata changed the fontTools point record"

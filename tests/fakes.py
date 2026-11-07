@@ -148,21 +148,25 @@ class QTransform(_Native):
 
 
 class flNode(_Native):
+    NodeKind = {"Smooth": 8}
+
     def __init__(self, pos, nodeType="on"):
         self.x, self.y = pos.x(), pos.y()
         self.type = nodeType
         self.attached = False  # FontLab ignores smooth on a free node
-        self._smooth = False
+        self.nodeState = {"on": 1, "off": 2, "curve": 4}[nodeType]
         self.name = ""
 
     @property
     def smooth(self):
-        return self._smooth
+        return bool(self.nodeState & self.NodeKind["Smooth"])
 
     @smooth.setter
     def smooth(self, value):
         if self.attached:
-            self._smooth = value
+            self.nodeState = (self.nodeState & ~self.NodeKind["Smooth"]) | (
+                self.NodeKind["Smooth"] if value else 0
+            )
 
 
 class flContour(_Native):

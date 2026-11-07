@@ -390,6 +390,55 @@ def test_point_pen_when_smooth_point_then_flag_set_on_contour_node():
     assert [n.smooth for n in nodes] == expected, "smooth flags must match the drawing"
 
 
+def test_point_pen_when_smooth_setter_moves_handles_then_raw_flag_preserves_geometry():
+    class AligningNode(flNode):
+        smooth_calls = []
+
+        def __init__(self, point, nodeType="on"):
+            super().__init__(point, nodeType)
+            self.nodeState |= 0x8050  # unrelated/first-state bits must survive
+
+        @flNode.smooth.setter
+        def smooth(self, value):
+            self.smooth_calls.append(self)
+            if self.attached and value:
+                # Native smooth alignment may move a neighboring cubic control.
+                self.neighbor.x += 1
+            flNode.smooth.fset(self, value)
+
+    native = fontlab_native()
+    native.flNode = AligningNode
+
+    def contour(nodes, closed=False):
+        result = flContour(nodes, closed=closed)
+        attached = result.nodes()
+        for index, node in enumerate(attached):
+            node.neighbor = attached[index - 1]
+        return result
+
+    native.flContour = contour
+    shape = flShape()
+    with FlPointPen(shape, native=native) as pen:
+        pen.beginPath()
+        pen.addPoint((0, 0), "move", name="entry")
+        pen.addPoint((25, 45))
+        pen.addPoint((65, 55), name="handle")
+        pen.addPoint((100, 0), "curve", smooth=True, name="exit")
+        pen.addPoint((160, -40), "line")
+        pen.endPath()
+    nodes = shape.contours[0].nodes()
+    assert [(n.x, n.y) for n in nodes] == [(0, 0), (25, 45), (65, 55), (100, 0), (160, -40)], (
+        "smooth metadata must not move an endpoint or neighboring control"
+    )
+    assert [n.type for n in nodes] == ["on", "curve", "curve", "on", "on"], "native node types changed"
+    assert [n.name for n in nodes] == ["entry", "", "handle", "exit", ""], "node names changed"
+    assert [n.smooth for n in nodes] == [False, False, False, True, False], "smooth flags changed"
+    assert [n.nodeState for n in nodes] == [0x8051, 0x8054, 0x8054, 0x8059, 0x8051], (
+        "raw smooth assignment must preserve every unrelated/type flag"
+    )
+    assert AligningNode.smooth_calls == [], "geometry-affecting smooth setter was called"
+
+
 def test_segment_pen_context_when_contour_unfinished_then_pen_error():
     layer = flLayer()
     with pytest.raises(PenError, match="Unfinished contour"):

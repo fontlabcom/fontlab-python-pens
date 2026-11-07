@@ -117,10 +117,10 @@ class FlPointPen(StagingPointPen):
         if not self._contours:
             self._ops.append("shape")
         contour = native.flContour(nodes, closed=points[0][1] != "move")
-        # FontLab ignores `smooth` on a node that is not yet inside a contour.
+        # The smooth setter can move neighboring handles; assign metadata only.
         for node, point in zip(contour.nodes(), points, strict=True):
             if point[2]:
-                node.smooth = True
+                node.nodeState = node.nodeState | native.flNode.NodeKind["Smooth"]
         self._contours.append(contour)
 
     def addComponent(

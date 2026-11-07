@@ -6,6 +6,11 @@ this_file: CHANGELOG.md
 
 ## Unreleased
 
+- Set FlPointPen smooth metadata with the named raw native Smooth bit instead
+  of the property setter, which can move neighboring handles. Preserve exact
+  input coordinates, names, types and unrelated node-state bits. The previous
+  native M/Regular matrix mismatch remains retained; whole-font qualification
+  requires a new source/artifact run.
 - Initialize attached layer/glyph history before notified FlPointPen/FlPen
   writes; finalize once after attempted writes, preserving native write errors
   and chained finalization failures. Refuse notified bare elements and direct

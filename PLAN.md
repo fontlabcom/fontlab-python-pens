@@ -209,6 +209,14 @@ Do not add guessed queue/window guards, duplicate notifications or a rollback.
 
 Tests with fake `fontlab`/`PythonQt` doubles.
 
+FlPointPen sets requested true Smooth metadata through the named public
+`flNode.NodeKind["Smooth"]` bit in `nodeState` after contour construction.
+The native smooth property setter can reposition neighboring handles; it must
+not be used for protocol metadata. Native M staging/append calibration supports
+the raw-state route. New source/artifact acceptance still requires the unchanged
+full finite font matrices; the earlier 66ec827 tuple and failed matrix remain
+frozen evidence, not a passed coordinate-preservation claim.
+
 ## Task 4: Qt pen (`src/fontlab_pens/qt.py`)
 
 - `QPainterPathPen(path=None)` (BasePen subclass, fontTools `QtPen` semantics,
