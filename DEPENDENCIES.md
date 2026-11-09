@@ -17,7 +17,6 @@ itself and are imported lazily inside functions.
 | --- | --- |
 | `pytest` | Test runner. |
 | `pytest-cov` | Enforces the 80% coverage gate. |
-| `fontTools` | Parity oracle. The tests compare our recordings, bounds and areas with the fontTools pens of the same name, and use `floatToFixedToFloat` in one ported rounding test. It is never imported by `src/`. |
+| `fontTools` | Parity oracle. The tests compare our recordings, bounds and areas with the fontTools pens of the same name, and use `floatToFixedToFloat` in one ported rounding test. `src/` imports it only optionally: when it is installed, `PenError` subclasses its `PenError`. |
 
-`fontPens` and `ufoLib2` may serve as test oracles in later tasks; Task 1 does
-not use them. `test.sh` installs the test packages unpinned through `uv run --with`.
+`fontPens` and `ufoLib2` are not used. `test.sh` installs the test packages unpinned through `uv run --with`.

@@ -4,36 +4,54 @@ this_file: CHANGELOG.md
 
 # Changelog
 
-## Unreleased
+## 1.0.0 — 2026-11-09
 
-- Clarified raw payload preservation for default-no-notify layer appends:
-  cached glyph snapshots and dependent expanded views may remain stale.
-  Fresh per-layer FontGate conversion reflects current FontLab shapes and
-  does not refresh dependent views.
-- Set FlPointPen smooth metadata with the named raw native Smooth bit instead
-  of the property setter, which can move neighboring handles. Preserve exact
-  input coordinates, names, types and unrelated node-state bits. The previous
-  native M/Regular matrix mismatch remains retained; whole-font qualification
-  requires a new source/artifact run.
-- Initialize attached layer/glyph history before notified FlPointPen/FlPen
-  writes; finalize once after attempted writes, preserving native write errors
-  and chained finalization failures. Refuse notified bare elements and direct
-  automatic-layer writes. Failed native commits remain partial and cannot replay
-  through the spent pen. This fixes the measured first-Undo geometry failure;
-  FontLab's 40 unrelated timestamp changes and whole-font history safety remain open.
-- Added native pens over layers and elements, never glyphs.
+First release.
+
+### Pen protocols
+
+- The fontTools pen protocol core, ported with zero runtime dependencies:
+  base, point, transform, recording, filter, measure (bounds, area,
+  point-inside), reverse and rounding pens.
+- `QPainterPathPen` and `draw_onoff_contours` in `fontlab_pens.qt`.
+- `PenError` subclasses `fontTools.pens.basePen.PenError` when fontTools is
+  installed, and `Exception` otherwise. Code that catches the fontTools error
+  also catches errors raised by these pens.
+
+### Native pens
+
+- Native pens write to a layer or an element, never to a glyph. Resolve the
+  layer first, for example with `layer_of(glyph, master)`.
   - FontGate: `FontGatePointPen`, `FontGatePen` and the
     `fontlab_pens.fontgate` readers.
   - FontLab: `FlPointPen`, `FlPen` and the `fontlab_pens.fontlab` readers.
   - Shared: `ComponentError`, `IncompleteContour` and `layer_of`.
-- Native targets are detected by type name. Native objects are never probed or
-  formatted, which would crash FontLab.
-- Tests use fake doubles that enforce these crash rules.
+- Native targets are recognised by type name. Native objects are never probed
+  or formatted, which can crash FontLab. `FontGatePointPen(target, kind=...)`
+  accepts `"layer"` or `"element"` to skip detection for wrappers and test
+  doubles.
+- Public staging API for adapters that resolve their own target:
+  `StagingPointPen` (with `append_contour` and `check_component`),
+  `StagedPoint`, `staged_node_kinds`, `FONTGATE_NODE_TYPES` and
+  `invert_transform`.
+- `FlPointPen` sets smooth metadata through the raw native Smooth bit rather
+  than the property setter, which can move neighbouring handles. Input
+  coordinates, names, types and unrelated node bits are kept as given.
+- Notified `FlPointPen` and `FlPen` writes start layer and glyph history before
+  writing and finish it once afterwards, so the first Undo can restore the
+  previous geometry. Whole-font history safety is not claimed. Write errors
+  are kept; a failure while finishing is chained to them. Notified writes to a bare element and direct writes to an
+  automatic layer are refused. A failed write may be partial, and a spent pen
+  cannot replay it.
+- Layer appends that do not notify keep the raw payload. Cached glyph
+  snapshots and dependent expanded views can stay stale until FontLab
+  refreshes them.
 
-- Added the package scaffold for `fontlab-python-pens` (import `fontlab_pens`):
-  hatch-vcs build, `test.sh`, NOTICE and the project documents.
-- Ported the fontTools pen protocol core with zero runtime dependencies: base,
-  point, transform, recording, filter, measure (bounds, area, point-inside),
-  reverse and rounding pens.
-- Added the ported fontTools pen tests and parity tests that check recordings,
-  bounds and areas against fontTools.
+### Packaging and tests
+
+- hatch-vcs build, `test.sh`, NOTICE and `uv.lock`.
+- `install.vfpy` installs the package into FontLab 9 under the extension id
+  `com.fontlab.pens`.
+- The ported fontTools pen tests, parity tests that compare recordings,
+  bounds and areas with fontTools, and native-pen tests on fake doubles that
+  enforce the no-probing rule. 662 tests pass with 94.89% line coverage.

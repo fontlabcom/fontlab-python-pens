@@ -15,9 +15,16 @@ FontGate and `fontlab` layers import the native modules lazily, so
 
 ## Install
 
+The package is not on PyPI. Install a tagged release from GitHub:
+
 ```sh
-uv pip install fontlab-python-pens
+uv pip install "fontlab-python-pens @ git+https://github.com/fontlabcom/fontlab-python-pens@v1.0.0"
 ```
+
+To use it inside FontLab 9, open `install.vfpy` from a checkout in FontLab
+(double-click it or drop it onto FontLab), then restart FontLab. It links the
+package into FontLab's own `site-packages` and records the install under the
+extension id `com.fontlab.pens`.
 
 Python 3.11 or later. Runtime dependencies: none.
 
@@ -84,8 +91,7 @@ How the native pens behave:
     are glyph-level only.
 
 The fast path over the native `fgPen` is not implemented. That pen binds to a
-glyph's work shape, which conflicts with the layer/element rule; see the
-upstream issue.
+glyph's work shape, which conflicts with the layer/element rule.
 
 ## FontLab notes
 
@@ -97,10 +103,10 @@ upstream issue.
   component views may stay stale until native reconstruction. Fresh per-layer
   FontGate conversion reflects current FontLab shapes without refreshing
   dependent views.
-- History initialization fixes the measured first-Undo geometry failure; it does
-  not establish whole-font history safety. FontLab's first notification changed
-  40 unrelated glyph timestamps in the owned fixture, even with an empty pending
-  queue and with recursion disabled. Glyph-window history scope remains a limit.
+- History initialization makes the first Undo after a notified write restore
+  the previous geometry. It does not make whole-font history safe: FontLab's
+  notification can change the timestamps of unrelated glyphs, and history is
+  scoped to the glyph window.
 - FontLab's smooth property setter can move neighboring handles. FlPointPen
   writes the named raw Smooth flag after contour construction to keep supplied
   coordinates unchanged. Advanced G2/Hobby and raw control-node flags are not
@@ -124,8 +130,27 @@ upstream issue.
 | `measure` | `ControlBoundsPen`, `BoundsPen`, `AreaPen`, `PointInsidePen` |
 | `reverse` | `ReverseContourPen`, `reversedContour` |
 | `rounding` | `RoundingPen`, `RoundingPointPen`, `otRound`, `noRound` |
+| `qt` | `QPainterPathPen`, `draw_onoff_contours` |
 
 Everything is also exported from `fontlab_pens` itself.
+
+## Building native adapters
+
+Code that resolves its own native target, such as a glyph-level adapter, can
+build on the staging layer the native pens use:
+
+| Name | Purpose |
+| --- | --- |
+| `StagingPointPen` | Point pen that validates each contour and passes it, complete, to `append_contour(points)`. `check_component(transformation)` validates a component call. |
+| `StagedPoint` | One staged point: `(position, segment_type, smooth, name)`. |
+| `staged_node_kinds(points)` | Native node kind per staged point: `move`, `on`, `cubic` or `quad`. |
+| `FONTGATE_NODE_TYPES` | FontGate `fgNode` type for each of those kinds. |
+| `invert_transform(transform)` | Inverse of an affine transform; raises `ValueError` if it is singular. |
+
+`FontGatePointPen(target, kind="layer")` or `kind="element"` states the
+target kind instead of detecting it from the native type name, for wrappers
+and test doubles. `PenError` subclasses `fontTools.pens.basePen.PenError` when
+fontTools is installed, so either `except` clause catches it.
 
 Not ported: `DecomposedTransform`, the decomposing filter pens, and the pens
 that need a graphics toolkit, cu2qu or a TrueType glyph object.
