@@ -33,8 +33,18 @@ Point = tuple[float, float]
 TransformLike = Sequence[float]
 
 
-class PenError(Exception):
-    """Represents an error during penning."""
+try:  # optional: when fontTools is installed, its handlers also catch our errors
+    from fontTools.pens.basePen import PenError as _BasePenError
+except ImportError:  # fontTools is not a dependency
+    _BasePenError = Exception
+
+
+class PenError(_BasePenError):
+    """Represents an error during penning.
+
+    Subclasses `fontTools.pens.basePen.PenError` when fontTools is importable,
+    so `except fontTools.pens.basePen.PenError` catches errors from these pens.
+    """
 
 
 class OpenContourError(PenError):

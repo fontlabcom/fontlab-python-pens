@@ -24,8 +24,8 @@ from fontlab_pens._native import (
     StagedPoint,
     StagingPointPen,
     emit_contour,
-    inverse,
-    node_kinds,
+    invert_transform,
+    staged_node_kinds,
     target_kind,
 )
 from fontlab_pens.base import AbstractPen, PenError
@@ -101,14 +101,14 @@ class FlPointPen(StagingPointPen):
         self._open()
         super().beginPath(identifier, **kwargs)
 
-    def _append_contour(self, points: list[StagedPoint]) -> None:
+    def append_contour(self, points: list[StagedPoint]) -> None:
         native = self._native()
         if self._target_kind == "element":
-            mapping = inverse(_transform(self.target))
+            mapping = invert_transform(_transform(self.target))
         else:
             mapping = Identity
         nodes = []
-        for (position, _, _, name), kind in zip(points, node_kinds(points), strict=True):
+        for (position, _, _, name), kind in zip(points, staged_node_kinds(points), strict=True):
             node = native.flNode(
                 native.QPointF(*mapping.transformPoint(position)), nodeType=_NATIVE_KIND[kind]
             )
@@ -131,7 +131,7 @@ class FlPointPen(StagingPointPen):
         **kwargs: Any,
     ) -> None:
         self._open()
-        values = self._check_component(transformation, identifier)
+        values = self.check_component(transformation, identifier)
         if self._target_kind == "element":
             raise ComponentError("An flShape element cannot hold a component; use its flLayer")
         self._ops.append(("component", baseGlyphName, values))

@@ -18,7 +18,15 @@ from fontlab_pens.point import AbstractPointPen, PointToSegmentPen
 from fontlab_pens.recording import RecordingPen
 from fontlab_pens.transform import Transform
 
-__all__ = ["ComponentError", "IncompleteContour", "layer_of"]
+__all__ = [
+    "ComponentError",
+    "IncompleteContour",
+    "StagedPoint",
+    "StagingPointPen",
+    "invert_transform",
+    "layer_of",
+    "staged_node_kinds",
+]
 
 GLYPH_HINT = (
     "pen targets are layers or elements, not glyphs: pass glyph.layers[...], "
@@ -78,20 +86,28 @@ def check_transformation(transformation: Any) -> tuple[float, ...]:
     return values
 
 
-def inverse(transformation: Transform) -> Transform:
-    """Invert a native matrix chain; a singular one cannot be written through."""
+def invert_transform(transformation: Transform) -> Transform:
+    """Return the inverse of a target's matrix, for writing in its coordinates.
+
+    Raises ValueError (not ZeroDivisionError) for a singular matrix, because no
+    point can be written through it.
+    """
     try:
         return transformation.inverse()
     except ZeroDivisionError as error:
         raise ValueError("Cannot draw into a singular native transform") from error
 
 
-# Staged point: ((x, y), segmentType, smooth, name).
 StagedPoint = tuple[tuple[float, float], str | None, bool, str | None]
+"""One point collected by `StagingPointPen`: ((x, y), segmentType, smooth, name)."""
 
 
-def node_kinds(points: list[StagedPoint]) -> list[str]:
-    """Classify each staged point as "move", "on", "cubic" or "quad" control."""
+def staged_node_kinds(points: list[StagedPoint]) -> list[str]:
+    """Classify each staged point as "move", "on", "cubic" or "quad".
+
+    An off-curve point (segmentType None) is "cubic" when the next on-curve
+    point is a "curve", else "quad"; wrapping around for closed contours.
+    """
     kinds = []
     for index, (_, segment_type, _, _) in enumerate(points):
         if segment_type is None:
@@ -104,10 +120,12 @@ def node_kinds(points: list[StagedPoint]) -> list[str]:
 
 
 class StagingPointPen(AbstractPointPen):
-    """Collect a contour, validate it as pen geometry, then hand it to `_append_contour`.
+    """Collect a contour, validate it as pen geometry, then hand it to `append_contour`.
 
     Nothing reaches the native side until the whole contour is known to be
     valid, so a malformed contour never leaves partial native data behind.
+    Subclasses implement `append_contour` (called only with validated points)
+    and `addComponent`, which should start with `check_component`.
     """
 
     def __init__(self) -> None:
@@ -145,12 +163,14 @@ class StagingPointPen(AbstractPointPen):
         if not points:
             return  # Empty editing contours have no native geometry.
         validate(points)
-        self._append_contour(points)
+        self.append_contour(points)
 
-    def _append_contour(self, points: list[StagedPoint]) -> None:
+    def append_contour(self, points: list[StagedPoint]) -> None:
+        """Store one validated, non-empty contour; `endPath` calls it."""
         raise NotImplementedError
 
-    def _check_component(self, transformation: Any, identifier: str | None) -> tuple:
+    def check_component(self, transformation: Any, identifier: str | None = None) -> tuple:
+        """Refuse identifiers and components inside a contour; return the 6-value matrix."""
         no_identifier(identifier)
         if self._points is not None:
             raise ValueError("Cannot add a component inside a contour")

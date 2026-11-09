@@ -12,7 +12,15 @@ readers live in `fontlab_pens.fontgate` and `fontlab_pens.fontlab`
 
 from importlib.metadata import PackageNotFoundError, version
 
-from fontlab_pens._native import ComponentError, IncompleteContour, layer_of
+from fontlab_pens._native import (
+    ComponentError,
+    IncompleteContour,
+    StagedPoint,
+    StagingPointPen,
+    invert_transform,
+    layer_of,
+    staged_node_kinds,
+)
 from fontlab_pens.base import (
     AbstractPen,
     BasePen,
@@ -31,7 +39,12 @@ from fontlab_pens.filter import (
     FilterPointPen,
     OnCurveFirstPointPen,
 )
-from fontlab_pens.fontgate import FontGatePen, FontGatePointPen, edit_geometry_ready
+from fontlab_pens.fontgate import (
+    FONTGATE_NODE_TYPES,
+    FontGatePen,
+    FontGatePointPen,
+    edit_geometry_ready,
+)
 from fontlab_pens.fontlab import FlPen, FlPointPen
 from fontlab_pens.measure import AreaPen, BoundsPen, ControlBoundsPen, PointInsidePen
 from fontlab_pens.point import (
@@ -70,6 +83,7 @@ except PackageNotFoundError:  # running from a source tree without metadata
     __version__ = "0.1.0"
 
 __all__ = [
+    "FONTGATE_NODE_TYPES",
     "AbstractPen",
     "AbstractPointPen",
     "AreaPen",
@@ -111,6 +125,8 @@ __all__ = [
     "RoundingPointPen",
     "Scale",
     "SegmentToPointPen",
+    "StagedPoint",
+    "StagingPointPen",
     "Transform",
     "TransformPen",
     "TransformPointPen",
@@ -119,10 +135,12 @@ __all__ = [
     "decomposeSuperBezierSegment",
     "draw_onoff_contours",
     "edit_geometry_ready",
+    "invert_transform",
     "layer_of",
     "lerpRecordings",
     "noRound",
     "otRound",
     "replayRecording",
     "reversedContour",
+    "staged_node_kinds",
 ]

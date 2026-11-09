@@ -23,9 +23,9 @@ from fontlab_pens._native import (
     StagedPoint,
     StagingPointPen,
     emit_contour,
-    inverse,
+    invert_transform,
     no_identifier,
-    node_kinds,
+    staged_node_kinds,
     target_kind,
 )
 from fontlab_pens.base import AbstractPen, PenError
@@ -33,6 +33,7 @@ from fontlab_pens.point import AbstractPointPen, PointToSegmentPen, SegmentToPoi
 from fontlab_pens.transform import Identity, Transform, TransformPointPen
 
 __all__ = [
+    "FONTGATE_NODE_TYPES",
     "FontGatePen",
     "FontGatePointPen",
     "IncompleteContour",
@@ -42,7 +43,8 @@ __all__ = [
     "edit_geometry_ready",
 ]
 
-_NATIVE_KIND = {"move": "Move", "on": "On", "cubic": "Curve", "quad": "Off"}
+FONTGATE_NODE_TYPES = {"move": "Move", "on": "On", "cubic": "Curve", "quad": "Off"}
+"""FontGate `fgNode` type name for each `staged_node_kinds` kind."""
 _READ_KIND = {"Move": "on", "On": "on", "Curve": "cubic", "Off": "quad"}
 
 
@@ -63,11 +65,19 @@ class FontGatePointPen(StagingPointPen):
     for a layer target and element-space-before-matrix for an element target:
     they are mapped through the inverse of `layer.matrix` or `shape.matrix`
     respectively, so `draw_points` on the same target reads them back.
+
+    The target kind is detected from the native type name. Pass
+    `kind="layer"` or `kind="element"` to state it instead, for a wrapper or
+    test double that behaves like an fgLayer or fgShape.
     """
 
-    def __init__(self, target: Any, *, native: Any = None) -> None:
+    def __init__(self, target: Any, *, native: Any = None, kind: str | None = None) -> None:
         super().__init__()
-        self._target_kind = _kind(target)
+        if kind is None:
+            kind = _kind(target)
+        elif kind not in ("layer", "element"):
+            raise PenError(f'kind must be "layer" or "element", not {kind!r}')
+        self._target_kind = kind
         self.target = target
         self.native = native
         self._shape: Any = target if self._target_kind == "element" else None
@@ -79,18 +89,20 @@ class FontGatePointPen(StagingPointPen):
             self.native = fontgate
         return self.native
 
-    def _append_contour(self, points: list[StagedPoint]) -> None:
+    def append_contour(self, points: list[StagedPoint]) -> None:
         native = self._native()
         # Element: its own matrix. Layer: layer.matrix (the new element's is identity).
-        mapping = inverse(_matrix(self.target))
+        mapping = invert_transform(_matrix(self.target))
         nodes = [
             native.fgNode(
-                _NATIVE_KIND[kind],
+                FONTGATE_NODE_TYPES[kind],
                 native.fgPoint(*mapping.transformPoint(position)),
                 name or "",
                 smooth,
             )
-            for (position, _, smooth, name), kind in zip(points, node_kinds(points), strict=True)
+            for (position, _, smooth, name), kind in zip(
+                points, staged_node_kinds(points), strict=True
+            )
         ]
         contour = native.fgContour()
         contour.nodes = nodes
@@ -180,7 +192,7 @@ def draw_contour_points(
 class _GeometryProbe(StagingPointPen):
     """Validates contours only: no target, no native allocation."""
 
-    def _append_contour(self, points: list[StagedPoint]) -> None:
+    def append_contour(self, points: list[StagedPoint]) -> None:
         pass
 
     def addComponent(self, baseGlyphName, transformation, identifier=None, **kwargs):
