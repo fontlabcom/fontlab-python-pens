@@ -4,6 +4,10 @@ this_file: WORK.md
 
 # Work log
 
+## 2026-11-10 — isolated graph guidance candidate
+
+Prepared an append-only AGENTS candidate with the approved graph-isolation and guarded own-entry recovery wording. Original guide and progress history remain intact; runtime code is unchanged. Independent batch review, fresh-main reconciliation, required checks and delivery remain pending. Native, installation, artifact and private Pages gates retain their existing scope.
+
 ## 2026-11-10 — Proteus lifecycle-test draft reconciled
 
 [Proteus PR12](https://github.com/Fontlab/Proteus/pull/12) now contains source

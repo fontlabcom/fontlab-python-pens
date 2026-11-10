@@ -57,3 +57,9 @@ excluded repositories, recovery, licences and private data; this workflow does
 not authorize FontLab installation or native operations, resume Issue 123, or
 lift private Pages holds. Native upstream fixes use reviewed PRs to the
 cause-appropriate Proteus, FontGate or pyfontgate repository.
+
+## Isolated successors
+
+Overrides generic bootstrap/MCP.
+
+For graph work in an isolated successor, use the qualified installed CLI or backend with both `GITNEXUS_HOME` and `GITNEXUS_STORAGE_PATH` set to separate task-owned locations before the first invocation, including index discovery and analysis. A private storage path alone can still register the successor in global control files. During ordinary analysis, do not fall back to global MCP defaults, global `list-repos` or global setup/bootstrap, and do not make unreviewed global registry edits. Retain exact command/selected environment and before/after owned metadata; record expected task-owned `.git/info/exclude` additions and preserve unrelated state. If discovery or indexing escapes the owned scope, preserve evidence and obtain independent bounded control-file review before integration. Any necessary recovery must be separately reviewed, use fresh guarded current bytes and reviewed writer coordination, and change only the proven task-owned entry while preserving all other current records and bytes; never restore an old whole global registry.

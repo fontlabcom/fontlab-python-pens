@@ -4,6 +4,10 @@ this_file: CHANGELOG.md
 
 # Changelog
 
+## 2026-11-10 — isolated graph guidance proposal
+
+Prepare append-only AGENTS guidance for separate task-owned graph HOME and storage, ordinary-analysis scope and independently reviewed bounded recovery. Preserve existing integration rules and acceptance holds. This documentation proposal records no new runtime, test, native, integration or publication result.
+
 ## 2026-11-10 — Proteus lifecycle-test source proposal reconciled
 
 - Publish [the PR12 reconciliation](https://github.com/Fontlab/Proteus/commit/5bca76c79811ede8bca2bdc097366158061c1bdb)
