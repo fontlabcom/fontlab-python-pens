@@ -4,6 +4,34 @@ this_file: CHANGELOG.md
 
 # Changelog
 
+## 2026-11-10 — prospective bounded lint policy; verification pending
+
+- Record the adopted policy change for the exact seven-file source cohort.
+  It replaces the earlier baseline-first milestone policy; all other gates stay.
+- Two new complete executable-pinned Ruff 0.17.4 scans retain exit 1 and the
+  same 72 diagnostic records across 19 files, with zero added, removed or
+  shifted records. Broad lint still fails; all findings remain open debt.
+- Retain the earlier blocked result below. Independent verification and
+  controller repetition remain pending; no differential-lint or final source
+  qualification is claimed. Native subclass and failure behavior, adoption
+  and delivery remain separate.
+
+## 2026-11-10 — staged classification and FontGate contour publication
+
+- Preserve cyclic staged-node results with a bounded seed scan and reverse pass,
+  without slicing the input. This bounds classifier work, not contour validation.
+- Refuse native-named glyph targets even when an explicit layer/element kind is
+  supplied; wrapper targets and lazy native imports remain supported.
+- Populate the first detached FontGate shape before publishing it to a layer,
+  then retain its stored copy for later contours. Exceptions propagate once.
+  A successful publication followed by failed re-fetch can still leave geometry.
+- Current source tests on arm64 Python 3.11 pass 716 cases, including demos.
+  Complete changed-module combined coverage is 98.94% and 99.07%, without
+  exclusions. Native failure behavior, adoption and delivery are separate gates.
+- Broad Ruff currently reports 72 identical inherited diagnostics on both the
+  untouched main baseline and this source tree; no new diagnostic was introduced.
+  The lint qualification blocker remains open.
+
 ## 2026-11-10 — verified integration-round guidance
 
 - Record current-main reconciliation in a new isolated successor, preservation

@@ -73,7 +73,7 @@ class FontGatePointPen(StagingPointPen):
 
     def __init__(self, target: Any, *, native: Any = None, kind: str | None = None) -> None:
         super().__init__()
-        if kind is None:
+        if kind is None or type(target).__name__ in ("fgGlyph", "flGlyph"):
             kind = _kind(target)
         elif kind not in ("layer", "element"):
             raise PenError(f'kind must be "layer" or "element", not {kind!r}')
@@ -107,15 +107,15 @@ class FontGatePointPen(StagingPointPen):
         contour = native.fgContour()
         contour.nodes = nodes
         contour.open = points[0][1] == "move"
-        self._element().contours.append(contour)
-
-    def _element(self) -> Any:
         if self._shape is None:
+            shape = native.fgShape()
+            shape.contours.append(contour)
             shapes = self.target.shapes
-            shapes.append(self._native().fgShape())
+            shapes.append(shape)
             # append stores a copy: re-fetch the stored element and keep it.
             self._shape = shapes[len(shapes) - 1]
-        return self._shape
+        else:
+            self._shape.contours.append(contour)
 
     def addComponent(
         self,

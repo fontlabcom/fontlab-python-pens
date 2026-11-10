@@ -200,3 +200,39 @@ def test_fontgate_point_pen_when_append_contour_called_directly_then_writes_vali
 def test_component_error_when_raised_then_is_pen_error():
     assert issubclass(ComponentError, PenError), "ComponentError must be a PenError"
     assert issubclass(IncompleteContour, ValueError), "IncompleteContour must be a ValueError"
+
+
+@pytest.mark.parametrize("glyph_type", ["fgGlyph", "flGlyph"])
+@pytest.mark.parametrize("kind", ["layer", "element"])
+def test_fontgate_point_pen_when_glyph_has_explicit_kind_then_refuses_without_probes(glyph_type, kind):
+    import subprocess
+    import sys
+    import textwrap
+
+    code = textwrap.dedent(
+        f"""
+        import sys
+        from fontlab_pens import FontGatePointPen
+
+        def unreadable(*args):
+            raise AssertionError("native target must not be probed or formatted")
+
+        target = type({glyph_type!r}, (), {{
+            "__getattribute__": unreadable,
+            "__repr__": unreadable,
+            "__str__": unreadable,
+        }})()
+        assert not {{"fontgate", "fontlab", "PythonQt"}} & set(sys.modules)
+        try:
+            FontGatePointPen(target, kind={kind!r})
+        except TypeError as error:
+            assert {glyph_type!r} in str(error), "error must identify the type without formatting target"
+        else:
+            raise AssertionError("a glyph must never pass the explicit target-kind override")
+        assert not {{"fontgate", "fontlab", "PythonQt"}} & set(sys.modules)
+        """
+    )
+    result = subprocess.run(
+        [sys.executable, "-I", "-B", "-c", code], capture_output=True, text=True, check=False
+    )
+    assert result.returncode == 0, result.stderr

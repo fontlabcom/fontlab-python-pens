@@ -108,14 +108,15 @@ def staged_node_kinds(points: list[StagedPoint]) -> list[str]:
     An off-curve point (segmentType None) is "cubic" when the next on-curve
     point is a "curve", else "quad"; wrapping around for closed contours.
     """
-    kinds = []
-    for index, (_, segment_type, _, _) in enumerate(points):
+    next_endpoint = next((p[1] for p in points if p[1] is not None), "qcurve")
+    kinds = [""] * len(points)
+    for index in range(len(points) - 1, -1, -1):
+        _, segment_type, _, _ = points[index]
         if segment_type is None:
-            following = points[index + 1 :] + points[:index]
-            end = next((p[1] for p in following if p[1] is not None), "qcurve")
-            kinds.append("cubic" if end == "curve" else "quad")
+            kinds[index] = "cubic" if next_endpoint == "curve" else "quad"
         else:
-            kinds.append("move" if segment_type == "move" else "on")
+            kinds[index] = "move" if segment_type == "move" else "on"
+            next_endpoint = segment_type
     return kinds
 
 

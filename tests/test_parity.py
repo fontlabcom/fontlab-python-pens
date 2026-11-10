@@ -583,3 +583,76 @@ def test_fontlab_pen_when_smooth_endpoint_has_noncollinear_handles_then_point_pa
     got = fl.RecordingPointPen()
     draw_points(shape, got)
     assert got.value == expected.value, "raw smooth metadata changed the fontTools point record"
+
+
+@pytest.mark.parametrize("family", ["fontgate", "fontlab"])
+def test_native_node_kinds_when_controls_wrap_then_matches_fonttools_points(family):
+    from tests import fakes
+
+    shape = fakes.fgShape() if family == "fontgate" else fakes.flShape()
+    expected = ft_rec.RecordingPointPen()
+    if family == "fontgate":
+        actual = fl.FontGatePointPen(shape, native=fakes.FONTGATE)
+    else:
+        actual = fl.FlPointPen(shape, native=fakes.fontlab_native())
+    for pen in (expected, actual):
+        pen.beginPath()
+        pen.addPoint((0, 0), "curve", smooth=True, name="wrap")
+        pen.addPoint((20, 50))
+        pen.addPoint((60, 0), "qcurve", name="quad")
+        pen.addPoint((40, -30), name="cubic1")
+        pen.addPoint((0, -30), name="cubic2")
+        pen.endPath()
+    if family == "fontlab":
+        actual.close()
+    got = fl.RecordingPointPen()
+    reader = __import__(f"fontlab_pens.{family}", fromlist=["draw_points"])
+    reader.draw_points(shape, got)
+    assert got.value == expected.value, "wrapped mixed control kinds changed point metadata"
+
+
+@pytest.mark.parametrize("kind", ["layer", "element"])
+def test_fontgate_point_pen_when_wrapper_has_explicit_kind_then_fonttools_point_parity(kind):
+    from fontlab_pens.fontgate import draw_points
+    from tests import fakes
+
+    base = fakes.fgLayer if kind == "layer" else fakes.fgShape
+    target = type("Wrapper", (base,), {})()
+    expected = ft_rec.RecordingPointPen()
+    actual = fl.FontGatePointPen(target, kind=kind, native=fakes.FONTGATE)
+    for pen in (expected, actual):
+        pen.beginPath()
+        pen.addPoint((0, 0), "move", name="start")
+        pen.addPoint((20, 50))
+        pen.addPoint((50, 50))
+        pen.addPoint((80, 0), "curve", smooth=True, name="end")
+        pen.endPath()
+    got = fl.RecordingPointPen()
+    # Readers use native type names; read the stored native-shaped element.
+    element = target.shapes[0] if kind == "layer" else fakes.fgShape()
+    if kind == "element":
+        element.contours = target.contours
+    draw_points(element, got)
+    assert got.value == expected.value, "explicit wrapper kind changed the point protocol"
+
+
+@pytest.mark.parametrize("kind", ["layer", "element"])
+def test_fontgate_first_contour_when_reused_then_transformed_points_match_fonttools(kind):
+    from fontlab_pens.fontgate import draw_points
+    from tests import fakes
+
+    target = fakes.fgLayer() if kind == "layer" else fakes.fgShape()
+    target.matrix = fakes.fgMatrix(2, 0, 0, 2, 10, 20)
+    actual = fl.FontGatePointPen(target, native=fakes.FONTGATE)
+    expected = ft_rec.RecordingPointPen()
+    for pen in (actual, expected):
+        for offset in (0, 100):
+            pen.beginPath()
+            pen.addPoint((10 + offset, 20), "move", name="start")
+            pen.addPoint((30 + offset, 40), "line", smooth=True, name="end")
+            pen.endPath()
+    got = fl.RecordingPointPen()
+    draw_points(target, got)
+    assert got.value == expected.value, "first-contour publication changed transformed points"
+    shape = target.shapes[0] if kind == "layer" else target
+    assert len(shape.contours) == 2, "stored shape did not retain both contours"
