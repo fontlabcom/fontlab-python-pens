@@ -4,6 +4,10 @@ this_file: CHANGELOG.md
 
 # Changelog
 
+## 2026-11-11 — CI workflow (Issue 250)
+
+- Add `.github/workflows/ci.yml` (macos-14, Python 3.11, runs `./test.sh`: tests plus the 80% coverage gate) on push and pull request to main. First hosted run is pending verification (see TODO).
+
 ## 2026-11-11 — with-block fix gate counts (Issue 250)
 
 - Landed a7a479d on main: full suite 854 passed, 0 failed, 96% coverage; Ruff 0.16.7 clean. Repo has no CI; the pre-push gate is the only check. Follow-ups M-1 and M-2 are open in TODO.

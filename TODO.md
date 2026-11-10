@@ -18,6 +18,6 @@ this_file: TODO.md
 
 - [ ] Qualify the source-reviewed service-layer experiment against the exact current native source/runtime/parent cohort with fresh owned-fixture and operation admission, independent actual-initial-state approval, constructor/lifetime, flags5 A-to-B-to-C persistence and full preservation/history/Undo/Redo/UI/SDK/retirement checks; keep ordinary/canonical adoption separate and all original 2,151 registry rows, four 615-layer inventories and 15 extensions counted. Separately qualify matching Proteus source/provider/SDK/build identities, the already-upstream shutdown guard and draft PR12's residual lifecycle-test teardown; keep native compilation/linking/full-suite execution and lifetime/exit0 gates held until separately admitted.
 - [ ] Specify and independently review real-mask getMaskLayer(True) association/flags13 and original-body preservation, then close measured encoded size and the remaining notification/history, state-carrying dependency, layer-bound native fast-path, actual UI-pixel and normal same-handle retirement source contracts; retain every native acceptance gate.
-- [ ] Add a CI workflow (`.github/workflows`) running the full suite and the 80% coverage gate on every push to main.
+- [ ] Verify the first hosted run of `.github/workflows/ci.yml` is green on the pushed SHA, then remove this row.
 - [ ] M-1: `FontGatePointPen`/`FontGatePen` `addComponent` after `close()` is not refused; refuse it.
 - [ ] M-2: when a with-block exits on an exception, `SegmentToPointPen.contour` stays set; clear it on the exception path.
