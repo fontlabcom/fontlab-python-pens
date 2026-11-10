@@ -32,3 +32,28 @@ this_file: AGENTS.md
 ## Owner workflow — 2026-11-10
 
 After each important round, reconcile current team work and integrate independently reviewed, verified changes into main using the repository's delivery gates. Preserve owner branches, indexes and unrelated work. Move only verified solved TODO items into cumulative CHANGELOG, update PLAN for remaining work, and continue the authorized backlog. Keep unverified native checks and owner-paused tasks open; this workflow does not authorize installation or bypass preservation gates.
+
+## Verified integration rounds — 2026-11-10
+
+After each important independently reviewed round, recheck actual upstream
+`main` and owner/worktree attachments. Fetch in a new isolated successor based
+on current `origin/main`, merge the round's reviewed work, and resolve conflicts
+by preserving both sides' intent, newer fixes and teammates' changes. Preserve
+owner checkouts, branches, indexes, refs and configuration; never pull, switch
+or rebase an owner's or another agent's active worktree. Stage only the exact
+reviewed residual delta. Run the repository's applicable full suite, lint and
+graph change gates on the combined tree, obtain independent merge review, then
+commit and push under the current owner task's authority. Keep required hooks,
+including the installed Dismisser pre-push gate, active; never bypass them or
+force-push or rewrite history. Verify the actual remote head and required
+main-triggered Actions; a local tracking ref is not delivery proof.
+
+Move only evidenced solved tasks from future PLAN/TODO into cumulative
+CHANGELOG, retaining every unrelated entry and placing new progress first. Keep
+TODO flat and unchecked, update PLAN to remaining work, and continue the next
+authorized task. Unverified native, SDK, UI, history, artifact, adoption and
+publication checks stay open. The workspace root remains non-Git. Preserve
+excluded repositories, recovery, licences and private data; this workflow does
+not authorize FontLab installation or native operations, resume Issue 123, or
+lift private Pages holds. Native upstream fixes use reviewed PRs to the
+cause-appropriate Proteus, FontGate or pyfontgate repository.

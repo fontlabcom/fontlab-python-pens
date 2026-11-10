@@ -13,3 +13,7 @@ this_file: TODO.md
 - [ ] Add this package's `test.sh` to the consumers' shared pre-push checks.
 
 - [ ] Qualify the three Scripts demo report windows in FontLab using the installed Fly/App reporting API; preserve open-document state.
+
+- [ ] Qualify the source-reviewed service-layer experiment against the exact current native source/runtime/parent cohort with fresh owned-fixture and operation admission, independent actual-initial-state approval, constructor/lifetime, flags5 A-to-B-to-C persistence and full preservation/history/Undo/Redo/UI/SDK/retirement checks; keep ordinary/canonical adoption separate and all original 2,151 registry rows, four 615-layer inventories and 15 extensions counted.
+- [ ] Independently qualify actual-data transport at both transaction and client encoder boundaries before real-mask source work: exact literal source and admitted data, unchanged 32,768-byte cap, equality admission, greater-payload refusal without dispatch and escaped/Unicode/distinct paths; preserve complete controller validation and approval checks. Modeled margins and static estimates are insufficient; no loader/source transformation/cap increase is authorized.
+- [ ] Specify and independently review real-mask getMaskLayer(True) association/flags13 and original-body preservation, then close measured encoded size and the remaining notification/history, state-carrying dependency, layer-bound native fast-path, actual UI-pixel and normal same-handle retirement source contracts; retain every native acceptance gate.

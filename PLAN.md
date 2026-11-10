@@ -62,3 +62,36 @@ FontGate gains a layer- or element-bound pen.
 ## Scripts demo qualification
 
 Qualify the three categorized demos' nonmodal report windows in an owned FontLab session after source review. Keep offline package results distinct from installed native UI behavior; no runtime mutation or installation is part of adding these demos.
+
+## Service-layer source experiment: remaining qualification
+
+A separately reviewed service-layer experiment has completed current-reference
+reconciliation at source scope; its result is recorded in CHANGELOG.md. The
+experiment is separate from this package's test suite and runtime code. Do not
+repeat its completed reference-refresh implementation as future work.
+
+Before relying on it, qualify the exact current native source/runtime/parent
+cohort and separately qualify ordinary/canonical adoption. Retain fresh owned
+fixture and operation admission, independent approval of the actual initial
+state, constructor/wrapper lifetime, flags5 A-to-B-to-C persistence, full-font
+preservation, history/Undo/Redo, dependencies, UI, SDK/fast-path and normal
+retirement checks. All original 2,151 registry rows, four 615-layer phase
+inventories and 15 extension categories remain counted; the working 616-layer
+inventory is separate. Source completion neither renews native authority nor
+clears pending queues or fences.
+
+Qualify transport separately before a real-mask implementation: measure exact
+literal source, real admitted metadata and finite launch/target data through
+the unchanged encoder at both transaction and actual client boundaries. Retain
+oversize refusal without dispatch; boundary tests admit exactly 32,768 encoded
+bytes and refuse greater payloads. Modeled precheck margins and unexecuted
+field-selection arithmetic establish no real-data or mask capacity. Any narrow
+transmitted-field selection requires independent review and preserves complete
+controller input, source, artifact and approval checks. No loader, source
+transformation, cap increase or operation removal follows.
+
+Real-mask setup still requires the stock getMaskLayer(True) association and
+flags13 contract, preservation of original bodies and independent encoded-size
+proof. Notification/history, state-carrying dependencies, a layer-bound native
+fast path, actual UI pixels and normal same-handle retirement remain source
+implementation gaps. Every original native acceptance gate remains open.

@@ -4,6 +4,29 @@ this_file: CHANGELOG.md
 
 # Changelog
 
+## 2026-11-10 — verified integration-round guidance
+
+- Record current-main reconciliation in a new isolated successor, preservation
+  of concurrent work and exact reviewed staging, combined repository/graph
+  checks, independent merge review, required hooks and actual remote proof.
+- Keep solved tasks in cumulative history and unfinished acceptance in the
+  future queue. Native, installation, adoption, Issue 123 and private Pages
+  boundaries remain unchanged. This entry records documentation only.
+
+## 2026-11-10 — service-layer source experiment; native gates retained
+
+- Record a separately reviewed current-reference experiment: 129 input keys,
+  126 unchanged values, three reference digests refreshed and unchanged
+  executable bodies after path headers. Its 737 source passes and nonadditive
+  21-case controller repeat are separate from this package's suite and code.
+- Record the reference refresh as source-complete in the experiment's history. Retain current native-cohort and ordinary/canonical adoption,
+  actual initial-state approval, full preservation/history/UI/lifetime/SDK and
+  normal retirement; preserve all original 2,151/four 615/all 15 denominators.
+- Distinguish modeled transaction prechecks from unmeasured actual-data/client
+  envelopes. Keep transport qualification, unchanged-cap boundary tests, real
+  mask association/flags13 and the five other source gaps open. No mask
+  capacity, native authority, package-code delivery or installation is claimed.
+
 ## 1.0.0 — 2026-11-09
 
 First release.
