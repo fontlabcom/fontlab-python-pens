@@ -32,7 +32,8 @@ class CountPointPen:
         pass
 
 
-glyph = fontlab.CurrentGlyph()
+# CurrentGlyph() gives a FontGate glyph; flGlyph makes it editable.
+glyph = fontlab.flGlyph(fontlab.CurrentGlyph(), fontlab.CurrentFont())
 counter = CountPointPen()
 draw_points(glyph.activeLayer, counter)
 print(glyph.name, "contours:", counter.contours)

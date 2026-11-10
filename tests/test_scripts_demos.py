@@ -48,7 +48,16 @@ def recording(target):
 
 
 def install_host(monkeypatch, glyph, native):
+    font = object()
+    native.CurrentFont = lambda: font
+
+    def as_flglyph(current, owner):
+        # FontLab's CurrentGlyph() is an fgGlyph; flGlyph(fg, font) wraps it.
+        assert current is glyph and owner is font, "wrap the current glyph of the current font"
+        return glyph
+
     native.CurrentGlyph = lambda: glyph
+    native.flGlyph = as_flglyph
     monkeypatch.setitem(sys.modules, "fontlab", native)
     monkeypatch.setitem(sys.modules, "PythonQt", SimpleNamespace())
     monkeypatch.setitem(

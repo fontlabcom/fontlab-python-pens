@@ -11,7 +11,8 @@ import fontlab
 
 from fontlab_pens import FlPen
 
-glyph = fontlab.CurrentGlyph()
+# CurrentGlyph() gives a FontGate glyph; flGlyph makes it editable.
+glyph = fontlab.flGlyph(fontlab.CurrentGlyph(), fontlab.CurrentFont())
 
 with FlPen(glyph.activeLayer, notify="Draw a Box") as pen:
     pen.moveTo((100, 100))

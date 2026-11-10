@@ -34,5 +34,6 @@ class PrintPen:
         print("addComponent", glyphName, transformation)
 
 
-glyph = fontlab.CurrentGlyph()
+# CurrentGlyph() gives a FontGate glyph; flGlyph makes it editable.
+glyph = fontlab.flGlyph(fontlab.CurrentGlyph(), fontlab.CurrentFont())
 draw(glyph.activeLayer, PrintPen())

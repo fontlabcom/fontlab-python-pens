@@ -51,4 +51,4 @@ partial changes may remain. Live FontLab acceptance and Undo verification remain
 For host-free tests, load a script with `runpy.run_path(path)` and call its
 `recording_demo(layer)`, `transform_demo(layer)`, `measurements_demo(layer)`, or
 `stroke_plan_demo(glyph, layer)` function with fake targets and `native=...`.
-`main()` obtains the real glyph with `fontlab.CurrentGlyph()`.
+`main()` wraps `fontlab.CurrentGlyph()` (a FontGate glyph) in `fontlab.flGlyph(..., fontlab.CurrentFont())` so the pens edit the live FontLab glyph.

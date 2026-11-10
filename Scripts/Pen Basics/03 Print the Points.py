@@ -26,5 +26,6 @@ class PrintPointPen:
         print("component", baseGlyphName, transformation)
 
 
-glyph = fontlab.CurrentGlyph()
+# CurrentGlyph() gives a FontGate glyph; flGlyph makes it editable.
+glyph = fontlab.flGlyph(fontlab.CurrentGlyph(), fontlab.CurrentFont())
 draw_points(glyph.activeLayer, PrintPointPen())

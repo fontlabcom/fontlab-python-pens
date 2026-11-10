@@ -33,7 +33,8 @@ class ShiftPen(FilterPen):
         super().qCurveTo(*[None if pt is None else shift(pt) for pt in points])
 
 
-glyph = fontlab.CurrentGlyph()
+# CurrentGlyph() gives a FontGate glyph; flGlyph makes it editable.
+glyph = fontlab.flGlyph(fontlab.CurrentGlyph(), fontlab.CurrentFont())
 layer = glyph.activeLayer
 
 with FlPen(layer, notify="Shifted Copy") as pen:

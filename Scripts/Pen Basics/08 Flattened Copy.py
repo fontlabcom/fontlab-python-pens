@@ -42,7 +42,8 @@ class FlattenPen(BasePen):
         self.outPen.endPath()
 
 
-glyph = fontlab.CurrentGlyph()
+# CurrentGlyph() gives a FontGate glyph; flGlyph makes it editable.
+glyph = fontlab.flGlyph(fontlab.CurrentGlyph(), fontlab.CurrentFont())
 layer = glyph.activeLayer
 
 with FlPen(layer, notify="Flattened Copy") as pen:

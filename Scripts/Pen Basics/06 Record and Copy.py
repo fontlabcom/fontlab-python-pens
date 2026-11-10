@@ -12,7 +12,8 @@ import fontlab
 from fontlab_pens import FlPen, RecordingPen
 from fontlab_pens.fontlab import draw
 
-glyph = fontlab.CurrentGlyph()
+# CurrentGlyph() gives a FontGate glyph; flGlyph makes it editable.
+glyph = fontlab.flGlyph(fontlab.CurrentGlyph(), fontlab.CurrentFont())
 source = glyph.activeLayer
 
 recording = RecordingPen()

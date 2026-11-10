@@ -39,9 +39,11 @@ def main() -> None:
     """Apply strokes to the open glyph and print the host's remaining limitations."""
     import fontlab
 
-    glyph = fontlab.CurrentGlyph()
-    if glyph is None:
+    current = fontlab.CurrentGlyph()
+    if current is None:
         raise RuntimeError("Open a glyph in a Glyph window first")
+    # CurrentGlyph() gives a FontGate glyph; flGlyph makes it editable.
+    glyph = fontlab.flGlyph(current, fontlab.CurrentFont())
     layer = glyph.activeLayer
     if layer is None:
         raise RuntimeError("The current glyph has no active layer")
