@@ -6,7 +6,7 @@ this_file: CHANGELOG.md
 
 ## 2026-11-11 — CI workflow (Issue 250)
 
-- Add `.github/workflows/ci.yml` (ubuntu-latest, Python 3.11, runs `./test.sh`: tests plus the 80% coverage gate) on push and pull request to main. macos-14 was rejected by the hosted runner pool ("macos-14-arm64-us-default is not supported"), so the job runs on ubuntu-latest. First passing hosted run is pending (see TODO).
+- Add `.github/workflows/ci.yml` (ubuntu-latest, Python 3.11, runs `./test.sh`: tests plus the 80% coverage gate) on push and pull request to main. macos-14 was rejected by the hosted runner pool ("macos-14-arm64-us-default is not supported"), so the job runs on ubuntu-latest. First hosted run on 3bb17ae: success.
 
 ## 2026-11-11 — with-block fix gate counts (Issue 250)
 
