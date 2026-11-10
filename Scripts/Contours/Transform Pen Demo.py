@@ -2,35 +2,39 @@
 # SPDX-License-Identifier: Apache-2.0
 """Transform Pen Demo.
 
-What: Scale and translate a detached triangle while retaining its original recording.
-Use: Run from FontLab's Scripts menu to open a read-only snapshot report.
-Safety: Uses detached sample data only; no font, history, selection, preferences,
-Output or clipboard is changed. No open font is required.
+What: Add a half-size, translated copy of the current glyph's active layer outline.
+Use: Open a nonempty glyph layer in a Glyph window, then run from Scripts.
+Safety: Adds one element in one undoable history step; existing outlines remain.
 """
 
+from typing import Any
 
-def build_report() -> dict:
-    """Return real package results without importing a native host or opening UI."""
-    from fontlab_pens import RecordingPen, TransformPen
+
+def transform_demo(layer: Any, *, native: Any = None) -> int:
+    """Copy the layer's visible contours at half scale, offset by (10, 20)."""
+    from fontlab_pens import FlPen, RecordingPen, TransformPen
+    from fontlab_pens.fontlab import draw
 
     source = RecordingPen()
-    source.moveTo((0, 0))
-    source.lineTo((100, 0))
-    source.lineTo((0, 100))
-    source.closePath()
-    result = RecordingPen()
-    matrix = (2, 0, 0, 2, 10, 20)
-    source.replay(TransformPen(result, matrix))
-    return {"matrix": matrix, "original": source.value, "transformed": result.value}
+    draw(layer, source, components=False)
+    count = sum(op in ("closePath", "endPath") for op, _ in source.value)
+    if not count:
+        raise ValueError("The active layer has no contours to transform")
+    with FlPen(layer, native=native, notify="Transform Pen Demo") as pen:
+        source.replay(TransformPen(pen, (0.5, 0, 0, 0.5, 10, 20)))
+    return count
 
 
 def main() -> None:
-    """Show the results using Fly and App's existing nonmodal report window."""
-    from fly.ap.proof.reports.model import show_report
+    """Transform the open layer and print a result to FontLab's Output panel."""
+    import fontlab
 
-    show_report(
-        build_report(), title="Transform Pen Demo", key="fontlab-python-pens-transform-pen-demo"
-    )
+    glyph = fontlab.CurrentGlyph()
+    if glyph is None:
+        raise RuntimeError("Open a glyph in a Glyph window first")
+    layer = glyph.activeLayer
+    count = transform_demo(layer)
+    print(f"Transform Pen Demo: added {count} transformed contours to the active layer")
 
 
 if __name__ == "__main__":

@@ -14,7 +14,8 @@ this_file: TODO.md
 - [ ] In FontLab 9, check writes after save, close and reopen.
 - [ ] Add this package's `test.sh` to the consumers' shared pre-push checks.
 
-- [ ] Qualify the three Scripts demo report windows in FontLab using the installed Fly/App reporting API; preserve open-document state.
+- [ ] Qualify all four current-glyph Scripts demos and stroke plans in FontLab: geometry, Output measurements, one-step Undo/Redo, every master and save/reopen on a disposable font.
+- [ ] Adopt and qualify upstream `penParameters` / `expandStroke` bindings (fl#8626); verify nib rotation persistence separately (fl#8627).
 
 - [ ] Qualify the source-reviewed service-layer experiment against the exact current native source/runtime/parent cohort with fresh owned-fixture and operation admission, independent actual-initial-state approval, constructor/lifetime, flags5 A-to-B-to-C persistence and full preservation/history/Undo/Redo/UI/SDK/retirement checks; keep ordinary/canonical adoption separate and all original 2,151 registry rows, four 615-layer inventories and 15 extensions counted. Separately qualify matching Proteus source/provider/SDK/build identities, the already-upstream shutdown guard and draft PR12's residual lifecycle-test teardown; keep native compilation/linking/full-suite execution and lifetime/exit0 gates held until separately admitted.
 - [ ] Specify and independently review real-mask getMaskLayer(True) association/flags13 and original-body preservation, then close measured encoded size and the remaining notification/history, state-carrying dependency, layer-bound native fast-path, actual UI-pixel and normal same-handle retirement source contracts; retain every native acceptance gate.

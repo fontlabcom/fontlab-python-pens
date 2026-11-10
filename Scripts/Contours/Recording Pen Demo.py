@@ -2,34 +2,38 @@
 # SPDX-License-Identifier: Apache-2.0
 """Recording Pen Demo.
 
-What: Record and replay a closed triangle through the segment-pen protocol.
-Use: Run from FontLab's Scripts menu to open a read-only snapshot report.
-Safety: Uses detached sample data only; no font, history, selection, preferences,
-Output or clipboard is changed. No open font is required.
+What: Record a triangle and replay it into the current glyph's active layer.
+Use: Open a glyph in a Glyph window, then run from FontLab's Scripts menu.
+Safety: Adds one element in one undoable history step; existing outlines remain.
 """
 
+from typing import Any
 
-def build_report() -> dict:
-    """Return real package results without importing a native host or opening UI."""
-    from fontlab_pens import RecordingPen
+
+def recording_demo(layer: Any, *, native: Any = None) -> int:
+    """Append a recorded triangle to the supplied layer and return its contour count."""
+    from fontlab_pens import FlPen, RecordingPen
 
     source = RecordingPen()
     source.moveTo((0, 0))
     source.lineTo((100, 0))
     source.lineTo((0, 100))
     source.closePath()
-    replayed = RecordingPen()
-    source.replay(replayed)
-    return {"recording": source.value, "replayed": replayed.value}
+    with FlPen(layer, native=native, notify="Recording Pen Demo") as pen:
+        source.replay(pen)
+    return 1
 
 
 def main() -> None:
-    """Show the results using Fly and App's existing nonmodal report window."""
-    from fly.ap.proof.reports.model import show_report
+    """Draw in the open glyph and print a result to FontLab's Output panel."""
+    import fontlab
 
-    show_report(
-        build_report(), title="Recording Pen Demo", key="fontlab-python-pens-recording-pen-demo"
-    )
+    glyph = fontlab.CurrentGlyph()
+    if glyph is None:
+        raise RuntimeError("Open a glyph in a Glyph window first")
+    layer = glyph.activeLayer
+    count = recording_demo(layer)
+    print(f"Recording Pen Demo: added {count} triangle to the active layer")
 
 
 if __name__ == "__main__":

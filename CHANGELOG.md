@@ -4,6 +4,37 @@ this_file: CHANGELOG.md
 
 # Changelog
 
+## Unreleased
+
+- Add immutable stroke/cap styles, Proteus variant conversion, QPen application,
+  capability-gated full strokes/expansion, staged multi-layer stroke plans and
+  recording compatibility checks. Unsupported legacy-host fields fail before
+  shape mutation; plans resolve and prepare targets before live commits.
+- Replace detached report demos with current-glyph Recording, Transform and
+  Measurements scripts; add a Stroke Plan demo using QPen-compatible defaults.
+  Drawing scripts enroll history and notify once; Measurements prints to Output.
+- Add fake-host tests for variants, validation, both capability paths, mutation
+  refusal, history/failure handling, compatibility and every demo entry point.
+- Writes `join` as an integer and both caps explicitly when `penParameters`
+  exists, because FontLab misreads join names
+  ([fl#8630](https://github.com/Fontlab/fl/issues/8630)). Applies native
+  parameters before the QPen, so a refusal leaves the shape unchanged.
+  `expand_stroke` raises `PenError` when FontLab reports a failed expansion.
+  Legacy hosts compare scaled values. The Stroke Plan demo refuses a non-master
+  active layer, and the Transform demo counts contours by their closing operation.
+- Update `install.vfpy` to the shared workspace installer.
+- Offline Python 3.11 gate: 832 tests pass, 96% overall coverage and 100% for
+  the stroke module. Ruff is clean on the touched files; the 72 baseline findings
+  in unchanged files remain. An independent review found two high-severity and
+  three medium-severity issues, all fixed here.
+- FontLab 9 native check (owned in-memory glyph, no document touched):
+  `apply_stroke` turned a NoPen shape into a solid 33-unit round-join stroke with
+  miter limit 5, and refused `contrast` without changing the shape. `apply_plan`
+  copied the open centreline into `Bold` with a 60-unit stroke, skipped the closed
+  contour and left `Regular` unchanged. This build has no `penParameters` or
+  `expandStroke`; those paths are covered only by fakes until Fontlab/Proteus#13
+  ships. The demo scripts were not run on an open font.
+
 ## 2026-11-10 — Issue 250 documentation round
 
 - AGENTS.md describes the delegation, integration and release workflow.
