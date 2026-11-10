@@ -4,6 +4,7 @@
 
 A filter pen sits between the outline and another pen and changes what passes
 through. This one adds an offset to every point before handing it to FlPen.
+FilterPen passes every call on unchanged unless you override it.
 """
 
 import fontlab
@@ -36,6 +37,7 @@ glyph = fontlab.CurrentGlyph()
 layer = glyph.activeLayer
 
 with FlPen(layer, notify="Shifted Copy") as pen:
+    # Components are skipped: the copy has contours only.
     draw(layer, ShiftPen(pen), components=False)
 
 print("Added a shifted copy in", glyph.name)

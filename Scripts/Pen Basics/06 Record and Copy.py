@@ -3,7 +3,8 @@
 """Record the outline of the current layer and copy it to the other masters.
 
 RecordingPen remembers every pen call. replay() plays them back into another
-pen, here an FlPen on each other master. Use Undo to remove the copies.
+pen, here an FlPen on each other master. The copy is added on top of what
+the master already has. Each master is one undo step, so undo once per master.
 """
 
 import fontlab

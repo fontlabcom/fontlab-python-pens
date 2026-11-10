@@ -33,7 +33,7 @@ class FlattenPen(BasePen):
             s = 1 - t
             x = s**3 * x0 + 3 * s * s * t * pt1[0] + 3 * s * t * t * pt2[0] + t**3 * pt3[0]
             y = s**3 * y0 + 3 * s * s * t * pt1[1] + 3 * s * t * t * pt2[1] + t**3 * pt3[1]
-            self.outPen.lineTo((round(x), round(y)))
+            self.outPen.lineTo((x, y))
 
     def _closePath(self):
         self.outPen.closePath()
@@ -46,6 +46,7 @@ glyph = fontlab.CurrentGlyph()
 layer = glyph.activeLayer
 
 with FlPen(layer, notify="Flattened Copy") as pen:
+    # BasePen cannot look up components here, so skip them.
     draw(layer, FlattenPen(pen), components=False)
 
 print("Added a flattened copy in", glyph.name)

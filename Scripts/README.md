@@ -18,7 +18,8 @@ active layer; read them in order.
 - [07 Shifted Copy](Pen%20Basics/07%20Shifted%20Copy.py): a filter pen that moves every point.
 - [08 Flattened Copy](Pen%20Basics/08%20Flattened%20Copy.py): a pen that turns curves into lines.
 
-Edits happen in one undoable step. They have no safety checks, so open a glyph first.
+Scripts 01, 07 and 08 add their edit as one undoable step; 06 adds one step per
+master; 02–05 only read. They have no safety checks, so open a glyph first.
 
 ## Package demos
 

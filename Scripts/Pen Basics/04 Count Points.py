@@ -35,13 +35,6 @@ class CountPointPen:
 glyph = fontlab.CurrentGlyph()
 counter = CountPointPen()
 draw_points(glyph.activeLayer, counter)
-print(
-    glyph.name,
-    "has",
-    counter.contours,
-    "contours,",
-    counter.oncurve,
-    "on-curve and",
-    counter.offcurve,
-    "off-curve points",
-)
+print(glyph.name, "contours:", counter.contours)
+print("on-curve points:", counter.oncurve)
+print("off-curve points:", counter.offcurve)

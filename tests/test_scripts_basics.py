@@ -52,26 +52,33 @@ def test_print_the_outline_when_run_then_prints_each_pen_call(monkeypatch, capsy
         "lineTo (200.0, 100.0)",
         "lineTo (0.0, 100.0)",
         "closePath",
-    ] or out.splitlines()[0].startswith("moveTo"), out
-    assert out.splitlines()[-1] == "closePath"
+    ], out
 
 
 def test_print_the_points_when_run_then_prints_four_points(monkeypatch, capsys):
     *_, out = run("03 Print the Points", monkeypatch, capsys)
     lines = out.splitlines()
-    assert lines[0] == "beginPath" and lines[-1] == "endPath" and len(lines) == 6, out
+    assert [line.split() for line in lines] == [
+        ["beginPath"],
+        ["(0.0,", "0.0)", "line"],
+        ["(200.0,", "0.0)", "line"],
+        ["(200.0,", "100.0)", "line"],
+        ["(0.0,", "100.0)", "line"],
+        ["endPath"],
+    ], out
+    assert not any(line.endswith(" ") for line in lines), "no trailing spaces"
 
 
 def test_count_points_when_curve_then_counts_on_and_off_curve(monkeypatch, capsys):
     *_, out = run("04 Count Points", monkeypatch, capsys, curve=True)
-    assert out == "A has 1 contours, 4 on-curve and 2 off-curve points\n"
+    assert out == "A contours: 1\non-curve points: 4\noff-curve points: 2\n"
 
 
 def test_bounds_and_area_when_rectangle_then_prints_metrics(monkeypatch, capsys):
     *_, out = run("05 Bounds and Area", monkeypatch, capsys)
     lines = out.splitlines()
-    assert lines[0].startswith("Bounds:") and "200" in lines[0], out
-    assert lines[1] in ("Area: 20000", "Area: -20000"), out
+    assert lines[0] == "Bounds: (0.0, 0.0, 200.0, 100.0)", out
+    assert lines[1] == "Area: 20000", out
 
 
 def test_record_and_copy_when_two_masters_then_copies_to_other(monkeypatch, capsys):
@@ -81,10 +88,11 @@ def test_record_and_copy_when_two_masters_then_copies_to_other(monkeypatch, caps
     assert out.splitlines()[-1] == "Copied to Bold" and len(native.flItems.calls) == 1
 
 
-def test_shifted_copy_when_run_then_adds_moved_contour(monkeypatch, capsys):
-    _glyph, layer, native, _out = run("07 Shifted Copy", monkeypatch, capsys)
+def test_shifted_copy_when_curve_then_every_point_moves(monkeypatch, capsys):
+    _glyph, layer, native, _out = run("07 Shifted Copy", monkeypatch, capsys, curve=True)
     assert len(layer.shapes) == 2 and len(native.flItems.calls) == 1
-    assert calls(layer.shapes[1])[0] == ("moveTo", ((100.0, 100.0),)), calls(layer.shapes[1])
+    shift = [(op, tuple((x + 100, y + 100) for x, y in pts)) for op, pts in calls(layer.shapes[0])]
+    assert calls(layer.shapes[1]) == shift, calls(layer.shapes[1])
 
 
 def test_flattened_copy_when_curve_then_copy_has_only_lines(monkeypatch, capsys):
@@ -92,6 +100,9 @@ def test_flattened_copy_when_curve_then_copy_has_only_lines(monkeypatch, capsys)
     copy = calls(layer.shapes[1])
     assert {op for op, _ in copy} == {"moveTo", "lineTo", "closePath"}, copy
     assert sum(op == "lineTo" for op, _ in copy) == 2 + 8, "eight lines per curve"
+    lines = [pts[0] for op, pts in copy if op == "lineTo"]
+    assert lines[1 + 3] == (275.0, 50.0), "midpoint of the curve at t=0.5"
+    assert lines[1 + 7] == (200.0, 100.0), "flattening ends on the curve end point"
 
 
 def test_print_the_outline_when_curve_then_prints_curve_to(monkeypatch, capsys):

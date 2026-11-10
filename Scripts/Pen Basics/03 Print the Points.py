@@ -17,7 +17,7 @@ class PrintPointPen:
         print("beginPath")
 
     def addPoint(self, pt, segmentType=None, smooth=False, name=None, identifier=None, **kwargs):
-        print("  ", pt, segmentType or "offcurve", "smooth" if smooth else "")
+        print("  ", pt, segmentType or "offcurve", *(["smooth"] if smooth else []))
 
     def endPath(self):
         print("endPath")
