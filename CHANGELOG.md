@@ -4,6 +4,10 @@ this_file: CHANGELOG.md
 
 # Changelog
 
+## 2026-11-11 — with-block fix gate counts (Issue 250)
+
+- Landed a7a479d on main: full suite 854 passed, 0 failed, 96% coverage; Ruff 0.16.7 clean. Repo has no CI; the pre-push gate is the only check. Follow-ups M-1 and M-2 are open in TODO.
+
 ## 2026-11-11 — Issue 250 recorded counts and CI status
 
 - Full suite on current main (`60e6a69`), `uv run --python 3.11 --with-editable . --with fonttools --with pytest --with pytest-cov pytest --cov=fontlab_pens`: 846 passed, 0 failed, 96% coverage (1,903 statements). The 7 failures recorded in the lint-round entry (711 passed, 95.02%) were the same pre-existing subprocess import failures from a non-installed checkout; they are gone with the editable install, not fixed by lint changes. Earlier lint-round pushes were gated by the local pre-push hook only.
