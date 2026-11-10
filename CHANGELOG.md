@@ -4,6 +4,24 @@ this_file: CHANGELOG.md
 
 # Changelog
 
+## 2026-11-10 — Proteus lifecycle-test source proposal reconciled
+
+- Publish [the PR12 reconciliation](https://github.com/Fontlab/Proteus/commit/5bca76c79811ede8bca2bdc097366158061c1bdb)
+  to its existing draft branch, preserving current master and all three
+  upstream commits/103 changed paths. The production focus guard is already
+  upstream; this proposal retains only two unchanged prior-PR native test
+  blobs and has no production C++ delta against current master.
+- Verify the complete remote source tree and ancestry. Distinguish the
+  two-test-file actual-master comparison from the PR API's historical `90cf9c0`
+  base and 105-file listing; the published body now states both scopes.
+- Keep PR12 open, draft and unmerged. Bounded graph results retain C++ impact
+  UNKNOWN, callable caps and sampled/truncated flows. Zero exact-head
+  checks/statuses/runs is not green CI.
+- Keep matching SDK/build-cohort qualification, native compilation/linking,
+  full-suite/harness execution, lifetime/shutdown/exit0 and ordinary/canonical
+  adoption open. No Pens code, runtime installation or native acceptance
+  follows from this source-proposal publication.
+
 ## 2026-11-10 — actual-client transport experiment source-qualified
 
 - Complete independent source review of the separate transport experiment:

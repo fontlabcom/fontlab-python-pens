@@ -4,6 +4,40 @@ this_file: WORK.md
 
 # Work log
 
+## 2026-11-10 — Proteus lifecycle-test draft reconciled
+
+[Proteus PR12](https://github.com/Fontlab/Proteus/pull/12) now contains source
+reconciliation commit `5bca76c79811ede8bca2bdc097366158061c1bdb`, preserving
+actual master `da9a4db54913bde655e6d14ede4b7f313e42df9f`, all three upstream
+commits and their 103 changed paths. Master already contains the destructor
+focus guard, its comments and the unrelated shortcut fix. The remaining
+current-master diff is only two native lifecycle-test files, byte-identical
+to their previous PR versions; no production C++ change was introduced.
+
+The complete remote tree and ancestry match the reviewed source candidate.
+The actual-master comparison has two test files and is ahead two commits,
+behind zero. The PR API separately reports historical base snapshot `90cf9c0`
+and lists 105 files; that set exactly matches the historical-base comparison,
+including the 103 upstream paths. The published PR body now explains both
+comparison scopes. Its base branch remains master; the PR remains open,
+draft and unmerged.
+
+The bounded source graph identifies the two changed test entry points, but
+C++ caller impact remains UNKNOWN, callable resolution reaches its cap and
+global flow extraction is sampled/truncated. Neither a low aggregate nor
+zero reported affected flows establishes safety. Exact-head checks, statuses
+and Actions runs were all zero at readback; the empty combined status was
+pending, not green CI.
+
+Compilation, linking, native full-suite/harness execution and shutdown,
+lifetime and exit0 qualification remain UNRUN/HELD. A matching qualified
+SDK/application-build cohort has not been established in this workflow.
+New upstream source does not refresh the separate experiment's source/provider
+pins or establish native behavior. Current cohort admission and ordinary/canonical adoption
+remain open; real-mask capacity is unmeasured. All original acceptance gates
+and inventory counts remain unchanged. This record changes no Pens package
+code or native authority.
+
 ## 2026-11-10 — actual-client transport source experiment qualified
 
 The separate transport experiment passed independent source review and one

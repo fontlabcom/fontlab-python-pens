@@ -48,6 +48,27 @@ running FontLab 9 on a disposable copy of a multi-master font:
 
 A passing check on one master does not cover the others.
 
+#### Upstream shutdown work: remaining native qualification
+
+Before relying on the upstream work, refresh actual Proteus master and the
+[PR12 draft](https://github.com/Fontlab/Proteus/pull/12) head and independently
+qualify the exact source/provider/runtime/parent and matching SDK/build cohort.
+New upstream commits do not automatically refresh the separate experiment's
+existing source/provider pins.
+
+Qualify the already-upstream destructor focus guard and PR12's residual
+package-close lifecycle-test teardown, retaining the distinct direct-quit
+regression contract. Guard presence and source-proposal publication do not
+prove that the PR merged or that the application is fixed. Native compilation,
+linking, full-suite/harness execution and lifetime/shutdown/exit0 gates remain
+held until separately admitted; never retry a blocked regression by inference.
+
+Use an independently approved owned real-session state and retain full-font
+preservation, history/Undo/Redo, UI and normal same-handle retirement evidence.
+Keep ordinary/canonical adoption separate. Continue the unfinished real-mask,
+source-contract and capacity work below; existing transport measurements do
+not establish real-mask capacity.
+
 ### 3. Native fast path
 
 A fast path over the native `fgPen` is not implemented: that pen binds to a
