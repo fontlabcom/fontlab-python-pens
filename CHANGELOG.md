@@ -4,6 +4,11 @@ this_file: CHANGELOG.md
 
 # Changelog
 
+## 2026-11-11 — Issue 250 test environment qualification
+
+- The seven inherited subprocess failures were environmental: the test interpreter must install this checkout (the recipe's `--with-editable`). Full suite via the workspace recipe: 718 passed. README documents the requirement; no production or test changes.
+
+
 ## 2026-11-10 — Issue 250 Ruff lint debt
 
 - Clear all 72 Ruff 0.16.7 findings across 19 files (72 before, 0 after):

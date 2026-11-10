@@ -171,7 +171,11 @@ components and transforms. The relevant upstream fontTools tests are ported in
 ```
 
 This runs pytest on Python 3.11 through `uv`. fontTools is installed only for
-the tests, and coverage must stay at 80% or above.
+the tests, and coverage must stay at 80% or above. The test environment must
+install this checkout (the command uses `--with-editable`): pytest
+`pythonpath = ["src"]` does not reach subprocesses, and isolated Python
+(`-I`) also ignores `PYTHONPATH`. Running pytest without that installation
+causes seven subprocess import failures; keep their isolation checks intact.
 
 ## Licence
 
