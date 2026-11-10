@@ -75,9 +75,10 @@ Qualify the three categorized demos' nonmodal report windows in an owned FontLab
 ## Service-layer source experiment: remaining qualification
 
 A separately reviewed service-layer experiment has completed current-reference
-reconciliation at source scope; its result is recorded in CHANGELOG.md. The
-experiment is separate from this package's test suite and runtime code. Do not
-repeat its completed reference-refresh implementation as future work.
+and bounded actual-client transport qualification at source scope; results are
+recorded in CHANGELOG.md. The experiment is separate from this package's test
+suite and runtime code. Do not repeat its completed reference-refresh or
+existing-mode transport work as future work.
 
 Before relying on it, qualify the exact current native source/runtime/parent
 cohort and separately qualify ordinary/canonical adoption. Retain fresh owned
@@ -89,13 +90,11 @@ inventories and 15 extension categories remain counted; the working 616-layer
 inventory is separate. Source completion neither renews native authority nor
 clears pending queues or fences.
 
-Qualify transport separately before a real-mask implementation: measure exact
-literal source, real admitted metadata and finite launch/target data through
-the unchanged encoder at both transaction and actual client boundaries. Retain
-oversize refusal without dispatch; boundary tests admit exactly 32,768 encoded
-bytes and refuse greater payloads. Modeled precheck margins and unexecuted
-field-selection arithmetic establish no real-data or mask capacity. Any narrow
-transmitted-field selection requires independent review and preserves complete
+Before adding an operation or growing literal source, input data or owned
+paths, independently qualify the resulting complete request through the
+unchanged encoder at both transaction and actual client boundaries. Existing
+bounded cases establish no arbitrary-path or real-mask capacity. Preserve
+exact 32,768-byte admission, larger-payload refusal without dispatch, and all
 controller input, source, artifact and approval checks. No loader, source
 transformation, cap increase or operation removal follows.
 

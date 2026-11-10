@@ -4,6 +4,30 @@ this_file: CHANGELOG.md
 
 # Changelog
 
+## 2026-11-10 — actual-client transport experiment source-qualified
+
+- Complete independent source review of the separate transport experiment:
+  954 cases pass; a distinct-path controller repeat passes 217 cases and is
+  nonadditive. Keep these experiment counts separate from the package suite.
+- Exercise the unchanged actual client and encoder/decoder with fake dispatch
+  and host APIs. Select only proven consumed wire fields while retaining the
+  complete literal host, operations, controller and approval checks.
+- Measure accepted FG requests of at most 32,723 bytes in the full run and
+  32,724 in the controller repeat, including bounded escaped/Unicode paths.
+  Exactly 32,768 bytes dispatches to the fake sink; greater payloads refuse
+  before dispatch. Preserve the original oversized request and earlier
+  modeled/static observations as history. No arbitrary-path or mask capacity
+  follows from these existing-mode measurements.
+- Preserve every original FONT field except the recorded build-metadata
+  change, and account separately for the added service layer. Preserve the
+  service sequence: 3,814 requests, 19 saved snapshots, six positive modeled
+  closes, original 2,151 registry rows, four 615-layer inventories and all 15
+  extension categories.
+- Retain current native/runtime admission, ordinary/canonical adoption,
+  real-mask setup and subsequent literal-source/data growth checks. This
+  experiment changes no package code and supplies no native authority,
+  installation, publication or whole-goal acceptance.
+
 ## 2026-11-10 — reviewed Pens source integrated into main
 
 - Integrate [the reviewed source change](https://github.com/fontlabcom/fontlab-python-pens/commit/59b7c3a593011002ab7bf345973f5a2f168c8809)

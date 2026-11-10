@@ -4,6 +4,36 @@ this_file: WORK.md
 
 # Work log
 
+## 2026-11-10 — actual-client transport source experiment qualified
+
+The separate transport experiment passed independent source review and one
+complete 954-case run on arm64 Python 3.11.18. A controller repeat at distinct
+owned paths passed 217 cases; it is nonadditive. The four complete experiment
+modules exceed 97% combined line/branch coverage with zero exclusions. Both
+runs retain the preimported-anyio warning; the full run deselects only its
+existing full-615 opt-in. These counts are separate from this package's suite.
+
+Unchanged actual client methods and encoder/decoder run against a fake sink;
+host APIs remain modeled. Full controller/source/provider/approval checks and
+165 fixed inputs remain. The original 37,326-byte real-data request refuses
+before dispatch. Narrow consumed-field selection admits the existing cases;
+accepted FG maxima are 32,723 and 32,724 bytes in the full run and controller
+repeat. Exact 32,768-byte admission, larger-payload refusal and bounded escaped,
+Unicode and distinct paths are verified. Earlier modeled/static margins and
+failed attempts remain dated evidence, not substitutes for these measurements.
+
+The service chain preserves 3,814 requests, 19 snapshot hashes, six positive
+modeled close sequences and both saved-byte phase links. Its working counts
+are 205/616/871 to 205/616/872 to 205/616/872, with exact integer flags 5;
+every original FONT field remains equal except the recorded build-metadata
+change, with the added service layer accounted for separately. The original
+219 flags-16 layers, 144 recipes, all 2,151 registry rows, four 615-layer
+inventories and 15 extension categories remain. The experiment
+retains its pinned provider cohort. Current native/runtime admission,
+ordinary/canonical adoption, history/UI/lifetime/SDK/retirement, real-mask setup
+and future literal-source/data/path growth remain separate. No package source,
+workflow, installation, native authority or publication changed for this record.
+
 ## 2026-11-10 — verified source main delivery
 
 Source commit `59b7c3a593011002ab7bf345973f5a2f168c8809` was pushed through the
