@@ -4,6 +4,10 @@ this_file: CHANGELOG.md
 
 # Changelog
 
+## 2026-11-10 — live font editing rule (Issue 250, D44)
+
+- AGENTS.md: agents test and edit the font open in FontLab 9, starting from the Desktop VFJs, and may save them.
+
 ## 2026-11-10 — Issue 250 Ruff lint debt
 
 - Clear all 72 Ruff 0.16.7 findings across 19 files (72 before, 0 after):
