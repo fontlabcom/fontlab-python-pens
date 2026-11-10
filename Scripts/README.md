@@ -1,7 +1,26 @@
 ---
 this_file: Scripts/README.md
 ---
-# Package demos
+# Scripts
+
+## Pen Basics
+
+Short, numbered examples in the spirit of the old RoboFab pen how-tos. Each
+script is a few lines of top-level code that works on the current glyph's
+active layer; read them in order.
+
+- [01 Draw a Box](Pen%20Basics/01%20Draw%20a%20Box.py): draw lines and a curve with `FlPen`.
+- [02 Print the Outline](Pen%20Basics/02%20Print%20the%20Outline.py): a pen that prints every call.
+- [03 Print the Points](Pen%20Basics/03%20Print%20the%20Points.py): the same with a point pen.
+- [04 Count Points](Pen%20Basics/04%20Count%20Points.py): a pen that only counts.
+- [05 Bounds and Area](Pen%20Basics/05%20Bounds%20and%20Area.py): ready-made measuring pens.
+- [06 Record and Copy](Pen%20Basics/06%20Record%20and%20Copy.py): record once, replay into the other masters.
+- [07 Shifted Copy](Pen%20Basics/07%20Shifted%20Copy.py): a filter pen that moves every point.
+- [08 Flattened Copy](Pen%20Basics/08%20Flattened%20Copy.py): a pen that turns curves into lines.
+
+Edits happen in one undoable step. They have no safety checks, so open a glyph first.
+
+## Package demos
 
 Open a glyph in a FontLab Glyph window, select its active layer, then run a demo
 from FontLab's Scripts menu. Install `fontlab_pens` and copy the functional

@@ -1,0 +1,30 @@
+# this_file: Scripts/Pen Basics/03 Print the Points.py
+# SPDX-License-Identifier: Apache-2.0
+"""Print every point of the current glyph with a point pen.
+
+A point pen gets one call per point, including off-curve control points.
+segmentType is "move", "line", "curve" or "qcurve" for on-curve points and
+None for off-curve points.
+"""
+
+import fontlab
+
+from fontlab_pens.fontlab import draw_points
+
+
+class PrintPointPen:
+    def beginPath(self, identifier=None, **kwargs):
+        print("beginPath")
+
+    def addPoint(self, pt, segmentType=None, smooth=False, name=None, identifier=None, **kwargs):
+        print("  ", pt, segmentType or "offcurve", "smooth" if smooth else "")
+
+    def endPath(self):
+        print("endPath")
+
+    def addComponent(self, baseGlyphName, transformation, identifier=None, **kwargs):
+        print("component", baseGlyphName, transformation)
+
+
+glyph = fontlab.CurrentGlyph()
+draw_points(glyph.activeLayer, PrintPointPen())

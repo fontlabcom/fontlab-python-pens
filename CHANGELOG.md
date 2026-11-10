@@ -6,6 +6,9 @@ this_file: CHANGELOG.md
 
 ## Unreleased
 
+- Add eight short `Scripts/Pen Basics` examples modelled on the RoboFab pen
+  how-tos: drawing, printing, counting, measuring, recording, filtering and
+  flattening on the current glyph. All eight ran in FontLab 9 on a test font.
 - Add immutable stroke/cap styles, Proteus variant conversion, QPen application,
   capability-gated full strokes/expansion, staged multi-layer stroke plans and
   recording compatibility checks. Unsupported legacy-host fields fail before

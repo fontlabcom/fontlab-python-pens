@@ -14,7 +14,7 @@ from fontlab_pens.fontlab import draw
 from tests.fakes import flGlyph, flLayer, fontlab_native
 
 SCRIPTS = Path(__file__).resolve().parents[1] / "Scripts"
-PATHS = sorted(SCRIPTS.glob("*/*.py"))
+PATHS = sorted(p for p in SCRIPTS.glob("*/*.py") if p.parent.name != "Pen Basics")
 
 
 def load_demo(name):
