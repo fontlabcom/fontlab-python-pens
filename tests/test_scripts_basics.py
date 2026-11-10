@@ -6,13 +6,13 @@ from pathlib import Path
 
 from fontlab_pens import FlPen, RecordingPen
 from fontlab_pens.fontlab import draw
-from tests.fakes import flGlyph, flLayer, fontlab_native
+from tests.fakes import QTransform, flGlyph, flLayer, fontlab_native
 from tests.test_scripts_demos import install_host
 
 BASICS = Path(__file__).resolve().parents[1] / "Scripts" / "Pen Basics"
 
 
-def run(name, monkeypatch, capsys, *, curve=False):
+def run(name, monkeypatch, capsys, *, curve=False, component=False):
     native = fontlab_native()
     layer = flLayer("Regular")
     glyph = flGlyph([layer, flLayer("Bold")])
@@ -26,6 +26,10 @@ def run(name, monkeypatch, capsys, *, curve=False):
             pen.lineTo((200, 100))
         pen.lineTo((0, 100))
         pen.closePath()
+    if component:
+        # Like Lslash: an element that references another glyph, shifted 300 units.
+        layer.components = list(layer.shapes[0].contours)
+        layer.addComponent(("L", QTransform(dx=300)))
     install_host(monkeypatch, glyph, native)
     runpy.run_path(str(BASICS / f"{name}.py"), run_name="__main__")
     return glyph, layer, native, capsys.readouterr().out
@@ -79,6 +83,13 @@ def test_bounds_and_area_when_rectangle_then_prints_metrics(monkeypatch, capsys)
     lines = out.splitlines()
     assert lines[0] == "Bounds: (0.0, 0.0, 200.0, 100.0)", out
     assert lines[1] == "Area: 20000", out
+
+
+def test_bounds_and_area_when_component_then_measures_its_outline(monkeypatch, capsys):
+    *_, out = run("05 Bounds and Area", monkeypatch, capsys, component=True)
+    lines = out.splitlines()
+    assert lines[0] == "Bounds: (0.0, 0.0, 500.0, 100.0)", out
+    assert lines[1] == "Area: 40000", out
 
 
 def test_record_and_copy_when_two_masters_then_copies_to_other(monkeypatch, capsys):

@@ -3,8 +3,9 @@
 """Measure the current glyph with two ready-made pens.
 
 BoundsPen finds the bounding box. AreaPen adds up the area: positive or
-negative depending on contour direction. Components are skipped: these pens
-cannot look them up here, so only the glyph's own contours are measured.
+negative depending on contour direction. Components are drawn as
+their outlines, not as references, so BoundsPen needs no glyph set and the
+whole glyph is measured.
 """
 
 import fontlab
@@ -12,7 +13,7 @@ import fontlab
 from fontlab_pens import AreaPen, BoundsPen
 from fontlab_pens.fontlab import draw
 
-# CurrentGlyph() gives a FontGate glyph; flGlyph makes it editable.
+# CurrentGlyph() gives a FontGate glyph; flGlyph gives the live glyph the pens read.
 glyph = fontlab.flGlyph(fontlab.CurrentGlyph(), fontlab.CurrentFont())
 layer = glyph.activeLayer
 
