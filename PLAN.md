@@ -58,3 +58,7 @@ FontGate gains a layer- or element-bound pen.
 
 - Add this package's `test.sh` to the shared pre-push checks used by its
   consumers.
+
+## Scripts demo qualification
+
+Qualify the three categorized demos' nonmodal report windows in an owned FontLab session after source review. Keep offline package results distinct from installed native UI behavior; no runtime mutation or installation is part of adding these demos.

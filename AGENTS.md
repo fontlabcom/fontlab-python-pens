@@ -28,3 +28,7 @@ this_file: AGENTS.md
   names follow `test_function_when_condition_then_result` and carry assertion messages.
 - Python 3.11 syntax, type hints on public signatures, docstrings that say what
   and why, no `print`.
+
+## Owner workflow — 2026-11-10
+
+After each important round, reconcile current team work and integrate independently reviewed, verified changes into main using the repository's delivery gates. Preserve owner branches, indexes and unrelated work. Move only verified solved TODO items into cumulative CHANGELOG, update PLAN for remaining work, and continue the authorized backlog. Keep unverified native checks and owner-paused tasks open; this workflow does not authorize installation or bypass preservation gates.

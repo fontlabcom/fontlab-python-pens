@@ -55,3 +55,9 @@ First release.
 - The ported fontTools pen tests, parity tests that compare recordings,
   bounds and areas with fontTools, and native-pen tests on fake doubles that
   enforce the no-probing rule. 662 tests pass with 94.89% line coverage.
+
+## 2026-11-10 — categorized package demos
+
+- Add three functional Scripts-menu demos using detached package data and existing functional category names.
+- Include Scripts in source distributions; document optional Fly/App snapshot reporting and host-free result access.
+- Add real API result, menu wiring and report-failure tests. Native UI acceptance is separate from offline execution.

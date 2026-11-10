@@ -11,3 +11,5 @@ this_file: TODO.md
 - [ ] In FontLab 9, check Undo and Redo after notified writes across several glyphs, and the effect of notification on unrelated glyphs.
 - [ ] In FontLab 9, check writes after save, close and reopen.
 - [ ] Add this package's `test.sh` to the consumers' shared pre-push checks.
+
+- [ ] Qualify the three Scripts demo report windows in FontLab using the installed Fly/App reporting API; preserve open-document state.

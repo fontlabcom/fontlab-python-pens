@@ -176,3 +176,5 @@ the tests, and coverage must stay at 80% or above.
 ## Licence
 
 Apache-2.0. Ported fontTools code stays under its MIT notice; see `NOTICE`.
+
+[Scripts demos](Scripts/README.md) use detached sample data, with host-free `build_report()` results and optional FontLab report windows through Fly/App. No open font is required.
