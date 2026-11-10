@@ -4,6 +4,16 @@ this_file: CHANGELOG.md
 
 # Changelog
 
+## 2026-11-10 — Segment pens clear the open contour on a failed with-block (Issue 250)
+
+- M-2: `FontGatePen` and `FlPen` set `contour = None` when a `with` block exits
+  on an exception, so a reused pen no longer rejects `addComponent` for a stale
+  contour. Tests: `test_segment_pen_when_exception_inside_with_then_open_contour_state_is_cleared`
+  and `test_flpen_when_exception_inside_with_then_open_contour_state_is_cleared`.
+- M-1 was stale: `FontGatePointPen`/`FontGatePen.addComponent` always raise
+  `ComponentError` (glyph-level components), also after `close()`; pinned by
+  `test_add_component_when_pen_closed_then_component_error_names_glyph_level`.
+
 ## 2026-11-11 — CI workflow (Issue 250)
 
 - Add `.github/workflows/ci.yml` (ubuntu-latest, Python 3.11, runs `./test.sh`: tests plus the 80% coverage gate) on push and pull request to main. macos-14 was rejected by the hosted runner pool ("macos-14-arm64-us-default is not supported"), so the job runs on ubuntu-latest. First hosted run on 3bb17ae: success.
