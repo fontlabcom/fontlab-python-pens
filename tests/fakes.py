@@ -187,11 +187,52 @@ class flShapeData(_Native):
         self.componentGlyph = componentGlyph
 
 
+class Qt:
+    MiterJoin = 0
+    BevelJoin = 64
+    RoundJoin = 128
+    NoPen = 0
+    SolidLine = 1
+
+
+class QPen:
+    def __init__(self, other=None):
+        self._width = other._width if other is not None else 1.0
+        self._join = other._join if other is not None else Qt.BevelJoin
+        self._miter = other._miter if other is not None else 2.0
+        self._style = other._style if other is not None else Qt.SolidLine
+
+    def setStyle(self, value):
+        self._style = value
+
+    def style(self):
+        return self._style
+
+    def setWidthF(self, value):
+        self._width = value
+
+    def widthF(self):
+        return self._width
+
+    def setJoinStyle(self, value):
+        self._join = value
+
+    def joinStyle(self):
+        return self._join
+
+    def setMiterLimit(self, value):
+        self._miter = value
+
+    def miterLimit(self):
+        return self._miter
+
+
 class flShape(_Native):
     def __init__(self):
         self.contours = []
         self.transform = QTransform()
         self.shapeData = flShapeData()
+        self.pen = QPen()
 
     def addContours(self, contours, flag):
         assert flag is True, "addContours must be called with True"
@@ -204,6 +245,7 @@ class flLayer(_Native):
         self.shapes = []
         self.glyph = None
         self.autoLayer = False
+        self.isMasterLayer = True
         self.history = []
         self.components = []  # base contours a component element would show
 
@@ -225,6 +267,7 @@ class flLayer(_Native):
 class flGlyph(_Native):
     def __init__(self, layers=()):
         self.layers = list(layers)
+        self.activeLayer = self.layers[0] if self.layers else None
         self.history = []
         for layer in self.layers:
             layer.glyph = self
@@ -257,4 +300,6 @@ def fontlab_native():
         flItems=Items,
         QPointF=QPointF,
         QTransform=QTransform,
+        QPen=QPen,
+        Qt=Qt,
     )

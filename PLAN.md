@@ -91,7 +91,14 @@ FontGate gains a layer- or element-bound pen.
 
 ## Scripts demo qualification
 
-Qualify the three categorized demos' nonmodal report windows in an owned FontLab session after source review. Keep offline package results distinct from installed native UI behavior; no runtime mutation or installation is part of adding these demos.
+Qualify all four current-glyph demos in a disposable FontLab font: inspect added
+geometry, one-step Undo/Redo, multi-master stroke results and save/reopen. Verify
+Measurements prints bounds and signed area without changing the layer. Offline
+fake-host checks do not establish native acceptance.
+
+Adopt and qualify upstream `penParameters` / `expandStroke` bindings (fl#8626),
+including cap variants and native expansion. Verify nib rotation persistence
+(fl#8627) separately. Keep these adoption and live acceptance tasks open.
 
 ## Service-layer source experiment: remaining qualification
 
