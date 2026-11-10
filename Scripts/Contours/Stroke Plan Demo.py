@@ -43,6 +43,8 @@ def main() -> None:
     if glyph is None:
         raise RuntimeError("Open a glyph in a Glyph window first")
     layer = glyph.activeLayer
+    if layer is None:
+        raise RuntimeError("The current glyph has no active layer")
     counts = stroke_plan_demo(glyph, layer)
     limitation = ""
     if "penParameters" not in dir(fontlab.flShape):

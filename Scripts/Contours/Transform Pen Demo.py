@@ -33,6 +33,8 @@ def main() -> None:
     if glyph is None:
         raise RuntimeError("Open a glyph in a Glyph window first")
     layer = glyph.activeLayer
+    if layer is None:
+        raise RuntimeError("The current glyph has no active layer")
     count = transform_demo(layer)
     print(f"Transform Pen Demo: added {count} transformed contours to the active layer")
 

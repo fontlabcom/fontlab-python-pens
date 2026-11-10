@@ -226,6 +226,8 @@ def apply_stroke(shape: Any, style: StrokeStyle, *, native: Any = None) -> None:
 
     This writes no history and sends no notification: use it on detached elements,
     or wrap a live element's edit in the layer's history step (as apply_plan does).
+
+    FontLab ignores ``setPen`` on varicolored shapes, so their QPen stays unchanged.
     """
     _shape(shape)
     if not isinstance(style, StrokeStyle):
@@ -244,16 +246,22 @@ def apply_stroke(shape: Any, style: StrokeStyle, *, native: Any = None) -> None:
         if fields:
             raise UnsupportedStroke(fields)
     else:
-        # Proteus join_code inverts its name comparison (fl#8630); the integer form is
-        # read directly. Caps are written explicitly so the old QPen cap cannot leak in.
+        # The native setter starts from the shape's old QPen and overrides only the
+        # keys sent, so send every pen-derived field explicitly. The integer join is
+        # also safe on builds whose join_code inverts name comparison (fl#8630).
+        variant["thickness"] = style.thickness
         variant["join"] = int(style.join)
+        variant["miter_limit"] = style.miter_limit
         variant.setdefault("cap0", style.cap0.type.name.lower())
         variant.setdefault("cap1", style.cap1.type.name.lower())
     native = _load_native() if native is None else native
     pen = native.QPen(shape.pen)
     pen.setWidthF(style.thickness)
-    # A fresh flShape has Qt.NoPen; FontLab exports thickness 0 for it.
-    if style.thickness > 0 and pen.style() == native.Qt.NoPen:
+    # A fresh flShape has Qt.NoPen; FontLab exports thickness 0 for it. Thickness 0
+    # means no stroke, not Qt's cosmetic one-pixel pen.
+    if style.thickness == 0:
+        pen.setStyle(native.Qt.NoPen)
+    elif pen.style() == native.Qt.NoPen:
         pen.setStyle(native.Qt.SolidLine)
     pen.setJoinStyle(
         {

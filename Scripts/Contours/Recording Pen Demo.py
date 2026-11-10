@@ -32,6 +32,8 @@ def main() -> None:
     if glyph is None:
         raise RuntimeError("Open a glyph in a Glyph window first")
     layer = glyph.activeLayer
+    if layer is None:
+        raise RuntimeError("The current glyph has no active layer")
     count = recording_demo(layer)
     print(f"Recording Pen Demo: added {count} triangle to the active layer")
 

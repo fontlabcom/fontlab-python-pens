@@ -205,7 +205,13 @@ def test_apply_stroke_when_parameters_on_type_then_write_full_variant():
     shape = extended_shape_type()()
     style = StrokeStyle(3, contrast=0.5, cap1=Cap(CapType.ROUND), rotation=20, join=Join.ROUND)
     apply_stroke(shape, style, native=fontlab_native())
-    expected = {**style.to_variant(), "join": int(Join.ROUND), "cap0": "butt"}
+    expected = {
+        **style.to_variant(),
+        "thickness": 3,
+        "join": int(Join.ROUND),
+        "miter_limit": 3.0,
+        "cap0": "butt",
+    }
     assert shape.penParameters == expected, "full native variant lost"
     assert shape.pen.widthF() == 3, "QPen width missing on extended host"
 
@@ -562,3 +568,68 @@ def test_apply_stroke_when_thickness_zero_then_no_pen_style_is_kept():
     shape.pen.setStyle(fakes.Qt.NoPen)
     apply_stroke(shape, StrokeStyle(thickness=0), native=fakes)
     assert shape.pen.style() == fakes.Qt.NoPen
+
+
+_JOIN_NAMES = {"bevel": 0, "round": 1, "miter": 2}
+_QT_JOIN = {0: "BevelJoin", 1: "RoundJoin", 2: "MiterJoin"}
+
+
+def proteus_shape_type(native):
+    """Fake flShape whose penParameters setter mirrors Proteus PR 13.
+
+    PenParameters::fromVariant resets, reads the shape's current QPen, then
+    overrides only the keys present; the setter writes width/join/miter back
+    to the QPen. The getter refreshes only thickness from the pen.
+    """
+
+    def get(self):
+        params = dict(self._params)
+        params["thickness"] = self.pen.widthF()
+        return params
+
+    def set_(self, variant):
+        params = {
+            "thickness": self.pen.widthF(),
+            "join": {native.Qt.BevelJoin: 0, native.Qt.RoundJoin: 1}.get(self.pen.joinStyle(), 2),
+            "miter_limit": self.pen.miterLimit(),
+            "cap0": "butt",
+            "cap1": "butt",
+        }
+        for key, value in variant.items():
+            if key == "join" and isinstance(value, str):
+                value = _JOIN_NAMES[value]
+            params[key] = value
+        pen = native.QPen(self.pen)
+        pen.setWidthF(params["thickness"])
+        pen.setJoinStyle(getattr(native.Qt, _QT_JOIN[params["join"]]))
+        pen.setMiterLimit(params["miter_limit"])
+        self.pen = pen
+        self._params = params
+
+    return type("flShape", (flShape,), {"_params": {}, "penParameters": property(get, set_)})
+
+
+def test_apply_stroke_when_old_pen_has_other_miter_then_native_and_qpen_agree():
+    native = fontlab_native()
+    shape = proteus_shape_type(native)()
+    old = native.QPen()
+    old.setWidthF(9)
+    old.setMiterLimit(6.0)
+    old.setJoinStyle(native.Qt.RoundJoin)
+    shape.pen = old
+    apply_stroke(shape, StrokeStyle(4), native=native)
+    params = shape.penParameters
+    assert params["miter_limit"] == shape.pen.miterLimit() == 3.0, "stale native miter limit"
+    assert params["thickness"] == shape.pen.widthF() == 4, "thickness disagrees"
+    assert params["join"] == int(Join.MITER), "stale native join"
+    assert shape.pen.joinStyle() == native.Qt.MiterJoin, "QPen join disagrees"
+
+
+def test_apply_stroke_when_thickness_zero_on_solid_pen_then_no_pen():
+    native = fontlab_native()
+    shape = flShape()
+    pen = native.QPen()
+    pen.setWidthF(5)
+    shape.pen = pen
+    apply_stroke(shape, StrokeStyle(thickness=0), native=native)
+    assert shape.pen.style() == native.Qt.NoPen, "zero thickness must not leave a cosmetic pen"
