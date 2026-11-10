@@ -1,14 +1,15 @@
 # this_file: tests/ported/test_recording.py
 # Ported from fontTools Tests/pens/recordingPen_test.py (MIT, (c) Just van Rossum; see NOTICE)
-from fontlab_pens.recording import (
-    RecordingPen,
-    DecomposingRecordingPen,
-    RecordingPointPen,
-)
 import pytest
 
+from fontlab_pens.recording import (
+    DecomposingRecordingPen,
+    RecordingPen,
+    RecordingPointPen,
+)
 
-class _TestGlyph(object):
+
+class _TestGlyph:
     def draw(self, pen):
         pen.moveTo((0.0, 0.0))
         pen.lineTo((0.0, 100.0))
@@ -25,7 +26,7 @@ class _TestGlyph(object):
         pen.endPath()
 
 
-class TestRecordingPenTest(object):
+class TestRecordingPenTest:
     def test_addComponent(self):
         pen = RecordingPen()
         pen.addComponent("a", (2, 0, 0, 3, -10, 5))
@@ -41,7 +42,7 @@ class TestRecordingPenTest(object):
         assert replayed.value == pen.value
 
 
-class TestDecomposingRecordingPenTest(object):
+class TestDecomposingRecordingPenTest:
     def test_addComponent_decomposed(self):
         pen = DecomposingRecordingPen({"a": _TestGlyph()})
         pen.addComponent("a", (2, 0, 0, 3, -10, 5))
@@ -53,7 +54,7 @@ class TestDecomposingRecordingPenTest(object):
         ]
 
     def test_addComponent_missing_raises(self):
-        pen = DecomposingRecordingPen(dict())
+        pen = DecomposingRecordingPen({})
         with pytest.raises(KeyError) as excinfo:
             pen.addComponent("a", (1, 0, 0, 1, 0, 0))
         assert excinfo.value.args[0] == "a"

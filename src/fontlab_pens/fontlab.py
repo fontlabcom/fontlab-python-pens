@@ -16,8 +16,8 @@ preservation is not guaranteed. Bare elements do not support notification.
 
 from __future__ import annotations
 
-from types import SimpleNamespace
-from typing import Any
+from types import SimpleNamespace, TracebackType
+from typing import Any, Self
 
 from fontlab_pens._native import (
     ComponentError,
@@ -190,10 +190,13 @@ class FlPointPen(StagingPointPen):
         if self.notify:
             native.flItems.notifyChangesApplied(self.notify, items)
 
-    def __enter__(self) -> FlPointPen:
+    def __enter__(self) -> Self:
         return self
 
-    def __exit__(self, exc_type: Any, exc: Any, tb: Any) -> None:
+    def __exit__(
+        self, exc_type: type[BaseException] | None,
+        exc: BaseException | None, tb: TracebackType | None,
+    ) -> None:
         if exc_type is None:
             self.close()
         else:
@@ -226,10 +229,13 @@ class FlPen(SegmentToPointPen):
             raise PenError("Unfinished contour: call closePath() or endPath() before close()")
         self.pointPen.close()
 
-    def __enter__(self) -> FlPen:
+    def __enter__(self) -> Self:
         return self
 
-    def __exit__(self, exc_type: Any, exc: Any, tb: Any) -> None:
+    def __exit__(
+        self, exc_type: type[BaseException] | None,
+        exc: BaseException | None, tb: TracebackType | None,
+    ) -> None:
         if exc_type is None:
             self.close()  # raises PenError on an unfinished contour
         else:

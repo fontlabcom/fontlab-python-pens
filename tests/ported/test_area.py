@@ -1,7 +1,8 @@
 # this_file: tests/ported/test_area.py
 # Ported from fontTools Tests/pens/areaPen_test.py (MIT, (c) Just van Rossum; see NOTICE)
-from fontlab_pens.measure import AreaPen
 import unittest
+
+from fontlab_pens.measure import AreaPen
 
 precision = 6
 

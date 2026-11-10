@@ -4,6 +4,29 @@ this_file: CHANGELOG.md
 
 # Changelog
 
+## 2026-11-10 — Issue 250 Ruff lint debt
+
+- Clear all 72 Ruff 0.16.7 findings across 19 files (72 before, 0 after):
+  safe fixes, equivalent string formatting, context-manager annotations,
+  explicit class variables and simplified condition/context syntax.
+- Keep one justified `BLE001` suppression in `tests/test_parity.py`: the
+  fontTools parity oracle deliberately compares any exception type.
+  Public exports and Ruff configuration are unchanged.
+- Run the full pytest coverage payload from `test.sh` before and after with
+  an existing Python 3.11 environment: baseline 709 passed and final 711 passed (two added numeric-formatting
+  regression cases), with the same 7 failures and 95.02% coverage
+  (80% gate passed). All seven unchanged failures are package
+  import failures in subprocesses because this worktree is not installed;
+  five use isolated Python (`-I`). No new test failures.
+- Run `python -m pytest -q --cov=fontlab_pens --cov-fail-under=80 tests` and
+  the existing uv-managed Ruff executable's `check .`; `uvx` itself cannot
+  acquire its cache lock in this sandbox. Do not run `test.sh`'s editable
+  installation because this round prohibits installs. Additional Transform
+  output checks cover integers, negative zero, precision, exponents, infinity
+  and NaN. Decimal/Fraction parity regressions first fail, then pass after
+  retaining the original float coercion for `%g` formatting. No whole-file
+  formatting or native FontLab checks.
+
 ## 2026-11-10 — Issue 250 documentation round
 
 - AGENTS.md describes the delegation, integration and release workflow.

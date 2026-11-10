@@ -5,10 +5,10 @@ import unittest
 from fontlab_pens.base import AbstractPen
 from fontlab_pens.point import (
     AbstractPointPen,
-    PointToSegmentPen,
-    SegmentToPointPen,
     GuessSmoothPointPen,
+    PointToSegmentPen,
     ReverseContourPointPen,
+    SegmentToPointPen,
 )
 
 
@@ -20,18 +20,18 @@ class _TestSegmentPen(AbstractPen):
         return " ".join(self._commands)
 
     def moveTo(self, pt):
-        self._commands.append("%s %s moveto" % (pt[0], pt[1]))
+        self._commands.append(f"{pt[0]!s} {pt[1]!s} moveto")
 
     def lineTo(self, pt):
-        self._commands.append("%s %s lineto" % (pt[0], pt[1]))
+        self._commands.append(f"{pt[0]!s} {pt[1]!s} lineto")
 
     def curveTo(self, *pts):
-        pts = ["%s %s" % pt for pt in pts]
-        self._commands.append("%s curveto" % " ".join(pts))
+        pts = ["{!s} {!s}".format(*pt) for pt in pts]
+        self._commands.append("{!s} curveto".format(" ".join(pts)))
 
     def qCurveTo(self, *pts):
-        pts = ["%s %s" % pt if pt is not None else "None" for pt in pts]
-        self._commands.append("%s qcurveto" % " ".join(pts))
+        pts = ["{!s} {!s}".format(*pt) if pt is not None else "None" for pt in pts]
+        self._commands.append("{!s} qcurveto".format(" ".join(pts)))
 
     def closePath(self):
         self._commands.append("closepath")
@@ -40,7 +40,7 @@ class _TestSegmentPen(AbstractPen):
         self._commands.append("endpath")
 
     def addComponent(self, glyphName, transformation):
-        self._commands.append("'%s' %s addcomponent" % (glyphName, transformation))
+        self._commands.append(f"'{glyphName!s}' {transformation!s} addcomponent")
 
 
 def _reprKwargs(kwargs):
@@ -48,9 +48,9 @@ def _reprKwargs(kwargs):
     for key in sorted(kwargs):
         value = kwargs[key]
         if isinstance(value, str):
-            items.append("%s='%s'" % (key, value))
+            items.append(f"{key!s}='{value!s}'")
         else:
-            items.append("%s=%s" % (key, value))
+            items.append(f"{key!s}={value!s}")
     return items
 
 
@@ -64,34 +64,34 @@ class _TestPointPen(AbstractPointPen):
     def beginPath(self, identifier=None, **kwargs):
         items = []
         if identifier is not None:
-            items.append("identifier='%s'" % identifier)
+            items.append(f"identifier='{identifier!s}'")
         items.extend(_reprKwargs(kwargs))
-        self._commands.append("beginPath(%s)" % ", ".join(items))
+        self._commands.append("beginPath({!s})".format(", ".join(items)))
 
     def addPoint(
         self, pt, segmentType=None, smooth=False, name=None, identifier=None, **kwargs
     ):
-        items = ["%s" % (pt,)]
+        items = [f"{pt!s}"]
         if segmentType is not None:
-            items.append("segmentType='%s'" % segmentType)
+            items.append(f"segmentType='{segmentType!s}'")
         if smooth:
             items.append("smooth=True")
         if name is not None:
-            items.append("name='%s'" % name)
+            items.append(f"name='{name!s}'")
         if identifier is not None:
-            items.append("identifier='%s'" % identifier)
+            items.append(f"identifier='{identifier!s}'")
         items.extend(_reprKwargs(kwargs))
-        self._commands.append("addPoint(%s)" % ", ".join(items))
+        self._commands.append("addPoint({!s})".format(", ".join(items)))
 
     def endPath(self):
         self._commands.append("endPath()")
 
     def addComponent(self, glyphName, transform, identifier=None, **kwargs):
-        items = ["'%s'" % glyphName, "%s" % transform]
+        items = [f"'{glyphName!s}'", f"{transform!s}"]
         if identifier is not None:
-            items.append("identifier='%s'" % identifier)
+            items.append(f"identifier='{identifier!s}'")
         items.extend(_reprKwargs(kwargs))
-        self._commands.append("addComponent(%s)" % ", ".join(items))
+        self._commands.append("addComponent({!s})".format(", ".join(items)))
 
 
 class PointToSegmentPenTest(unittest.TestCase):

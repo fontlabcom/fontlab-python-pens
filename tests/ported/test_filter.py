@@ -1,17 +1,15 @@
 # this_file: tests/ported/test_filter.py
 # Ported from fontTools Tests/pens/filterPen_test.py (MIT, (c) Just van Rossum; see NOTICE)
-import logging
 from types import MappingProxyType
 
-from fontlab_pens.base import MissingComponentError
+import pytest
+
 from fontlab_pens.filter import (
     FilterPointPen,
     OnCurveFirstPointPen,
 )
-from fontlab_pens.point import PointToSegmentPen, ReverseFlipped
-from fontlab_pens.recording import DecomposingRecordingPointPen, RecordingPen, RecordingPointPen
-
-import pytest
+from fontlab_pens.point import ReverseFlipped
+from fontlab_pens.recording import DecomposingRecordingPointPen, RecordingPointPen
 
 
 class SimpleGlyph:

@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import sys
 from types import SimpleNamespace
+from typing import ClassVar
 
 
 class CrashRule(AssertionError):
@@ -148,7 +149,7 @@ class QTransform(_Native):
 
 
 class flNode(_Native):
-    NodeKind = {"Smooth": 8}
+    NodeKind: ClassVar[dict[str, int]] = {"Smooth": 8}
 
     def __init__(self, pos, nodeType="on"):
         self.x, self.y = pos.x(), pos.y()
@@ -236,7 +237,7 @@ class flGlyph(_Native):
 
 
 class flItems:
-    calls: list = []
+    calls: ClassVar[list] = []
 
     @classmethod
     def notifyChangesApplied(cls, title, items):
@@ -247,7 +248,7 @@ def fontlab_native():
     """A fresh FontLab namespace (with its own notify log)."""
 
     class Items(flItems):
-        calls = []
+        calls: ClassVar[list] = []
 
     return SimpleNamespace(
         flNode=flNode,

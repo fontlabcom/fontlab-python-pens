@@ -1,8 +1,9 @@
 # this_file: tests/ported/test_reverse.py
 # Ported from fontTools Tests/pens/reverseContourPen_test.py (MIT, (c) Just van Rossum; see NOTICE)
+import pytest
+
 from fontlab_pens.recording import RecordingPen
 from fontlab_pens.reverse import ReverseContourPen
-import pytest
 
 TEST_DATA = [
     (
@@ -503,8 +504,8 @@ def test_reverse_pen_outputImpliedClosingLine():
 @pytest.mark.parametrize("contour, outputImpliedClosingLine, expected", TEST_DATA)
 def test_reverse_point_pen(contour, outputImpliedClosingLine, expected):
     from fontlab_pens.point import (
-        ReverseContourPointPen,
         PointToSegmentPen,
+        ReverseContourPointPen,
         SegmentToPointPen,
     )
 

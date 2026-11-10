@@ -23,7 +23,7 @@ def noRound(value: float) -> float:
 
 def otRound(value: float) -> int:
     """Round half up (towards +infinity), as the OpenType spec requires."""
-    return int(math.floor(value + 0.5))
+    return math.floor(value + 0.5)
 
 
 class RoundingPen(FilterPen):

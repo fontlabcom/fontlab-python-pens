@@ -1,16 +1,17 @@
 # this_file: tests/ported/test_rounding.py
 # Ported from fontTools Tests/pens/roundingPen_test.py (MIT, (c) Just van Rossum; see NOTICE)
-from fontTools.misc.fixedTools import floatToFixedToFloat
-from fontlab_pens.rounding import noRound, otRound
-from fontlab_pens.recording import RecordingPen, RecordingPointPen
-from fontlab_pens.rounding import RoundingPen, RoundingPointPen
 from functools import partial
+
 import pytest
+from fontTools.misc.fixedTools import floatToFixedToFloat
+
+from fontlab_pens.recording import RecordingPen, RecordingPointPen
+from fontlab_pens.rounding import RoundingPen, RoundingPointPen, noRound, otRound
 
 tt_scale_round = partial(floatToFixedToFloat, precisionBits=14)
 
 
-class TestRoundingPenTest(object):
+class TestRoundingPenTest:
     @pytest.mark.parametrize(
         "roundFunc, expected",
         [
@@ -58,7 +59,7 @@ class TestRoundingPenTest(object):
         ]
 
 
-class TestRoundingPointPenTest(object):
+class TestRoundingPointPenTest:
     def test_general(self):
         recpen = RecordingPointPen()
         roundpen = RoundingPointPen(recpen)

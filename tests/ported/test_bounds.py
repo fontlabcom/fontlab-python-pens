@@ -1,7 +1,8 @@
 # this_file: tests/ported/test_bounds.py
 # Ported from fontTools Tests/pens/boundsPen_test.py (MIT, (c) Just van Rossum; see NOTICE)
-from fontlab_pens.measure import BoundsPen, ControlBoundsPen
 import unittest
+
+from fontlab_pens.measure import BoundsPen, ControlBoundsPen
 
 
 def draw_(pen):
@@ -13,7 +14,7 @@ def draw_(pen):
 
 
 def bounds_(pen):
-    return " ".join(["%.0f" % c for c in pen.bounds])
+    return " ".join([f"{c:.0f}" for c in pen.bounds])
 
 
 class BoundsPenTest(unittest.TestCase):

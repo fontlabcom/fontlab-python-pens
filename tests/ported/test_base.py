@@ -1,16 +1,15 @@
 # this_file: tests/ported/test_base.py
 # Ported from fontTools Tests/pens/basePen_test.py (MIT, (c) Just van Rossum; see NOTICE)
-from fontlab_pens.base import (
-    AbstractPen,
-    BasePen,
-    decomposeSuperBezierSegment,
-    decomposeQuadraticSegment,
-)
-from fontlab_pens.point import AbstractPointPen
 import logging
 import unittest
 
 import pytest
+
+from fontlab_pens.base import (
+    BasePen,
+    decomposeQuadraticSegment,
+    decomposeSuperBezierSegment,
+)
 
 
 class _TestPen(BasePen):
@@ -25,15 +24,14 @@ class _TestPen(BasePen):
         return self._getCurrentPoint()
 
     def _moveTo(self, pt):
-        self._commands.append("%s %s moveto" % (pt[0], pt[1]))
+        self._commands.append(f"{pt[0]!s} {pt[1]!s} moveto")
 
     def _lineTo(self, pt):
-        self._commands.append("%s %s lineto" % (pt[0], pt[1]))
+        self._commands.append(f"{pt[0]!s} {pt[1]!s} lineto")
 
     def _curveToOne(self, bcp1, bcp2, pt):
         self._commands.append(
-            "%s %s %s %s %s %s curveto"
-            % (bcp1[0], bcp1[1], bcp2[0], bcp2[1], pt[0], pt[1])
+            f"{bcp1[0]!s} {bcp1[1]!s} {bcp2[0]!s} {bcp2[1]!s} {pt[0]!s} {pt[1]!s} curveto"
         )
 
     def _closePath(self):

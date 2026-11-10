@@ -86,7 +86,7 @@ class ContourFilterPen(_PassThruComponentsMixin, RecordingPen):
 
     def filterContour(self, contour):
         """Override: modify the `(operator, operands)` list in place or return a new one."""
-        return None
+        return
 
 
 class FilterPointPen(_PassThruComponentsMixin, AbstractPointPen):
@@ -151,7 +151,7 @@ class ContourFilterPointPen(_PassThruComponentsMixin, AbstractPointPen):
 
     def filterContour(self, contour):
         """Override: modify the point list in place or return a new one."""
-        return None
+        return
 
     def addPoint(
         self, pt, segmentType=None, smooth=False, name=None, identifier=None, **kwargs

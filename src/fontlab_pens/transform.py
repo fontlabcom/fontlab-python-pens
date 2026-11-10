@@ -135,14 +135,16 @@ class Transform(NamedTuple):
 
     def toPS(self) -> str:
         """Return the PostScript matrix representation, e.g. `[2 0 0 3 8 15]`."""
-        return "[%s %s %s %s %s %s]" % self
+        return "[{!s} {!s} {!s} {!s} {!s} {!s}]".format(*self)
 
     def __bool__(self) -> bool:
         """True unless this is the identity transformation."""
         return self != Identity
 
     def __repr__(self) -> str:
-        return "<%s [%g %g %g %g %g %g]>" % ((self.__class__.__name__, *self))
+        return "<{!s} [{:g} {:g} {:g} {:g} {:g} {:g}]>".format(
+            self.__class__.__name__, *map(float, self)
+        )
 
 
 Identity = Transform()

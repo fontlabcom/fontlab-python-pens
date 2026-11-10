@@ -1,8 +1,9 @@
 # this_file: tests/ported/test_point_inside.py
 # Ported from fontTools Tests/pens/pointInsidePen_test.py (MIT, (c) Just van Rossum; see NOTICE)
-from io import StringIO
-from fontlab_pens.measure import PointInsidePen
 import unittest
+from io import StringIO
+
+from fontlab_pens.measure import PointInsidePen
 
 
 class PointInsidePenTest(unittest.TestCase):

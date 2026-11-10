@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import sys
 from types import SimpleNamespace
+from typing import ClassVar
 
 import pytest
 
@@ -392,7 +393,7 @@ def test_point_pen_when_smooth_point_then_flag_set_on_contour_node():
 
 def test_point_pen_when_smooth_setter_moves_handles_then_raw_flag_preserves_geometry():
     class AligningNode(flNode):
-        smooth_calls = []
+        smooth_calls: ClassVar[list] = []
 
         def __init__(self, point, nodeType="on"):
             super().__init__(point, nodeType)
@@ -441,10 +442,12 @@ def test_point_pen_when_smooth_setter_moves_handles_then_raw_flag_preserves_geom
 
 def test_segment_pen_context_when_contour_unfinished_then_pen_error():
     layer = flLayer()
-    with pytest.raises(PenError, match="Unfinished contour"):
-        with FlPen(layer, native=fontlab_native()) as pen:
-            pen.moveTo((0, 0))
-            pen.lineTo((10, 0))
+    with (
+        pytest.raises(PenError, match="Unfinished contour"),
+        FlPen(layer, native=fontlab_native()) as pen,
+    ):
+        pen.moveTo((0, 0))
+        pen.lineTo((10, 0))
     assert layer.shapes == [], "an unfinished contour must not commit"
 
 

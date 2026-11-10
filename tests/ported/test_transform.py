@@ -1,16 +1,18 @@
 # this_file: tests/ported/test_transform.py
 # Ported from fontTools Tests/misc/transform_test.py (MIT, (c) Just van Rossum; see NOTICE)
+import math
+
+import pytest
+
 from fontlab_pens.transform import (
-    Transform,
     Identity,
     Offset,
     Scale,
+    Transform,
 )
-import math
-import pytest
 
 
-class TestTransformTest(object):
+class TestTransformTest:
     def test_examples(self):
         t = Transform()
         assert repr(t) == "<Transform [1 0 0 1 0 0]>"
@@ -92,7 +94,7 @@ class TestTransformTest(object):
     def test__hash__(self):
         t = Transform(12, 0, 0, 13, 0, 0)
         d = {t: None}
-        assert t in d.keys()
+        assert t in d
 
     def test__bool__(self):
         assert not bool(Transform())

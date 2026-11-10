@@ -86,13 +86,12 @@ def reversedContour(
             else:
                 secondType, secondPts = lastType, lastPts
 
-            if not outputImpliedClosingLine:
-                # A line after the move becomes the implied closing line, unless
-                # it overlaps the move (then the duplicate point is kept).
-                if secondType == "lineTo" and firstPts != secondPts:
-                    del contour[0]
-                    if contour:
-                        contour[-1] = (lastType, (*tuple(lastPts[:-1]), *secondPts))
+            # A line after the move becomes the implied closing line, unless
+            # it overlaps the move (then the duplicate point is kept).
+            if not outputImpliedClosingLine and secondType == "lineTo" and firstPts != secondPts:
+                del contour[0]
+                if contour:
+                    contour[-1] = (lastType, (*tuple(lastPts[:-1]), *secondPts))
         else:
             # Open path: the last point becomes the first.
             yield firstType, (lastOnCurve,)

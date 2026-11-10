@@ -145,7 +145,7 @@ def lerpRecordings(
     """
     if len(recording1) != len(recording2):
         raise ValueError(
-            "Mismatched lengths: %d and %d" % (len(recording1), len(recording2))
+            f"Mismatched lengths: {len(recording1)} and {len(recording2)}"
         )
     for (op1, args1), (op2, args2) in zip(recording1, recording2, strict=True):
         if op1 != op2:

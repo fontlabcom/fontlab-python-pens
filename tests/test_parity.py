@@ -8,6 +8,9 @@ compares the recordings, bounds, areas or inside-tests.
 
 from __future__ import annotations
 
+from decimal import Decimal
+from fractions import Fraction
+
 import pytest
 from fontTools.pens import areaPen as ft_area
 from fontTools.pens import basePen as ft_base
@@ -519,7 +522,7 @@ def test_point_to_segment_when_move_is_not_first_then_matches_fonttools(case):
             pen.addPoint(pt, kind)
         try:
             pen.endPath()
-        except Exception as error:  # compare the failure, not just success
+        except Exception as error:  # noqa: BLE001 - oracle compares any exception type with fontTools
             return type(error).__name__
         return rec.value
 
@@ -549,8 +552,8 @@ def test_native_pens_when_move_is_not_first_then_pen_error(case, family):
 
 
 def test_fontlab_pen_when_history_enabled_then_geometry_matches_fonttools():
-    from tests import fakes
     from fontlab_pens.fontlab import draw
+    from tests import fakes
 
     layer = fakes.flLayer()
     glyph = fakes.flGlyph([layer])
@@ -566,8 +569,8 @@ def test_fontlab_pen_when_history_enabled_then_geometry_matches_fonttools():
 
 
 def test_fontlab_pen_when_smooth_endpoint_has_noncollinear_handles_then_point_parity():
-    from tests import fakes
     from fontlab_pens.fontlab import draw_points
+    from tests import fakes
 
     expected = ft_rec.RecordingPointPen()
     shape = fakes.flShape()
@@ -656,3 +659,12 @@ def test_fontgate_first_contour_when_reused_then_transformed_points_match_fontto
     assert got.value == expected.value, "first-contour publication changed transformed points"
     shape = target.shapes[0] if kind == "layer" else target
     assert len(shape.contours) == 2, "stored shape did not retain both contours"
+
+
+@pytest.mark.parametrize("value", [Decimal("1.23456789"), Fraction(1, 3)])
+def test_transform_repr_when_decimal_or_fraction_then_matches_fonttools(value):
+    from fontTools.misc.transform import Transform
+
+    assert repr(fl.Transform(value, 0, 0, 1, 0, 0)) == repr(Transform(value, 0, 0, 1, 0, 0)), (
+        "numeric components must retain fontTools float-coercing formatting"
+    )
