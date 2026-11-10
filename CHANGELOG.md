@@ -4,6 +4,11 @@ this_file: CHANGELOG.md
 
 # Changelog
 
+## 2026-11-11 — Issue 250 recorded counts and CI status
+
+- Full suite on current main (`60e6a69`), `uv run --python 3.11 --with-editable . --with fonttools --with pytest --with pytest-cov pytest --cov=fontlab_pens`: 846 passed, 0 failed, 96% coverage (1,903 statements). The 7 failures recorded in the lint-round entry (711 passed, 95.02%) were the same pre-existing subprocess import failures from a non-installed checkout; they are gone with the editable install, not fixed by lint changes. Earlier lint-round pushes were gated by the local pre-push hook only.
+- This repository has no CI: `.github/workflows` does not exist, so no exact-SHA CI evidence is possible. Tracked as an open TODO.
+
 ## 2026-11-11 — Issue 250 test environment qualification
 
 - The seven inherited subprocess failures were environmental: the test interpreter must install this checkout (the recipe's `--with-editable`). Full suite via the workspace recipe: 718 passed. README documents the requirement; no production or test changes.
