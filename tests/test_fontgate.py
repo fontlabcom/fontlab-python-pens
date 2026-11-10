@@ -461,3 +461,19 @@ def test_segment_pen_when_exception_inside_with_then_open_contour_is_not_written
 def test_segment_pen_when_constructed_then_point_pen_is_exposed():
     pen = FontGatePen(fgLayer(), native=N)
     assert isinstance(pen.pointPen, FontGatePointPen), "FontGatePen.pointPen missing (FlPen parity)"
+
+
+def test_segment_pen_when_exception_inside_with_then_open_contour_state_is_cleared():
+    shape = element_with()
+    with pytest.raises(KeyError), FontGatePen(shape, native=N) as pen:
+        pen.moveTo((0, 0))
+        pen.lineTo((100, 0))
+        raise KeyError("stop")
+    assert pen.contour is None, "contour stayed set after the with-block failed"
+
+
+def test_add_component_when_pen_closed_then_component_error_names_glyph_level():
+    for pen in (FontGatePointPen(fgLayer(), native=N), FontGatePen(fgLayer(), native=N)):
+        pen.close()
+        with pytest.raises(PenError, match="glyph-level"):
+            pen.addComponent("A", (1, 0, 0, 1, 0, 0))

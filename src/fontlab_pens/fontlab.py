@@ -239,6 +239,7 @@ class FlPen(SegmentToPointPen):
         if exc_type is None:
             self.close()  # raises PenError on an unfinished contour
         else:
+            self.contour = None
             self.pointPen.__exit__(exc_type, exc, tb)
 
 

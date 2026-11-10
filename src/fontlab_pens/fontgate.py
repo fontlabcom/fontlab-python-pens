@@ -197,6 +197,7 @@ class FontGatePen(SegmentToPointPen):
         if exc_type is None:
             self.close()
         else:
+            self.contour = None
             self.pointPen.__exit__(exc_type, exc, tb)
 
 

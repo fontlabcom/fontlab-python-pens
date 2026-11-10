@@ -608,3 +608,12 @@ def test_point_pen_when_native_omitted_then_fontlab_and_pythonqt_load_lazily(mon
     with FlPointPen(shape) as pen:
         play(DRAWINGS["open_lines"], pen)
     assert len(shape.contours) == 1, "lazy fontlab import did not write"
+
+
+def test_flpen_when_exception_inside_with_then_open_contour_state_is_cleared():
+    layer = flLayer()
+    with pytest.raises(KeyError), FlPen(layer, native=fontlab_native()) as pen:
+        pen.moveTo((0, 0))
+        pen.lineTo((10, 0))
+        raise KeyError("stop")
+    assert pen.contour is None, "contour stayed set after the with-block failed"
