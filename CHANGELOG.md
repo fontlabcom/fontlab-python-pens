@@ -16,6 +16,15 @@ this_file: CHANGELOG.md
 
 ## Unreleased
 
+- `FontGatePointPen` and `FontGatePen` now work as context managers, like
+  `FlPointPen` and `FlPen`. FontGate pens still write each contour at its
+  `endPath`; `close()` and a clean `with` exit raise `PenError` for an
+  unfinished contour, and drawing after close raises `PenError`. If the block
+  raises, the open contour is dropped, finished contours stay written and the
+  exception propagates. `FontGatePen.pointPen` is now set. In FontLab 9.0.9808,
+  `-0.0` coordinates read back from pen writes come from the native
+  `flContour` constructor, not from the pens, so the write path is unchanged.
+
 - Add eight short `Scripts/Pen Basics` examples modelled on the RoboFab pen
   how-tos: drawing, printing, counting, measuring, recording, filtering and
   flattening on the current glyph. All eight ran in FontLab 9 on a test font.

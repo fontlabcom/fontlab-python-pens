@@ -185,7 +185,10 @@ def test_layer_reader_when_matrices_set_then_layer_times_element_is_applied():
 def test_element_reader_when_shear_matrix_then_fonttools_convention_applies():
     shape = element_with((1, 0, 0.5, 1, 0, 0))  # (xx, xy, yx, yy): x' = x + 0.5 y
     contour = fgContour()
-    contour.nodes = [fgNode("Move", fgPoint(0, 10), "", False), fgNode("On", fgPoint(2, 0), "", False)]
+    contour.nodes = [
+        fgNode("Move", fgPoint(0, 10), "", False),
+        fgNode("On", fgPoint(2, 0), "", False),
+    ]
     contour.open = True
     shape.contours.append(contour)
     assert points(shape) == [(5, 10), (2, 0)], "xy/yx swapped in the fgMatrix mapping"
@@ -380,3 +383,81 @@ def test_point_pen_when_native_omitted_then_fontgate_is_imported_lazily(monkeypa
     shape = fgShape()
     play(DRAWINGS["open_lines"], FontGatePointPen(shape))
     assert len(shape.contours) == 1, "lazy fontgate import did not write"
+
+
+def test_point_pen_when_used_as_context_manager_then_contours_are_written():
+    layer = fgLayer()
+    with FontGatePointPen(layer, native=N) as pen:
+        play(DRAWINGS["closed_lines"], pen)
+    assert len(layer.shapes) == 1 and len(layer.shapes[0].contours) == 1, (
+        "with-block lost the write"
+    )
+
+
+def test_point_pen_when_context_exits_inside_open_contour_then_pen_error():
+    layer = fgLayer()
+    with pytest.raises(PenError), FontGatePointPen(layer, native=N) as pen:
+        pen.beginPath()
+        pen.addPoint((0, 0), "line")
+
+
+def test_segment_pen_when_used_as_context_manager_then_contours_are_written():
+    shape = element_with()
+    with FontGatePen(shape, native=N) as pen:
+        pen.moveTo((0, 0))
+        pen.lineTo((100, 0))
+        pen.lineTo((100, 100))
+        pen.closePath()
+    rec = RecordingPen()
+    draw(shape, rec)
+    assert rec.value[0] == ("moveTo", ((0, 0),)), "with-block lost the segment write"
+
+
+def test_segment_pen_when_context_exits_inside_open_contour_then_pen_error():
+    with pytest.raises(PenError), FontGatePen(element_with(), native=N) as pen:
+        pen.moveTo((0, 0))
+        pen.lineTo((10, 0))
+
+
+def test_point_pen_when_exception_inside_with_then_finished_contours_stay_and_error_propagates():
+    layer = fgLayer()
+    with pytest.raises(RuntimeError, match="boom"), FontGatePointPen(layer, native=N) as pen:
+        play(DRAWINGS["closed_lines"], pen)
+        pen.beginPath()
+        pen.addPoint((5, 5), "line")
+        raise RuntimeError("boom")
+    assert len(layer.shapes) == 1, "eager FontGate write was lost on exception"
+    assert len(layer.shapes[0].contours) == 1, "the open contour must not be written"
+    assert pen._points is None, "open contour was not dropped"
+    with pytest.raises(PenError, match="closed"):
+        pen.beginPath()
+
+
+def test_point_pen_when_closed_then_close_again_is_harmless_and_drawing_raises():
+    layer = fgLayer()
+    pen = FontGatePointPen(layer, native=N)
+    play(DRAWINGS["closed_lines"], pen)
+    pen.close()
+    pen.close()
+    with pytest.raises(PenError, match="closed"):
+        pen.beginPath()
+    assert len(layer.shapes[0].contours) == 1, "close changed the written contours"
+
+
+def test_segment_pen_when_exception_inside_with_then_open_contour_is_not_written():
+    shape = element_with()
+    with pytest.raises(KeyError), FontGatePen(shape, native=N) as pen:
+        pen.moveTo((0, 0))
+        pen.lineTo((100, 0))
+        pen.closePath()
+        pen.moveTo((200, 0))
+        pen.lineTo((300, 0))
+        raise KeyError("stop")
+    assert len(shape.contours) == 1, "only the finished contour should be written"
+    with pytest.raises(PenError, match="closed"):
+        pen.pointPen.beginPath()
+
+
+def test_segment_pen_when_constructed_then_point_pen_is_exposed():
+    pen = FontGatePen(fgLayer(), native=N)
+    assert isinstance(pen.pointPen, FontGatePointPen), "FontGatePen.pointPen missing (FlPen parity)"

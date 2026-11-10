@@ -15,7 +15,8 @@ which conflicts with the layer/element rule.
 
 from __future__ import annotations
 
-from typing import Any
+from types import TracebackType
+from typing import Any, Self
 
 from fontlab_pens._native import (
     ComponentError,
@@ -71,6 +72,9 @@ class FontGatePointPen(StagingPointPen):
     test double that behaves like an fgLayer or fgShape.
     """
 
+    # Class default keeps subclasses that skip __init__ (public adapters) working.
+    _closed = False
+
     def __init__(self, target: Any, *, native: Any = None, kind: str | None = None) -> None:
         super().__init__()
         if kind is None or type(target).__name__ in ("fgGlyph", "flGlyph"):
@@ -117,6 +121,44 @@ class FontGatePointPen(StagingPointPen):
         else:
             self._shape.contours.append(contour)
 
+    def beginPath(self, identifier: str | None = None, **kwargs: Any) -> None:
+        if self._closed:
+            raise PenError("This pen is closed; create a new pen to write again")
+        super().beginPath(identifier, **kwargs)
+
+    def close(self) -> None:
+        """End the session; contours were already written at each endPath.
+
+        Raises PenError for an unfinished contour, like `FlPointPen.close`.
+        Closing twice is harmless; drawing after close raises PenError.
+        """
+        if self._closed:
+            return
+        if self._points is not None:
+            raise PenError("Cannot close the pen inside an open contour")
+        self._closed = True
+
+    def __enter__(self) -> Self:
+        return self
+
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc: BaseException | None,
+        tb: TracebackType | None,
+    ) -> None:
+        """Close on success; on an exception drop the open contour and close.
+
+        FontGate writes each contour at its endPath, so contours finished
+        before the exception stay written (unlike `FlPointPen`, which stages
+        until close). The exception is never swallowed.
+        """
+        if exc_type is None:
+            self.close()
+        else:
+            self._points = None
+            self._closed = True
+
     def addComponent(
         self,
         baseGlyphName: str,
@@ -134,7 +176,28 @@ class FontGatePen(SegmentToPointPen):
     """Segment pen over `FontGatePointPen` (same targets and rules)."""
 
     def __init__(self, target: Any, *, native: Any = None, guessSmooth: bool = True) -> None:
-        super().__init__(FontGatePointPen(target, native=native), guessSmooth)
+        self.pointPen = FontGatePointPen(target, native=native)
+        super().__init__(self.pointPen, guessSmooth)
+
+    def close(self) -> None:
+        """Raise PenError for an unfinished contour, like `FlPen.close`."""
+        if self.contour is not None:
+            raise PenError("Unfinished contour: call closePath() or endPath() before close()")
+        self.pointPen.close()
+
+    def __enter__(self) -> Self:
+        return self
+
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc: BaseException | None,
+        tb: TracebackType | None,
+    ) -> None:
+        if exc_type is None:
+            self.close()
+        else:
+            self.pointPen.__exit__(exc_type, exc, tb)
 
 
 def draw_points(
