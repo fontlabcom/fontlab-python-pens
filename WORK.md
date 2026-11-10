@@ -4,6 +4,35 @@ this_file: WORK.md
 
 # Work log
 
+## 2026-11-10 — verified source main delivery
+
+Source commit `59b7c3a593011002ab7bf345973f5a2f168c8809` was pushed through the
+actual installed Pens pre-push hook and read back from upstream main. Its
+parent is `1968103e98470e0e1b6cdb89e0521bae9675d15c`; all eleven reviewed paths
+and the complete qualified source inventory match the delivered tree.
+
+Independent source review and controller repetition completed under the exact
+prospectively adopted differential-lint policy. Both complete broad scans
+still fail and match the same 72 diagnostic records across 19 files, including
+the preserved parity prefix. All findings remain open. The earlier blocked
+and pending observations below remain historical evidence.
+
+The real installed hook ran 716 passing tests on the qualified arm64 Python
+3.11 route and checked both complete changed modules: 186/188 (98.94%) and
+106/107 (99.07%) combined coverage, no exclusions, 0/2 below 80%. The controller
+repeat and hook rerun these same 716 cases; the earlier baseline had 669.
+Postcommit cold imports retain exact source origins, lazy native imports and
+zero runtime dependencies; genuine Git-derived version is
+`1.0.1.dev3+g59b7c3a59`. No source, fixture, export or package configuration was
+changed for delivery.
+
+At readback GitHub reported zero configured workflows, zero runs/checks for
+this exact commit, no active branch rules and an unprotected main branch.
+No CI result is claimed. Native first-contour publication/re-fetch failure
+behavior, subclass semantics, full-font/history/reopen/UI/SDK/lifetime and
+canonical adoption remain unproved. All original acceptance denominators and
+unrelated PLAN/TODO entries remain.
+
 ## 2026-11-10 — bounded differential lint policy; verification pending
 
 The prospectively adopted bounded differential-lint policy changes only the

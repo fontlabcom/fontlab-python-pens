@@ -4,8 +4,8 @@ this_file: TODO.md
 
 # TODO
 
-- [ ] Resolve all 72 inherited broad Ruff diagnostics across 19 files through a separately scoped review, including the intentional exception-oracle finding pending its own disposition; preserve source oracles and configuration. The prospectively adopted bounded differential-lint policy of 2026-11-10 replaces the baseline-first milestone policy only for this exact source cohort; independent verification and controller repetition remain required, and broad lint still fails.
-- [ ] Complete independent current-source review, controller repetition and qualified main delivery; keep native first-contour failure behavior and canonical adoption separate.
+- [ ] Resolve all 72 inherited broad Ruff diagnostics across 19 files through a separately scoped review, including the intentional exception-oracle finding pending its own disposition; preserve source oracles and configuration. The bounded differential-lint policy adopted on 2026-11-10 applies only to the exact reviewed source cohort recorded in CHANGELOG.md; qualify source/settings/diagnostic drift separately. Broad lint still fails.
+- [ ] Qualify native first-contour publication/re-fetch failure behavior and canonical adoption separately; preserve all original native acceptance gates.
 - [ ] Tag `v1.0.0` on `main` and publish the GitHub release.
 - [ ] Refresh the Fontport, Glyport and FontLab App lock files against the `v1.0.0` tag.
 - [ ] In FontLab 9, read every master layer and element through both readers and compare with native node data, including element transforms and components.

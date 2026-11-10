@@ -4,6 +4,21 @@ this_file: CHANGELOG.md
 
 # Changelog
 
+## 2026-11-10 — reviewed Pens source integrated into main
+
+- Integrate [the reviewed source change](https://github.com/fontlabcom/fontlab-python-pens/commit/59b7c3a593011002ab7bf345973f5a2f168c8809)
+  into actual upstream main through the installed Pens pre-push gate.
+- Current source suite: 716 passes, including demos, versus the prior 669.
+  Independent controller and real pre-push runs repeat the same cases.
+  Complete changed-module combined coverage is 186/188 and 106/107, with
+  no exclusions and no module below the 80% gate.
+- Complete the exact inherited-diagnostic comparison, independent source review
+  and controller repetition. Differential lint qualification passed; broad
+  Ruff still fails with all 72 findings across 19 files retained as open debt.
+- Keep native first-contour failure behavior, publication/re-fetch partial-write
+  risk, native subclass behavior and canonical adoption open. No installation,
+  native acceptance, release or publication follows from source integration.
+
 ## 2026-11-10 — prospective bounded lint policy; verification pending
 
 - Record the adopted policy change for the exact seven-file source cohort.

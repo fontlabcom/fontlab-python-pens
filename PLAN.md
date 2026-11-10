@@ -59,13 +59,11 @@ FontGate gains a layer- or element-bound pen.
 - Resolve all 72 inherited broad Ruff diagnostics across 19 files through a
   separately scoped review, including the intentional exception-oracle finding
   pending its own disposition. Preserve source oracles and configuration.
-  The prospectively adopted bounded differential-lint policy of 2026-11-10
-  permits only this unchanged seven-file source cohort to qualify after exact
-  pinned comparison, independent verification and controller repetition; broad
-  lint still fails. This replaces the earlier baseline-first milestone policy.
-- Independently qualify the current source composition, then reconcile and
-  deliver it through the required main/pre-push gates. Native first-contour
-  publication/re-fetch failure behavior and canonical adoption remain unproved.
+  The bounded differential-lint policy adopted on 2026-11-10 applies only to
+  the exact reviewed source cohort recorded in CHANGELOG.md. Qualify any source,
+  settings or diagnostic drift separately; broad lint still fails.
+- Qualify native first-contour publication/re-fetch failure behavior and
+  canonical adoption separately; source tests supply no native failure proof.
 
 - Add this package's `test.sh` to the shared pre-push checks used by its
   consumers.
