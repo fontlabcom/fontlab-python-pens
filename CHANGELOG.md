@@ -4,6 +4,43 @@ this_file: CHANGELOG.md
 
 # Changelog
 
+## Unreleased
+
+- Add eight short `Scripts/Pen Basics` examples modelled on the RoboFab pen
+  how-tos: drawing, printing, counting, measuring, recording, filtering and
+  flattening on the current glyph. All eight ran in FontLab 9 on a test font.
+- Add immutable stroke/cap styles, Proteus variant conversion, QPen application,
+  capability-gated full strokes/expansion, staged multi-layer stroke plans and
+  recording compatibility checks. Unsupported legacy-host fields fail before
+  shape mutation; plans resolve and prepare targets before live commits.
+- Replace detached report demos with current-glyph Recording, Transform and
+  Measurements scripts; add a Stroke Plan demo using QPen-compatible defaults.
+  Drawing scripts enroll history and notify once; Measurements prints to Output.
+- Add fake-host tests for variants, validation, both capability paths, mutation
+  refusal, history/failure handling, compatibility and every demo entry point.
+- Writes `join` as an integer and both caps explicitly when `penParameters`
+  exists, because FontLab misreads join names
+  ([fl#8630](https://github.com/Fontlab/fl/issues/8630)). Applies native
+  parameters before the QPen, so a refusal leaves the shape unchanged.
+  `expand_stroke` raises `PenError` when FontLab reports a failed expansion.
+  Legacy hosts compare scaled values. The Stroke Plan demo refuses a non-master
+  active layer, and the Transform demo counts contours by their closing operation.
+- Update `install.vfpy` to the shared workspace installer.
+- Offline Python 3.11 gate after merging with main: 846 tests pass, 95.64%
+  overall coverage and 100% for the stroke module; broad Ruff is clean. An independent review found two high-severity and
+  three medium-severity issues, all fixed here.
+- FontLab 9 native check (owned in-memory glyph, no document touched):
+  `apply_stroke` turned a NoPen shape into a solid 33-unit round-join stroke with
+  miter limit 5, and refused `contrast` without changing the shape. `apply_plan`
+  copied the open centreline into `Bold` with a 60-unit stroke, skipped the closed
+  contour and left `Regular` unchanged. This build has no `penParameters` or
+  `expandStroke`; those paths are covered only by fakes until Fontlab/Proteus#13
+  ships.
+- FontLab 9 open-font check: `CurrentGlyph()` returns a FontGate glyph, so
+  every script now wraps it with `flGlyph(CurrentGlyph(), CurrentFont())`.
+  All eight Pen Basics scripts ran on Lslash in `Lato3Upr2Ma.vfj`; Bounds and
+  Area draws components as outlines, and Undo restored the glyph.
+
 ## 2026-11-10 — live font editing rule (Issue 250, D44)
 
 - AGENTS.md: agents test and edit the font open in FontLab 9, starting from the Desktop VFJs, and may save them.

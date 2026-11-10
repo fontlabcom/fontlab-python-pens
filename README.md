@@ -93,6 +93,24 @@ How the native pens behave:
 The fast path over the native `fgPen` is not implemented. That pen binds to a
 glyph's work shape, which conflicts with the layer/element rule.
 
+## Strokes
+
+`StrokePlan` appends source open contours to named layers with one notification.
+`StrokeStyle` validates parameters; unsupported fields raise `UnsupportedStroke` before mutation.
+
+```python
+from fontlab_pens import StrokePlan, StrokeStyle, apply_plan
+source = glyph.activeLayer.name
+styles = {source: StrokeStyle(thickness=20)}
+plan = StrokePlan(styles)
+counts = apply_plan(glyph, plan, source=source)
+# counts maps each target layer name to its new open-contour count.
+```
+
+Full strokes and expansion need upstream [`penParameters` / `expandStroke`](https://github.com/Fontlab/fl/issues/8626). `apply_stroke` writes the join as an integer, because FontLab misreads join names ([fl#8630](https://github.com/Fontlab/fl/issues/8630)). It also writes both caps explicitly, applies the native parameters before the QPen so a refusal leaves the shape unchanged, and `expand_stroke` raises `PenError` when FontLab reports a failed expansion.
+Variants retain rotation; [native persistence](https://github.com/Fontlab/fl/issues/8627) remains unresolved.
+Percentage rounding loses finer precision. Live Undo/Redo and save/reopen acceptance remain open.
+
 ## FontLab notes
 
 - A native commit can leave partial geometry if a later write or notification
@@ -177,4 +195,4 @@ the tests, and coverage must stay at 80% or above.
 
 Apache-2.0. Ported fontTools code stays under its MIT notice; see `NOTICE`.
 
-[Scripts demos](Scripts/README.md) use detached sample data, with host-free `build_report()` results and optional FontLab report windows through Fly/App. No open font is required.
+[Scripts demos](Scripts/README.md) edit the open glyph with history; Measurements prints to Output.

@@ -2,38 +2,58 @@
 # SPDX-License-Identifier: Apache-2.0
 """Outline Measurements Demo.
 
-What: Measure a detached rectangle with bounds and signed-area pens.
-Use: Run from FontLab's Scripts menu to open a read-only snapshot report.
-Safety: Uses detached sample data only; no font, history, selection, preferences,
-Output or clipboard is changed. No open font is required.
+What: Measure bounds and signed area of the current glyph's active layer.
+Use: Open a glyph in a Glyph window, then run from Scripts.
+Safety: Reads the active layer and prints to the Output panel; no font mutation.
 """
 
+from typing import Any
 
-def build_report() -> dict:
-    """Return real package results without importing a native host or opening UI."""
+
+def measurements_demo(layer: Any, *, native: Any = None) -> dict:
+    """Measure visible outlines without editing.
+
+    Bounds cover every contour. Signed area covers closed contours only, because
+    open contours (such as stroke centrelines) enclose no area; they are counted.
+    """
     from fontlab_pens import AreaPen, BoundsPen, RecordingPen
+    from fontlab_pens.fontlab import draw
 
     outline = RecordingPen()
-    outline.moveTo((0, 0))
-    outline.lineTo((200, 0))
-    outline.lineTo((200, 100))
-    outline.lineTo((0, 100))
-    outline.closePath()
+    draw(layer, outline, components=False)
     bounds = BoundsPen(None)
-    area = AreaPen()
     outline.replay(bounds)
-    outline.replay(area)
-    return {"bounds": bounds.bounds, "signed_area": area.value}
+    area = AreaPen()
+    contour: list = []
+    open_contours = 0
+    for operator, operands in outline.value:
+        contour.append((operator, operands))
+        if operator == "endPath":
+            open_contours += 1
+            contour = []
+        elif operator == "closePath":
+            for item in contour:
+                getattr(area, item[0])(*item[1])
+            contour = []
+    return {"bounds": bounds.bounds, "signed_area": area.value, "open_contours": open_contours}
 
 
 def main() -> None:
-    """Show the results using Fly and App's existing nonmodal report window."""
-    from fly.ap.proof.reports.model import show_report
+    """Print the open layer's measurements to FontLab's Output panel."""
+    import fontlab
 
-    show_report(
-        build_report(),
-        title="Outline Measurements Demo",
-        key="fontlab-python-pens-outline-measurements-demo",
+    current = fontlab.CurrentGlyph()
+    if current is None:
+        raise RuntimeError("Open a glyph in a Glyph window first")
+    # CurrentGlyph() gives a FontGate glyph; flGlyph makes it editable.
+    glyph = fontlab.flGlyph(current, fontlab.CurrentFont())
+    layer = glyph.activeLayer
+    if layer is None:
+        raise RuntimeError("The current glyph has no active layer")
+    result = measurements_demo(layer)
+    print(
+        f"Outline Measurements Demo: bounds={result['bounds']}, "
+        f"signed area={result['signed_area']}, open contours={result['open_contours']}"
     )
 
 
