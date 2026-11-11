@@ -7,8 +7,6 @@ this_file: CHANGELOG.md
 ## 2026-11-11 — Segment pens clear the open contour on a failed with-block (Issue 250)
 
 - M-2: `FontGatePen` and `FlPen` set `contour = None` when a `with` block exits
-  on an exception, so a later `close()` no longer raises "Unfinished contour" for the
-  abandoned contour. Tests: `test_segment_pen_when_exception_inside_with_then_open_contour_state_is_cleared`
   on an exception, so a later `close()` on the reused pen no longer raises
   "Unfinished contour". Tests: `test_segment_pen_when_exception_inside_with_then_open_contour_state_is_cleared`
   and `test_flpen_when_exception_inside_with_then_open_contour_state_is_cleared`.
@@ -18,6 +16,7 @@ this_file: CHANGELOG.md
 
 ## 2026-11-11 — CI workflow (Issue 250)
 
+- First hosted run of `ci.yml` is green: run 43031352878 on `292dbf5`.
 - Add `.github/workflows/ci.yml` (ubuntu-latest, Python 3.11, runs `./test.sh`: tests plus the 80% coverage gate) on push and pull request to main. macos-14 was rejected by the hosted runner pool ("macos-14-arm64-us-default is not supported"), so the job runs on ubuntu-latest. First hosted run on 3bb17ae: success.
 
 ## 2026-11-11 — with-block fix gate counts (Issue 250)
