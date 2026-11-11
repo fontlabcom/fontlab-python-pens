@@ -6,7 +6,6 @@ this_file: TODO.md
 
 - [ ] Publish the GitHub release for tag `v1.0.2` (292dbf5e, with-block segment-pen fix), or record why it is a tag-only point release. Next check: the 2026-11-11 with-block CHANGELOG sections (b6b7666, 292dbf5) and the release-notes convention of the v1.0.0/v1.0.1 releases (`gh release view v1.0.1`).
 - [ ] Qualify native first-contour publication/re-fetch failure behavior and canonical adoption separately; preserve all original native acceptance gates.
-- [ ] Refresh the Fontport, Glyport and FontLab App lock files against the `v1.0.0` tag.
 - [ ] In FontLab 9, read every master layer and element through both readers and compare with native node data, including element transforms and components.
 - [ ] In FontLab 9, write through `FlPointPen` and `FontGatePointPen` into every master layer, as a new element and appended to an existing element, and read back.
 - [ ] In FontLab 9, check Undo and Redo after notified writes across several glyphs, and the effect of notification on unrelated glyphs.

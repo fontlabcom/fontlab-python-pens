@@ -28,8 +28,10 @@ Version 1.0.0 is the first release. This plan lists what comes next.
 
 - Tag `v1.0.0` on `main` and publish the GitHub release.
 - Consumers (Fontport, Glyport, the FontLab App package) declare
-  `fontlab-python-pens>=1.0.0`. Refresh their lock files against the tag
-  once it exists.
+  `fontlab-python-pens>=1.0.0`. Owner decision (2026-11-11): they keep the
+  path-editable `[tool.uv.sources]` entry for pens, so their lock files record
+  an editable path and pin no pens version; there is no lock refresh against
+  the tag. Each consumer's gate runs this suite instead.
 
 ### 2. Native checks inside FontLab
 

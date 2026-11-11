@@ -10,6 +10,11 @@ this_file: CHANGELOG.md
 - `gh release view v1.0.0`: published 2026-11-09T03:27:46Z, not a draft. `gh release view v1.0.1`: published 2026-11-10T21:47:05Z, not a draft, marked Latest.
 - Closes the TODO row "Tag `v1.0.0` on `main` and publish the GitHub release". The later tag v1.0.2 (292dbf5e) exists on `main` but has no GitHub release.
 
+## 2026-11-11 — Consumer locks stay path-editable (owner decision, Issue 250)
+
+- Owner decision (2026-11-11): Fontport, Glyport and the FontLab App keep the path-editable `[tool.uv.sources]` entry for `fontlab-python-pens`, with no version pin and no git tag reference. Their lock files therefore record an editable path and are not refreshed against `v1.0.0`; the TODO row for that refresh is removed and PLAN item 1 records the decision.
+- Fontport and Glyport gates now run this suite (80% coverage floor) after their own suite; the wiring is tracked in their repositories.
+
 ## 2026-11-11 — install.vfpy synced to the App WP11A installer (Issue 250)
 
 - `install.vfpy` is now byte-identical to fontlab-fontlabapp 79f7485 (WP11A): it records file hashes in `install.log`, removes only superseded files whose current hash matches the logged hash, keeps edited ones and reports them, refuses entries with `..` or outside the data folder and any unowned entry in the old RECORD, and supports `FONTLAB_INSTALL_DRY_RUN`. Verify with `tools/check_install_copies.py` in the App repository. The native reinstall check is owner-run and stays open in the App TODO.
