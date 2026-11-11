@@ -9,6 +9,8 @@ this_file: CHANGELOG.md
 - M-2: `FontGatePen` and `FlPen` set `contour = None` when a `with` block exits
   on an exception, so a later `close()` no longer raises "Unfinished contour" for the
   abandoned contour. Tests: `test_segment_pen_when_exception_inside_with_then_open_contour_state_is_cleared`
+  on an exception, so a later `close()` on the reused pen no longer raises
+  "Unfinished contour". Tests: `test_segment_pen_when_exception_inside_with_then_open_contour_state_is_cleared`
   and `test_flpen_when_exception_inside_with_then_open_contour_state_is_cleared`.
 - M-1 was stale: `FontGatePointPen`/`FontGatePen.addComponent` always raise
   `ComponentError` (glyph-level components), also after `close()`; pinned by
@@ -16,7 +18,7 @@ this_file: CHANGELOG.md
 
 ## 2026-11-11 — CI workflow (Issue 250)
 
-- Add `.github/workflows/ci.yml` (ubuntu-latest, Python 3.11, runs `./test.sh`: tests plus the 80% coverage gate) on push and pull request to main. macos-14 was rejected by the hosted runner pool ("macos-14-arm64-us-default is not supported"), so the job runs on ubuntu-latest. First passing hosted run is pending (see TODO).
+- Add `.github/workflows/ci.yml` (ubuntu-latest, Python 3.11, runs `./test.sh`: tests plus the 80% coverage gate) on push and pull request to main. macos-14 was rejected by the hosted runner pool ("macos-14-arm64-us-default is not supported"), so the job runs on ubuntu-latest. First hosted run on 3bb17ae: success.
 
 ## 2026-11-11 — with-block fix gate counts (Issue 250)
 
