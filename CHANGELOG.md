@@ -4,11 +4,11 @@ this_file: CHANGELOG.md
 
 # Changelog
 
-## 2026-11-10 — Segment pens clear the open contour on a failed with-block (Issue 250)
+## 2026-11-11 — Segment pens clear the open contour on a failed with-block (Issue 250)
 
 - M-2: `FontGatePen` and `FlPen` set `contour = None` when a `with` block exits
-  on an exception, so a reused pen no longer rejects `addComponent` for a stale
-  contour. Tests: `test_segment_pen_when_exception_inside_with_then_open_contour_state_is_cleared`
+  on an exception, so a later `close()` no longer raises "Unfinished contour" for the
+  abandoned contour. Tests: `test_segment_pen_when_exception_inside_with_then_open_contour_state_is_cleared`
   and `test_flpen_when_exception_inside_with_then_open_contour_state_is_cleared`.
 - M-1 was stale: `FontGatePointPen`/`FontGatePen.addComponent` always raise
   `ComponentError` (glyph-level components), also after `close()`; pinned by
