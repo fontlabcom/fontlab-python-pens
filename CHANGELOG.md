@@ -4,6 +4,12 @@ this_file: CHANGELOG.md
 
 # Changelog
 
+## 2026-11-11 — v1.0.0 and v1.0.1 tags and releases verified (Issue 250)
+
+- `git ls-remote origin refs/tags/v1.0.0` gives db6b4557 ("docs: release documents for 1.0.0"), and `refs/tags/v1.0.1` gives 6dbb88de. Both commits are ancestors of `origin/main`.
+- `gh release view v1.0.0`: published 2026-11-09T03:27:46Z, not a draft. `gh release view v1.0.1`: published 2026-11-10T21:47:05Z, not a draft, marked Latest.
+- Closes the TODO row "Tag `v1.0.0` on `main` and publish the GitHub release". The later tag v1.0.2 (292dbf5e) exists on `main` but has no GitHub release.
+
 ## 2026-11-11 — install.vfpy synced to the App WP11A installer (Issue 250)
 
 - `install.vfpy` is now byte-identical to fontlab-fontlabapp 79f7485 (WP11A): it records file hashes in `install.log`, removes only superseded files whose current hash matches the logged hash, keeps edited ones and reports them, refuses entries with `..` or outside the data folder and any unowned entry in the old RECORD, and supports `FONTLAB_INSTALL_DRY_RUN`. Verify with `tools/check_install_copies.py` in the App repository. The native reinstall check is owner-run and stays open in the App TODO.
