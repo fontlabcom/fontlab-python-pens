@@ -31,7 +31,7 @@ Version 1.0.0 is the first release. This plan lists what comes next.
   `fontlab-python-pens>=1.0.0`. Owner decision (2026-11-11): they keep the
   path-editable `[tool.uv.sources]` entry for pens, so their lock files record
   an editable path and pin no pens version; there is no lock refresh against
-  the tag. Each consumer's gate runs this suite instead.
+  the tag. Once the reviewed `repos.sh` change lands, the Fontport and Glyport gates run this suite instead (tracked in their TODO); wiring it into the FontLab App gate is tracked below in Next, item 1.
 
 ### 2. Native checks inside FontLab
 
