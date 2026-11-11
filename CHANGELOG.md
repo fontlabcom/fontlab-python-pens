@@ -14,7 +14,7 @@ this_file: CHANGELOG.md
 
 - Owner decision (2026-11-11): Fontport, Glyport and the FontLab App keep the path-editable `[tool.uv.sources]` entry for `fontlab-python-pens`, with no version pin and no git tag reference. Their lock files therefore record an editable path and are not refreshed against `v1.0.0`; the TODO row for that refresh is removed and PLAN item 1 records the decision.
 - Fontport and Glyport gates will run this suite (80% coverage floor) after their own suite once the reviewed `repos.sh` change and their wiring commits land; that is tracked in their TODO. The FontLab App gate is not wired yet (TODO row).
-- Decision source: owner, recorded in the Issue 250 team thread on 2026-11-11 and relayed by the team lead.
+- Decision source: owner, owner answer to team-lead, Issue 250 controller session, 2026-11-11.
 
 ## 2026-11-11 — install.vfpy synced to the App WP11A installer (Issue 250)
 
