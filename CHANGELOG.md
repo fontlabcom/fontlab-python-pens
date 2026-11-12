@@ -4,6 +4,12 @@ this_file: CHANGELOG.md
 
 # Changelog
 
+## 2026-11-12 — install.vfpy matches the App's installer, with Extensions bundle support (Issue 254)
+
+- `install.vfpy` is now byte-identical to `fontlab-fontlabapp/install.vfpy` (pushed in App `5cac0d6`).
+  The new code places `[tool.fontlab-install] extensions` bundles; this repository declares none, so
+  installs behave as before. `tools/check_install_copies.py` in the App compares the copies by sha256.
+
 ## 2026-11-12 — v1.0.2 recorded as a tag-only release (Issue 250)
 
 - Tag `v1.0.2` (292dbf5e, with-block segment-pen fix) stays tag-only: it has no GitHub release and none will be published. The published release [v1.0.3](https://github.com/fontlabcom/fontlab-python-pens/releases/tag/v1.0.3) (89611c47) supersedes it and contains its fix. Closes the TODO row "Publish the GitHub release for tag `v1.0.2` … or record why it is a tag-only point release".
