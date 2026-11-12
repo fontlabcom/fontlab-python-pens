@@ -4,6 +4,11 @@ this_file: CHANGELOG.md
 
 # Changelog
 
+## 2026-11-11 — Pens suite in the Fontport and Glyport pre-push gates (Issue 250)
+
+- The workspace gate recipe (`.metaswarm/repos.sh`) now runs this package's suite (80% coverage floor) after the Fontport and Glyport suites. Real pre-push gate runs on the merged trees: Fontport 5110 passed then pens 857 passed at 95.76% (pushed 54ffe80), Glyport 7434 passed, 7 skipped, then pens 857 passed at 95.76% (pushed 87f39f4).
+- App is not wired yet, so the two gate-wiring TODO rows are narrowed to the App case rather than closed.
+
 ## 2026-11-11 — v1.0.0 and v1.0.1 tags and releases verified (Issue 250)
 
 - `git ls-remote origin refs/tags/v1.0.0` gives db6b4557 ("docs: release documents for 1.0.0"), and `refs/tags/v1.0.1` gives 6dbb88de. Both commits are ancestors of `origin/main`.
