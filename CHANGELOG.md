@@ -4,6 +4,10 @@ this_file: CHANGELOG.md
 
 # Changelog
 
+## 2026-11-12 — v1.0.2 recorded as a tag-only release (Issue 250)
+
+- Tag `v1.0.2` (292dbf5e, with-block segment-pen fix) stays tag-only: it has no GitHub release and none will be published. The published release [v1.0.3](https://github.com/fontlabcom/fontlab-python-pens/releases/tag/v1.0.3) (89611c47) supersedes it and contains its fix. Closes the TODO row "Publish the GitHub release for tag `v1.0.2` … or record why it is a tag-only point release".
+
 ## 2026-11-12 — Pens suite in the App pre-push gate (Issue 250)
 
 - `.metaswarm/repos.sh` (sha256 `8e6a4cb23c34bd96157b76d436340d2047dcf2d30457665037baf22db03dd9e3`)
