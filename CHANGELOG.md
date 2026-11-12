@@ -4,6 +4,13 @@ this_file: CHANGELOG.md
 
 # Changelog
 
+## 2026-11-12 — Installer: unreachable blocked skip removed (Issue 250, review M-10)
+
+- `install.vfpy` synced byte-identically from App (sha256 `2eb71691…` → `bbe8104e…`):
+  `remove_old_dist` drops the `path.name in blocked` skip. Every blocked top-level
+  name is also held, and a non-empty held refuses before anything is deleted, so the
+  skip never ran. App's `tests/test_install_superseded.py` pins that invariant.
+
 ## 2026-11-11 — Pens suite in the Fontport and Glyport pre-push gates (Issue 250)
 
 - The workspace gate recipe (`.metaswarm/repos.sh`) now runs this package's suite (80% coverage floor) after the Fontport and Glyport suites. Real pre-push gate runs on the merged trees: Fontport 5110 passed then pens 857 passed at 95.76% (pushed 54ffe80), Glyport 7434 passed, 7 skipped, then pens 857 passed at 95.76% (pushed 87f39f4).
