@@ -7,7 +7,7 @@ this_file: PLAN.md
 fontlab-python-pens is a dependency-free package (`fontlab_pens`) that
 implements the fontTools Pen and PointPen protocols and reads and writes
 FontLab outlines through the native `fontgate` and `fontlab` bindings.
-Version 1.0.0 is the first release. This plan lists what comes next.
+Releases v1.0.0, v1.0.1 and v1.0.3 are published (v1.0.2 is tag-only). This plan lists what is still open.
 
 ## Constraints that stay
 
@@ -26,7 +26,7 @@ Version 1.0.0 is the first release. This plan lists what comes next.
 
 ### 1. Release and consumers
 
-- Tag `v1.0.0` on `main` and publish the GitHub release.
+- Releases are done (see CHANGELOG, 2026-11-11 and 2026-11-12).
 - Consumers (Fontport, Glyport, the FontLab App package) declare
   `fontlab-python-pens>=1.0.0`. Owner decision (2026-11-11): they keep the
   path-editable `[tool.uv.sources]` entry for pens, so their lock files record

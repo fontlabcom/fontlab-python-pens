@@ -18,7 +18,7 @@ FontGate and `fontlab` layers import the native modules lazily, so
 The package is not on PyPI. Install a tagged release from GitHub:
 
 ```sh
-uv pip install "fontlab-python-pens @ git+https://github.com/fontlabcom/fontlab-python-pens@v1.0.0"
+uv pip install "fontlab-python-pens @ git+https://github.com/fontlabcom/fontlab-python-pens@v1.0.3"
 ```
 
 To use it inside FontLab 9, open `install.vfpy` from a checkout in FontLab

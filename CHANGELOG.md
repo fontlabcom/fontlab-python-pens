@@ -4,6 +4,12 @@ this_file: CHANGELOG.md
 
 # Changelog
 
+## 2026-11-12 — D46 documentation pass (Issue 250)
+
+- Landed this session, all on `main`: `install.vfpy` synced with the App installer for Extensions bundles (`0bc7884`, App `5cac0d6`, Issue 254); M-10 install sync without the unreachable blocked skip (`668de30`); App gate pens wiring closed in TODO (`89611c4`); `v1.0.2` recorded as tag-only, superseded by published `v1.0.3` (`a2efd35`).
+- README install example now names `v1.0.3`. PLAN no longer lists the `v1.0.0` tag as future work. TODO adds the Issue 254 native check. WORK.md is a short status note; its previous bytes are archived on the owner's data volume (sha256 `07f3661f972b5f4dede921f0a10e3b78e3abc2d331e7c4190e00f16171e8327a`, 3,284 bytes).
+- No code changed.
+
 ## 2026-11-12 — install.vfpy matches the App's installer, with Extensions bundle support (Issue 254)
 
 - `install.vfpy` is now byte-identical to `fontlab-fontlabapp/install.vfpy` (pushed in App `5cac0d6`).
