@@ -4,6 +4,14 @@ this_file: CHANGELOG.md
 
 # Changelog
 
+## 2026-11-12 — Pens suite in the App pre-push gate (Issue 250)
+
+- `.metaswarm/repos.sh` (sha256 `8e6a4cb23c34bd96157b76d436340d2047dcf2d30457665037baf22db03dd9e3`)
+  now runs `run_pens_suite` after the App suite, as for Fontport and Glyport; an App
+  failure returns before the pens suite. Real App gate: 15203 passed, 22 skipped,
+  then pens 857 passed at 95.76% (80% floor), Suite exit 0. Closes the two App
+  gate-wiring TODO rows.
+
 ## 2026-11-12 — Installer: unreachable blocked skip removed (Issue 250, review M-10)
 
 - `install.vfpy` synced byte-identically from App (sha256 `2eb71691…` → `bbe8104e…`):
