@@ -2,29 +2,16 @@
 this_file: WORK.md
 ---
 
-# Work
+# Current round — Issue 255 post-release reconciliation
 
-## Issue 255 — Fly examples migration (2026-11-13)
+[fontlab-python-pens v1.0.5](https://github.com/fontlabcom/fontlab-python-pens/releases/tag/v1.0.5) is qualified at `e80672ff2d51e2fec77f4b73f0c7e01d93b9a37f`.
 
-- Migrate all 12 Scripts and the three runnable README blocks to `fly.pens`;
-  Scripts retain their `fontlab` local binding through `from fly import fl as fontlab`.
-- Document separate Fly installation for examples; leave library source, runtime
-  dependencies, lock and shared installer unchanged to avoid a Fly/Pens cycle.
-- Route host-free script tests through a Fly namespace double with canonical
-  real Pens module identity. Retain all geometry, history and failure assertions;
-  add 12 structural import checks.
-- Baseline from unchanged HEAD: 857 pass; final: 869 pass. Both arm64 Python 3.11,
-  full `./test.sh`, 95.76% coverage (80% gate unchanged). Ruff 0.16.7 passes.
-  Initial unqualified runs selected x86_64; these counts were repeated on arm64.
-- Real reviewed Fly source resolves `fly.pens` and its native-reader child to
-  canonical modules; the README recording example runs. Native `fly.fl` identity
-  was checked against a fake provider, not the installed host.
-- Task-owned graph baseline/impact and change analysis completed; dynamic runpy
-  callers were cross-checked in current source. No script digest manifests exist.
-- Independent review, combined gates, integration/delivery and native acceptance
-  remain open. The existing host fence remains in force.
+All 12 Scripts and runnable README examples use Fly while the Pens library stays dependency-free.
 
-Previous WORK bytes are archived privately for this round. Existing native
-and adoption tasks remain in TODO.md and PLAN.md.
+869 source tests and all 12 complete changed-script coverage gates pass. Independent artifact review, genuine wheel/sdist ordinary installation and actual release downloads are qualified; real Pens child identity and exports are preserved.
 
-Controller gates:869 tests passed on Python3.11.18 arm64 with Scripts branch coverage added; combined total94.64%, every complete changed script>=80% (minimum84.21%). Ruff0.16.7 passed. System Ruff0.14.10 reports existing E731 in unchanged tests/fakes.py:27; no source regression or automatic adjacent fix applied. Independent review requested explicit example prerequisite Fly>=1.3.0; both setup descriptions now state it. Native and installed-script acceptance remain open.
+The source, artifact, ordinary external-install, release and download gates above are verified. This round reconciles their progress records after release; it changes no runtime source, installer, dependency declaration, generated documentation or immutable release asset. Consumer setup still requires separately installing matching Fly >=1.3 in the same interpreter. Provider source installers do not automatically supply or enforce this prerequisite; no reverse mandatory Fly dependency is claimed.
+
+Remaining: After explicit D43 recovery and admission, qualify all 12 Scripts against the released installed Fly/Pens cohort in FontLab, retaining native geometry, complete history/Undo/Redo and saved/reopened font evidence.
+
+D43 native acceptance remains held and unproved. Issue 123 remains paused; existing private Pages holds and every unrelated acceptance task remain in PLAN/TODO. Prior WORK bytes are retained exactly in the private external delivery ledger, SHA256 `6bf9b4b7de36fde3ef47e611eafa73258a7d94762a320406bcde28cfba73f744`.

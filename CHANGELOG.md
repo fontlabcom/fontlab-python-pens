@@ -2,6 +2,13 @@
 this_file: CHANGELOG.md
 ---
 
+## 2026-11-13 — Issue 255 verified release qualification
+
+- [fontlab-python-pens v1.0.5](https://github.com/fontlabcom/fontlab-python-pens/releases/tag/v1.0.5) is released at `e80672ff2d51e2fec77f4b73f0c7e01d93b9a37f`. Reviewed main/tag delivery, applicable CI and actual downloads match the qualified artifacts.
+- All 12 Scripts and runnable README examples use Fly while the Pens library stays dependency-free.
+- 869 source tests and all 12 complete changed-script coverage gates pass. Independent artifact review, genuine wheel/sdist ordinary installation and actual release downloads are qualified; real Pens child identity and exports are preserved.
+- Ordinary external installation is qualified; installed FontLab/native acceptance remains unproved under D43. Consumer setup still requires separately installing matching Fly >=1.3 in the same interpreter. Provider source installers do not automatically supply or enforce this prerequisite; no reverse mandatory Fly dependency is claimed.
+
 # Changelog
 
 
