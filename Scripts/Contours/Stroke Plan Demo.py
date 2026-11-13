@@ -15,7 +15,7 @@ from typing import Any
 
 def stroke_plan_demo(glyph: Any, layer: Any, *, native: Any = None) -> dict[str, int]:
     """Stroke the active layer's centerline into every other master layer."""
-    from fontlab_pens import Join, StrokePlan, StrokeStyle, apply_plan
+    from fly.pens import Join, StrokePlan, StrokeStyle, apply_plan
 
     if not layer.isMasterLayer:
         raise ValueError(
@@ -37,7 +37,7 @@ def stroke_plan_demo(glyph: Any, layer: Any, *, native: Any = None) -> dict[str,
 
 def main() -> None:
     """Apply strokes to the open glyph and print the host's remaining limitations."""
-    import fontlab
+    from fly import fl as fontlab
 
     current = fontlab.CurrentGlyph()
     if current is None:

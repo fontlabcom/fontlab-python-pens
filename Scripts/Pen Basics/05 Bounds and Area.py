@@ -8,10 +8,9 @@ their outlines, not as references, so BoundsPen needs no glyph set and the
 whole glyph is measured.
 """
 
-import fontlab
-
-from fontlab_pens import AreaPen, BoundsPen
-from fontlab_pens.fontlab import draw
+from fly import fl as fontlab
+from fly.pens import AreaPen, BoundsPen
+from fly.pens.fontlab import draw
 
 # CurrentGlyph() gives a FontGate glyph; flGlyph gives the live glyph the pens read.
 glyph = fontlab.flGlyph(fontlab.CurrentGlyph(), fontlab.CurrentFont())

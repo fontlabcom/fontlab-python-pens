@@ -30,8 +30,13 @@ Python 3.11 or later. Runtime dependencies: none.
 
 ## Use
 
+The examples and Scripts require FontLab Fly (`fontlab-fly>=1.3.0`) with its `fly.pens`
+alias for this package and `fly.fl` for the native FontLab API. Install the
+Fly 1.3.0 or later as well; older Fly releases without `fly.pens` cannot run
+these examples. The Pens library itself retains zero runtime dependencies.
+
 ```python
-from fontlab_pens import BoundsPen, RecordingPen, TransformPen
+from fly.pens import BoundsPen, RecordingPen, TransformPen
 
 rec = RecordingPen()
 pen = TransformPen(rec, (2, 0, 0, 2, 10, 0))
@@ -54,8 +59,8 @@ native pens and readers take a layer or an element. If you pass a glyph, they
 raise `TypeError`. To pick a layer explicitly, use `layer_of(glyph, master)`.
 
 ```python
-from fontlab_pens import FlPointPen, RecordingPointPen, layer_of
-from fontlab_pens.fontlab import draw_points
+from fly.pens import FlPointPen, RecordingPointPen, layer_of
+from fly.pens.fontlab import draw_points
 
 layer = layer_of(glyph, "Regular")         # an flGlyph's flLayer
 with FlPointPen(layer, notify="Draw") as pen:
@@ -99,7 +104,7 @@ glyph's work shape, which conflicts with the layer/element rule.
 `StrokeStyle` validates parameters; unsupported fields raise `UnsupportedStroke` before mutation.
 
 ```python
-from fontlab_pens import StrokePlan, StrokeStyle, apply_plan
+from fly.pens import StrokePlan, StrokeStyle, apply_plan
 source = glyph.activeLayer.name
 styles = {source: StrokeStyle(thickness=20)}
 plan = StrokePlan(styles)
@@ -133,7 +138,8 @@ Percentage rounding loses finer precision. Live Undo/Redo and save/reopen accept
   preceding off-curves reads back as `line`. The geometry is identical; FontLab
   stores both as "on".
 - To move a FontGate-pen result into the live font, wrap the element:
-  `layer.addShape(fontlab.flShape(fg_shape))`. `flGlyph.fgGlyph` is a detached copy,
+  `layer.addShape(fly.fl.flShape(fg_shape))` (after `import fly.fl`).
+  `flGlyph.fgGlyph` is a detached copy,
   and `flLayer.assignFgLayer` currently raises `IndexError: Unexpected SeqBase<T> length.`
 
 ## What is included

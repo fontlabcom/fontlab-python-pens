@@ -6,9 +6,8 @@ A pen does not have to draw anything. This one just prints what it is told,
 which shows exactly how an outline "talks" to a pen.
 """
 
-import fontlab
-
-from fontlab_pens.fontlab import draw
+from fly import fl as fontlab
+from fly.pens.fontlab import draw
 
 
 class PrintPen:

@@ -7,10 +7,9 @@ through. This one adds an offset to every point before handing it to FlPen.
 FilterPen passes every call on unchanged unless you override it.
 """
 
-import fontlab
-
-from fontlab_pens import FilterPen, FlPen
-from fontlab_pens.fontlab import draw
+from fly import fl as fontlab
+from fly.pens import FilterPen, FlPen
+from fly.pens.fontlab import draw
 
 DX, DY = 100, 100
 

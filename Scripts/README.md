@@ -24,9 +24,11 @@ master; 02–05 only read. They have no safety checks, so open a glyph first.
 ## Package demos
 
 Open a glyph in a FontLab Glyph window, select its active layer, then run a demo
-from FontLab's Scripts menu. Install `fontlab_pens` and copy the functional
-subfolders here into FontLab's Scripts folder (or use `install.vfpy`). No extra
-runtime packages are needed. The demos are also included in the source distribution.
+from FontLab's Scripts menu. Install this package and the current `fontlab-fly>=1.3.0`
+package, including its `fly.pens` alias, into the same FontLab environment.
+Copy the functional subfolders here into FontLab's Scripts folder (or use
+`install.vfpy` for Pens; install Fly separately). The Scripts use `fly.pens`
+and `fly.fl`; the Pens library itself has no runtime dependencies. The demos are also included in the source distribution.
 
 - [Recording Pen Demo](Contours/Recording%20Pen%20Demo.py) appends a triangle.
 - [Transform Pen Demo](Contours/Transform%20Pen%20Demo.py) appends a half-size copy
@@ -51,4 +53,4 @@ partial changes may remain. Live FontLab acceptance and Undo verification remain
 For host-free tests, load a script with `runpy.run_path(path)` and call its
 `recording_demo(layer)`, `transform_demo(layer)`, `measurements_demo(layer)`, or
 `stroke_plan_demo(glyph, layer)` function with fake targets and `native=...`.
-`main()` wraps `fontlab.CurrentGlyph()` (a FontGate glyph) in `fontlab.flGlyph(..., fontlab.CurrentFont())` so the pens edit the live FontLab glyph.
+`main()` wraps `fly.fl.CurrentGlyph()` (a FontGate glyph) in `fly.fl.flGlyph(..., fly.fl.CurrentFont())` so the pens edit the live FontLab glyph.

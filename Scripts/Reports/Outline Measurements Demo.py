@@ -16,8 +16,8 @@ def measurements_demo(layer: Any, *, native: Any = None) -> dict:
     Bounds cover every contour. Signed area covers closed contours only, because
     open contours (such as stroke centrelines) enclose no area; they are counted.
     """
-    from fontlab_pens import AreaPen, BoundsPen, RecordingPen
-    from fontlab_pens.fontlab import draw
+    from fly.pens import AreaPen, BoundsPen, RecordingPen
+    from fly.pens.fontlab import draw
 
     outline = RecordingPen()
     draw(layer, outline, components=False)
@@ -40,7 +40,7 @@ def measurements_demo(layer: Any, *, native: Any = None) -> dict:
 
 def main() -> None:
     """Print the open layer's measurements to FontLab's Output panel."""
-    import fontlab
+    from fly import fl as fontlab
 
     current = fontlab.CurrentGlyph()
     if current is None:

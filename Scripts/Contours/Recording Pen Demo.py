@@ -12,7 +12,7 @@ from typing import Any
 
 def recording_demo(layer: Any, *, native: Any = None) -> int:
     """Append a recorded triangle to the supplied layer and return its contour count."""
-    from fontlab_pens import FlPen, RecordingPen
+    from fly.pens import FlPen, RecordingPen
 
     source = RecordingPen()
     source.moveTo((0, 0))
@@ -26,7 +26,7 @@ def recording_demo(layer: Any, *, native: Any = None) -> int:
 
 def main() -> None:
     """Draw in the open glyph and print a result to FontLab's Output panel."""
-    import fontlab
+    from fly import fl as fontlab
 
     current = fontlab.CurrentGlyph()
     if current is None:

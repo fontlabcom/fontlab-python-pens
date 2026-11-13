@@ -7,10 +7,9 @@ pen, here an FlPen on each other master. The copy is added on top of what
 the master already has. Each master is one undo step, so undo once per master.
 """
 
-import fontlab
-
-from fontlab_pens import FlPen, RecordingPen
-from fontlab_pens.fontlab import draw
+from fly import fl as fontlab
+from fly.pens import FlPen, RecordingPen
+from fly.pens.fontlab import draw
 
 # CurrentGlyph() gives a FontGate glyph; flGlyph makes it editable.
 glyph = fontlab.flGlyph(fontlab.CurrentGlyph(), fontlab.CurrentFont())

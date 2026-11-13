@@ -11,6 +11,13 @@ FontLab's Python 3.11 without pulling in anything else. The native `fontgate`,
 `fontlab` and `PythonQt` modules (used by later native pens) belong to FontLab
 itself and are imported lazily inside functions.
 
+## Scripts only
+
+The user-facing Scripts and README examples require `fontlab-fly` with the
+`fly.pens` alias. Install Fly separately in the script environment; it is not
+a Pens runtime dependency because Fly itself depends on Pens. Host-free script
+tests supply a Fly namespace double pointing at the real Pens modules.
+
 ## Test only
 
 | Package | Why |

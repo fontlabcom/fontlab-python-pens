@@ -12,8 +12,8 @@ from typing import Any
 
 def transform_demo(layer: Any, *, native: Any = None) -> int:
     """Copy the layer's visible contours at half scale, offset by (10, 20)."""
-    from fontlab_pens import FlPen, RecordingPen, TransformPen
-    from fontlab_pens.fontlab import draw
+    from fly.pens import FlPen, RecordingPen, TransformPen
+    from fly.pens.fontlab import draw
 
     source = RecordingPen()
     draw(layer, source, components=False)
@@ -27,7 +27,7 @@ def transform_demo(layer: Any, *, native: Any = None) -> int:
 
 def main() -> None:
     """Transform the open layer and print a result to FontLab's Output panel."""
-    import fontlab
+    from fly import fl as fontlab
 
     current = fontlab.CurrentGlyph()
     if current is None:

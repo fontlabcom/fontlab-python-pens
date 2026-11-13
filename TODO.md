@@ -4,6 +4,8 @@ this_file: TODO.md
 
 # TODO
 
+- [ ] Issue 255: independently review and integrate the Fly Scripts migration; qualify all 12 scripts with installed Fly/Pens through the admitted native gate after the host fence is lifted.
+
 - [ ] Qualify native first-contour publication/re-fetch failure behavior and canonical adoption separately; preserve all original native acceptance gates.
 - [ ] In FontLab 9, read every master layer and element through both readers and compare with native node data, including element transforms and components.
 - [ ] In FontLab 9, write through `FlPointPen` and `FontGatePointPen` into every master layer, as a new element and appended to an existing element, and read back.

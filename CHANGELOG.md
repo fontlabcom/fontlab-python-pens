@@ -4,6 +4,23 @@ this_file: CHANGELOG.md
 
 # Changelog
 
+
+## 2026-11-13 — Issue 255 Fly script source migration
+
+- Route all 12 user-facing Scripts and three runnable README examples through
+  `fly.pens`; Scripts access the native API through `fly.fl` with their existing
+  local binding. Document separate current-Fly installation, keeping Pens library
+  source and zero-runtime-dependency metadata unchanged.
+- Retain all fake-host geometry/history/refusal assertions through a Fly namespace
+  double using real canonical Pens modules; add 12 script import regressions.
+- Source checks on arm64 Python 3.11: unchanged baseline 857 passes; migrated
+  source 869 passes, 95.76% coverage with the unchanged 80% gate; Ruff 0.16.7 clean.
+  Reviewed Fly source preserves canonical Pens root/reader identity and runs the
+  README recording example. Native identity uses a fake provider only.
+- Graph change analysis retains dynamic-call limitations, checked against current
+  source. Independent review, integration, release/installation and native
+  acceptance are separate and remain open; the existing host fence stays active.
+
 ## 2026-11-12 — D46 documentation pass (Issue 250)
 
 - Landed this session, all on `main`: `install.vfpy` synced with the App installer for Extensions bundles (`0bc7884`, App `5cac0d6`, Issue 254); M-10 install sync without the unreachable blocked skip (`668de30`); App gate pens wiring closed in TODO (`89611c4`); `v1.0.2` recorded as tag-only, superseded by published `v1.0.3` (`a2efd35`).

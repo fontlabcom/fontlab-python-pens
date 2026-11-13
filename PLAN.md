@@ -87,6 +87,13 @@ FontGate gains a layer- or element-bound pen.
 - Add this package's `test.sh` to the shared pre-push checks used by its
   consumers.
 
+## Issue 255 Fly migration: remaining acceptance
+
+Review and integrate the source migration, then qualify all 12 Scripts with the
+installed Fly/Pens cohort after the shared native gate admits the host. Keep
+source routing and fake-host results separate from native geometry, history and
+persistence evidence. Do not bypass the existing host fence.
+
 ## Scripts demo qualification
 
 Qualify all four current-glyph demos in a disposable FontLab font: inspect added

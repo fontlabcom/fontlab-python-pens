@@ -7,10 +7,9 @@ each. Here each curve becomes STEPS short lines. The copy sits on top of the
 original so you can compare them; use Undo to remove it.
 """
 
-import fontlab
-
-from fontlab_pens import BasePen, FlPen
-from fontlab_pens.fontlab import draw
+from fly import fl as fontlab
+from fly.pens import BasePen, FlPen
+from fly.pens.fontlab import draw
 
 STEPS = 8
 

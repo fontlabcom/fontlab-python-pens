@@ -5,9 +5,8 @@
 A small pen that only keeps score.
 """
 
-import fontlab
-
-from fontlab_pens.fontlab import draw_points
+from fly import fl as fontlab
+from fly.pens.fontlab import draw_points
 
 
 class CountPointPen:

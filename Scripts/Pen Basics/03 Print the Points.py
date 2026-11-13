@@ -7,9 +7,8 @@ segmentType is "move", "line", "curve" or "qcurve" for on-curve points and
 None for off-curve points.
 """
 
-import fontlab
-
-from fontlab_pens.fontlab import draw_points
+from fly import fl as fontlab
+from fly.pens.fontlab import draw_points
 
 
 class PrintPointPen:

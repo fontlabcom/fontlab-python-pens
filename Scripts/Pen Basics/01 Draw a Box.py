@@ -7,9 +7,8 @@ FlPen draws into a FontLab layer. When the `with` block ends, the contour is
 added to the layer as one undoable step.
 """
 
-import fontlab
-
-from fontlab_pens import FlPen
+from fly import fl as fontlab
+from fly.pens import FlPen
 
 # CurrentGlyph() gives a FontGate glyph; flGlyph makes it editable.
 glyph = fontlab.flGlyph(fontlab.CurrentGlyph(), fontlab.CurrentFont())

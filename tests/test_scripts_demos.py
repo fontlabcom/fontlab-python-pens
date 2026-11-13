@@ -1,6 +1,7 @@
 # this_file: tests/test_scripts_demos.py
 """Execute menu demos on fake glyph layers through the actual package pens."""
 
+import ast
 import importlib.util
 import runpy
 import sys
@@ -59,6 +60,8 @@ def install_host(monkeypatch, glyph, native):
     native.CurrentGlyph = lambda: fg_glyph
     native.flGlyph = as_flglyph
     monkeypatch.setitem(sys.modules, "fontlab", native)
+    monkeypatch.setattr(sys.modules["fly"], "fl", native, raising=False)
+    monkeypatch.setitem(sys.modules, "fly.fl", native)
     monkeypatch.setitem(sys.modules, "PythonQt", SimpleNamespace())
     monkeypatch.setitem(
         sys.modules, "PythonQt.QtCore", SimpleNamespace(QPointF=native.QPointF, Qt=native.Qt)
@@ -206,6 +209,24 @@ def test_main_when_glyph_open_then_operates_on_active_layer_and_prints(path, mon
 
 @pytest.mark.parametrize("path", PATHS, ids=lambda path: path.stem)
 def test_main_when_no_glyph_then_raises_guidance_before_native_loading(path, monkeypatch):
-    monkeypatch.setitem(sys.modules, "fontlab", SimpleNamespace(CurrentGlyph=lambda: None))
+    native = SimpleNamespace(CurrentGlyph=lambda: None)
+    monkeypatch.setitem(sys.modules, "fontlab", native)
+    monkeypatch.setattr(sys.modules["fly"], "fl", native, raising=False)
+    monkeypatch.setitem(sys.modules, "fly.fl", native)
     with pytest.raises(RuntimeError, match="^Open a glyph in a Glyph window first$"):
         load_demo(path.stem).main()
+
+
+@pytest.mark.parametrize("path", sorted(SCRIPTS.glob("*/*.py")), ids=lambda path: path.stem)
+def test_script_when_importing_fontlab_apis_then_uses_fly(path):
+    direct = {"fontlab_pens", "fontlab", "fontgate", "PythonQt", "fontlabapp"}
+    for node in ast.walk(ast.parse(path.read_text())):
+        if isinstance(node, ast.Import):
+            names = [alias.name for alias in node.names]
+        elif isinstance(node, ast.ImportFrom):
+            names = [node.module or ""]
+        else:
+            continue
+        assert all(name.split(".")[0] not in direct for name in names), (
+            f"{path.name}:{node.lineno} must use the Fly alias"
+        )

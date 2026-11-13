@@ -6,6 +6,9 @@ this_file: AGENTS.md
 
 - **Zero runtime dependencies.** `src/` imports only the standard library and
   `fontlab_pens`. fontTools, fontPens and ufoLib2 are test-only oracles.
+- **User-facing scripts.** `Scripts/` and runnable documentation examples use
+  `fly.pens` and `fly.fl` (or other Fly aliases). Install Fly separately for
+  scripts; keep library imports under `src/` direct to avoid a dependency cycle.
 - **Lazy native imports.** `fontgate`, `fontlab` and `PythonQt` are imported
   inside functions or methods only, so `import fontlab_pens` works outside FontLab.
 - **Parity with fontTools.** Pens keep the fontTools class and function names.
