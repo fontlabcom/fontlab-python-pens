@@ -1,0 +1,40 @@
+# this_file: .github/workflows/release.yml
+# Publish to PyPI with Trusted Publishing (OIDC, no token).
+# Runs on a pushed vX.Y.Z tag, or by hand for an existing tag:
+#   gh workflow run release.yml -f tag=vX.Y.Z
+# PyPI publisher settings: owner fontlabcom, this repository,
+# workflow release.yml, no environment.
+name: release
+
+on:
+  push:
+    tags: ["v[0-9]*.[0-9]*.[0-9]*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing tag to publish, for example v1.2.3"
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  pypi:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag || github.ref }}
+          fetch-depth: 0
+      - uses: astral-sh/setup-uv@v6
+      - name: Build
+        run: |
+          TAG="${{ inputs.tag || github.ref_name }}"
+          git describe --exact-match --tags HEAD | grep -qx "$TAG"
+          uv build --out-dir dist
+          ls -l dist
+          V="${TAG#v}"
+          test "$(ls dist/*-"$V"-*.whl dist/*-"$V".tar.gz | wc -l)" -eq 2
+      - uses: pypa/gh-action-pypi-publish@release/v1
