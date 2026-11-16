@@ -1,0 +1,39 @@
+#FLM: Install this package into FontLab (fontlab-instamix)
+import hashlib, importlib, io, json, os, shutil, sys, urllib.request, zipfile
+from pathlib import Path
+HERE, PKG, PYPI = Path(__file__).resolve().parent, "fontlab_instamix", "https://pypi.org/pypi/fontlab-python-instamix/json"
+def site():
+    data = os.environ.get("FONTLAB_DATA_DIR") or __import__("fontlab").flPreferences().dataPathDefault
+    data = data() if callable(data) else data
+    return Path(data).expanduser() / "python" / "3.11" / "site-packages"
+def download(target, url=PYPI):
+    info = json.load(urllib.request.urlopen(url, timeout=60))
+    wheel = next((u for u in info["urls"] if u["packagetype"] == "bdist_wheel"), None)
+    if wheel is None:
+        raise RuntimeError("no fontlab-instamix wheel on PyPI")
+    blob = urllib.request.urlopen(wheel["url"], timeout=120).read()
+    if hashlib.sha256(blob).hexdigest() != wheel["digests"]["sha256"]:
+        raise RuntimeError("fontlab-instamix wheel failed its sha256 check")
+    with zipfile.ZipFile(io.BytesIO(blob)) as wheel_zip:
+        for name in wheel_zip.namelist():
+            parts = name.split("/")
+            if parts[0] == PKG and ".." not in parts and "" not in parts and "\\" not in name:
+                (target / name).parent.mkdir(parents=True, exist_ok=True); (target / name).write_bytes(wheel_zip.read(name))
+def ensure():
+    try:  # an older instamix without the parity modules does not count
+        return importlib.import_module(PKG + ".legacy") and importlib.import_module(PKG)
+    except ImportError:
+        target, local = site(), HERE.parent / "fontlab-python-instamix" / "src" / PKG
+        target.mkdir(parents=True, exist_ok=True)
+        shutil.rmtree(target / PKG, ignore_errors=True)
+        if local.is_dir():
+            shutil.copytree(local, target / PKG, ignore=shutil.ignore_patterns("__pycache__"))
+        else:
+            download(target)
+        [sys.modules.pop(n) for n in list(sys.modules) if n == PKG or n.startswith(PKG + ".")]
+        sys.path.insert(0, str(target)) if str(target) not in sys.path else None
+        importlib.invalidate_caches()
+        return importlib.import_module(PKG)
+if __name__ != "install_vfpy_import":  # FontLab may not run this as __main__
+    ensure(); from fontlab_instamix import bootstrap, gui  # noqa: E402,E702
+    gui.message("\n".join(f"Installed {r['id']} {r['version']}" for r in bootstrap.install_project(__file__)))
