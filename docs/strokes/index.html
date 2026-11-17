@@ -702,7 +702,10 @@ wrapped with <code>fl.flPackage(font)</code>, which in 9.1.9813 resolves to the 
 font. <code>curvature</code> must be within 0 to 1 and <code>inktrap_len</code> must not be negative.
 FontLab itself stores any value, so these bounds are the package's own. Bools and
 non-numbers raise <code>TypeError</code>, other bad values <code>ValueError</code>, before any write;
-if FontLab stores something other than the request, <code>PenError</code> is raised.</p>
+if FontLab stores something other than the request, the previous values are
+written back and <code>PenError</code> is raised. Both functions take <code>native=</code>, the
+<code>fontlab</code> module or a namespace with <code>flPackage</code>, for wrappers and test doubles;
+it defaults to the FontLab module.</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">fly</span><span class="w"> </span><span class="kn">import</span> <span class="n">fl</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">fly.pens</span><span class="w"> </span><span class="kn">import</span> <span class="n">set_smart_corner_parameters</span><span class="p">,</span> <span class="n">smart_corner_parameters</span>
 
