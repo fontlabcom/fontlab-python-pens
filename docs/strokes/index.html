@@ -662,7 +662,15 @@ makes an ink trap).</p>
 <p>Pass <code>expand=True</code> to outline each stroke: equal centerlines give compatible
 outlines in every master. In FontLab 9.1.9813 the strokes were created, expanded
 to compatible outlines (one 19-point contour per master) and given smart corners
-on a live font; Undo/Redo and save-and-reopen were not checked.</p>
+on a live font. The app's Undo and Redo stepped back and forward through both
+the creation and the expansion, pen parameters included. A saved and reopened
+copy kept the stroke's pen parameters and the smart-corner radii.</p>
+<p>To round only some corners, pass <code>nodes</code>. The first corner makes FontLab move
+the outline into a smart-corner source, so <code>add_smart_corners</code> finds each later
+node again by contour and node index:</p>
+<div class="highlight"><pre><span></span><code><span class="n">nodes</span> <span class="o">=</span> <span class="n">shape</span><span class="o">.</span><span class="n">contours</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">nodes</span><span class="p">()</span>
+<span class="n">add_smart_corners</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="n">nodes</span><span class="o">=</span><span class="p">[</span><span class="n">nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">nodes</span><span class="p">[</span><span class="mi">2</span><span class="p">]])</span>
+</code></pre></div>
 <h2 id="what-fontlab-supports-today">What FontLab supports today</h2>
 <ul>
 <li>The default styles work with FontLab's QPen on current builds.</li>
@@ -675,7 +683,8 @@ on a live font; Undo/Redo and save-and-reopen were not checked.</p>
 <li><code>add_smart_corners</code> needs <code>flShape.addSmartCorners</code> / <code>addSmartCorner</code> (present in 9.1.9813; <a href="https://github.com/Fontlab/fl/issues/8628">fl#8628</a>); older builds raise <code>UnsupportedStroke</code>.</li>
 <li>Variants keep their rotation, but <a href="https://github.com/Fontlab/fl/issues/8627">native persistence</a> is unresolved.</li>
 <li>Percentage rounding loses finer precision.</li>
-<li>Live Undo/Redo and save-and-reopen acceptance have not been verified.</li>
+<li>An expanded outline's saved <code>stroke.join</code> can disagree with the live value, so do not rely on join round-trips through VFJ (<a href="https://github.com/Fontlab/fl/issues/8654">fl#8654</a>, <a href="https://github.com/Fontlab/fl/issues/8630">fl#8630</a>).</li>
+<li><code>restoreHistoryState</code> on a glyph changed the history counter but not the outline in 9.1.9813; use the app's Undo.</li>
 </ul>
 
 
