@@ -1,6 +1,7 @@
 # this_file: tests/test_installer_archive.py
 """Source releases ship the fontlab-instamix stub and a valid install table."""
 
+import hashlib
 import re
 import subprocess
 import tarfile
@@ -21,16 +22,17 @@ def canonical_stub() -> bytes | None:
     return stub.text().encode("utf-8")
 
 
-STUB_HEADER = b"#FLM: Install this package into FontLab (fontlab-instamix)\n"
+STUB_HEADER = b"#FLM: Install into FontLab with fontlab-instamix\n"
+STUB_SHA256 = "bdb98c7c23f9904e5f4c59332b0bbd8723f18e33c7bbfea1c526c9b0b0b9cb50"
 REVERSE_DNS = re.compile(r"^[a-z][a-z0-9-]*(\.[a-z0-9][a-z0-9-]*)+$")  # instamix manifest.ID_PATTERN
 
 
 def test_installer_when_read_then_is_instamix_stub():
-    """install.vfpy is the short stub that delegates to fontlab-instamix."""
+    """install.vfpy is the canonical bootstrap that delegates to fontlab-instamix."""
     source = (ROOT / "install.vfpy").read_bytes()
     assert source.startswith(STUB_HEADER), "install.vfpy must be the instamix stub"
     assert b"bootstrap.install_project(__file__)" in source, "stub must hand off to instamix"
-    assert len(source.splitlines()) < 80, "stub must stay short; legacy installer is gone"
+    assert hashlib.sha256(source).hexdigest() == STUB_SHA256, "installer must match the reviewed canonical template"
     canonical = canonical_stub()
     if canonical is not None:
         assert source == canonical, "install.vfpy must match instamix's canonical stub"

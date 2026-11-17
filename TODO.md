@@ -2,6 +2,12 @@
 this_file: TODO.md
 ---
 
+## Guarded common installer
+
+- [ ] Independently review the canonical 1.0.11 common-template source candidate and preserved metadata/archive/licence contracts.
+- [ ] After the existing holds are lifted, qualify the full checkout/cohort, ordinary hooks, exact-SHA CI/artifacts and installed/native/Windows behavior; no consumer execution or delivery is admitted by static checks.
+
+
 ## Shared installer qualification — 2026-11-15
 
 - [ ] Review and deliver the shared-installer candidate through fresh-main reconciliation, required gates, exact-SHA CI and genuine release/download qualification.

@@ -2,6 +2,15 @@
 this_file: PLAN.md
 ---
 
+## Guarded common installer: remaining qualification
+
+Independently review the canonical 1.0.11 template propagation and static oracle
+updates. After explicit admission, qualify the complete consumer cohort and
+ordinary hook/CI/artifact gates in a full checkout. Current sparse static checks
+do not qualify runtime, installation or native behavior. Consumer execution,
+owner recovery and delivery remain held; retain existing backlog and pauses.
+
+
 ## Shared installer: remaining delivery qualification — 2026-11-15
 
 Review the exact shared-installer candidate against fresh main, run the required combined package gates, and qualify genuine release/archive/download inputs. Preserve the existing package-specific dependency and distribution contracts. Then qualify the coherent provider/consumer and Script/Extension cohort through the admitted root installer and native lane; source checks do not establish those outcomes. Keep every existing ownership, native, publication and paused-work limit.

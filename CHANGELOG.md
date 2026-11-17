@@ -2,6 +2,22 @@
 this_file: CHANGELOG.md
 ---
 
+## 2026-11-17 — Guarded common installer source candidate
+
+Copied the exact canonical common template shipped with Instamix 1.0.11.
+Provider reuse now requires migration/rollback capabilities and entry context is
+checked before bootstrap. Legacy rollback requires 1.0.9 or newer; the entry
+guard originated in 1.0.10, and shared-layout venv reuse requires 1.0.11.
+No package metadata, dependency floors, scripts, bundles or licences changed.
+This supersedes earlier shared-installer source notes; historical checks retain
+their dated scope.
+
+Compile/AST and exact-template byte checks qualify source only. No installer,
+provider, readiness harness, test, package build or native operation ran.
+Consumer execution, owner recovery and delivery remain held. Required broad
+cohort/suite, release, installed and Windows/native gates remain open.
+
+
 ## Unreleased
 
 - Documentation website at https://code.fontlab.com/fontlab-python-pens/, built
