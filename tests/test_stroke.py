@@ -23,6 +23,8 @@ from fontlab_pens import (
     compatibility,
     expand_stroke,
     new_stroke,
+    set_smart_corner_parameters,
+    smart_corner_parameters,
 )
 from fontlab_pens.fontlab import draw_points
 from tests.fakes import flGlyph, flLayer, flShape, fontlab_native
@@ -772,3 +774,64 @@ def test_add_smart_corners_when_host_lacks_binding_then_unsupported():
 def test_add_smart_corners_when_not_shape_then_type_error():
     with pytest.raises(TypeError, match="flShape"):
         add_smart_corners(flLayer(), 10)
+
+
+class SmartCornerParameters:
+    """Like the 9.1.9813 structure: readable fields, assigned from a dict."""
+
+    def __init__(self, curvature=0.67, inktrap_len=2.0):
+        self.curvature = curvature
+        self.inktrap_len = inktrap_len
+
+
+def package_type():
+    def get(self):
+        return self._scp
+
+    def put(self, value):
+        self.writes.append(value)
+        self._scp = SmartCornerParameters(**value)
+
+    def init(self):
+        self._scp = SmartCornerParameters()
+        self.writes = []
+
+    return type("flPackage", (), {"__init__": init, "smartCornerParameters": property(get, put)})
+
+
+def test_smart_corner_parameters_when_host_has_fields_then_floats():
+    assert smart_corner_parameters(package_type()()) == {"curvature": 0.67, "inktrap_len": 2.0}
+
+
+def test_set_smart_corner_parameters_when_one_field_then_other_kept():
+    package = package_type()()
+    result = set_smart_corner_parameters(package, inktrap_len=7)
+    assert result == {"curvature": 0.67, "inktrap_len": 7.0}, "omitted field must be kept"
+    assert package.writes == [{"curvature": 0.67, "inktrap_len": 7.0}], "one dict write expected"
+    result = set_smart_corner_parameters(package, curvature=0.5)
+    assert result == {"curvature": 0.5, "inktrap_len": 7.0}, "values must be read back"
+
+
+def test_set_smart_corner_parameters_when_not_finite_then_value_error_before_write():
+    package = package_type()()
+    with pytest.raises(ValueError, match="inktrap_len"):
+        set_smart_corner_parameters(package, inktrap_len=float("nan"))
+    assert package.writes == [], "nothing may be written for a bad value"
+
+
+def test_smart_corner_parameters_when_old_structure_then_unsupported():
+    package = package_type()()
+    package._scp = SimpleNamespace(curvature=0.67)  # before 9.1.9813: no inktrap_len
+    with pytest.raises(UnsupportedStroke) as caught:
+        smart_corner_parameters(package)
+    assert caught.value.issue.endswith("8628"), "error must link the smart corner issue"
+    with pytest.raises(UnsupportedStroke):
+        set_smart_corner_parameters(package, curvature=0.5)
+    assert package.writes == [], "nothing may be written on an old host"
+
+
+def test_smart_corner_parameters_when_no_binding_or_not_package_then_errors():
+    with pytest.raises(UnsupportedStroke):
+        smart_corner_parameters(type("flPackage", (), {})())
+    with pytest.raises(TypeError, match="flPackage"):
+        smart_corner_parameters(flLayer())

@@ -81,6 +81,8 @@ from fontlab_pens.stroke import (
     compatibility,
     expand_stroke,
     new_stroke,
+    set_smart_corner_parameters,
+    smart_corner_parameters,
 )
 from fontlab_pens.transform import (
     Identity,
@@ -168,5 +170,7 @@ __all__ = [
     "otRound",
     "replayRecording",
     "reversedContour",
+    "set_smart_corner_parameters",
+    "smart_corner_parameters",
     "staged_node_kinds",
 ]

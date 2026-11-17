@@ -60,6 +60,28 @@ nodes = shape.contours[0].nodes()
 add_smart_corners(shape, 30, nodes=[nodes[0], nodes[2]])
 ```
 
+## Smart-corner defaults
+
+Each font stores a smart-corner curvature and ink-trap length. Read them with
+`smart_corner_parameters` and change them with `set_smart_corner_parameters`;
+omitted fields keep their value and the function returns what FontLab reads back.
+
+```python
+from fly import fl
+from fly.pens import set_smart_corner_parameters, smart_corner_parameters
+
+font = fl.flPackage(fl.CurrentFont())
+print(smart_corner_parameters(font))  # {'curvature': 0.67, 'inktrap_len': 2.0}
+set_smart_corner_parameters(font, inktrap_len=7)
+```
+
+In FontLab 9.1.9813 a written curvature of 0.5 and ink-trap length of 7 were
+saved on the key master and read back after reopening the VFJ. FontLab stores
+them on the key master and rebuilds smart corners on the key layer only. Smart
+corners that already exist keep the values saved with them. Hosts without
+`inktrap_len` raise `UnsupportedStroke`
+([fl#8628](https://github.com/Fontlab/fl/issues/8628)).
+
 ## What FontLab supports today
 
 - The default styles work with FontLab's QPen on current builds.
@@ -70,7 +92,8 @@ add_smart_corners(shape, 30, nodes=[nodes[0], nodes[2]])
 
 - Cap, proportion, contrast, rotation and remove-overlap controls, and full expansion, need the native `penParameters` / `expandStroke` API ([fl#8626](https://github.com/Fontlab/fl/issues/8626)). FontLab 9.1.9813 has it; older builds accept thickness, join and miter limit only.
 - `add_smart_corners` needs `flShape.addSmartCorners` / `addSmartCorner` (present in 9.1.9813; [fl#8628](https://github.com/Fontlab/fl/issues/8628)); older builds raise `UnsupportedStroke`.
-- Variants keep their rotation, but [native persistence](https://github.com/Fontlab/fl/issues/8627) is unresolved.
+- Nib rotation survives VFJ save and reopen in 9.1.9813 ([fl#8627](https://github.com/Fontlab/fl/issues/8627)); Copy/Paste Style is untested.
 - Percentage rounding loses finer precision.
 - An expanded outline's saved `stroke.join` can disagree with the live value, so do not rely on join round-trips through VFJ ([fl#8654](https://github.com/Fontlab/fl/issues/8654), [fl#8630](https://github.com/Fontlab/fl/issues/8630)).
-- `restoreHistoryState` on a glyph changed the history counter but not the outline in 9.1.9813; use the app's Undo.
+- `restoreHistoryState` on a glyph, layer or element changes the history counter but not the outline in 9.1.9813 ([fl#8665](https://github.com/Fontlab/fl/issues/8665)); use the app's Undo.
+- `set_smart_corner_parameters` makes no Undo step and changes only the key master; existing smart corners keep their own builder values.

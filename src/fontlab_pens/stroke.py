@@ -35,10 +35,13 @@ __all__ = [
     "compatibility",
     "expand_stroke",
     "new_stroke",
+    "set_smart_corner_parameters",
+    "smart_corner_parameters",
 ]
 
 _ISSUE = "https://github.com/Fontlab/fl/issues/8626"
-# Smart corners Python API issue (SmartCornerParameters; the add* bindings came in 9.1.9813).
+# Smart corners Python API issue: SmartCornerParameters lacked inktrap_len before
+# 9.1.9813, and builds before 9813 have no flShape.addSmartCorner(s) binding either.
 _SMART_CORNER_ISSUE = "https://github.com/Fontlab/fl/issues/8628"
 
 
@@ -352,6 +355,48 @@ def add_smart_corners(
         if node is not None and shape.addSmartCorner(node, radius, bool(smooth)) is True:
             count += 1
     return count
+
+
+_CORNER_FIELDS = ("curvature", "inktrap_len")
+
+
+def _package(package: Any) -> None:
+    if type(package).__name__ != "flPackage":
+        raise TypeError(f"Expected flPackage font, got {type(package).__name__}")
+    if "smartCornerParameters" not in dir(type(package)):
+        raise UnsupportedStroke(("smart_corner_parameters",), _SMART_CORNER_ISSUE)
+
+
+def smart_corner_parameters(package: Any) -> dict[str, float]:
+    """Return the font's smart-corner defaults: ``curvature`` and ``inktrap_len``.
+
+    Reads ``flPackage.smartCornerParameters``. Hosts whose structure lacks
+    ``inktrap_len`` (before FontLab 9.1.9813) raise ``UnsupportedStroke``.
+    """
+    _package(package)
+    value = package.smartCornerParameters
+    if not all(hasattr(value, field) for field in _CORNER_FIELDS):
+        raise UnsupportedStroke(_CORNER_FIELDS, _SMART_CORNER_ISSUE)
+    return {field: float(getattr(value, field)) for field in _CORNER_FIELDS}
+
+
+def set_smart_corner_parameters(
+    package: Any, *, curvature: float | None = None, inktrap_len: float | None = None
+) -> dict[str, float]:
+    """Set the font's smart-corner defaults and return the values read back.
+
+    Omitted fields keep their current value. FontLab stores them on the key
+    master and rebuilds smart corners on the key layer only; existing corners on
+    other layers keep the values saved in their own builder. The change makes no
+    Undo step. Verified in FontLab 9.1.9813, including VFJ save and reopen.
+    """
+    current = smart_corner_parameters(package)
+    if curvature is not None:
+        current["curvature"] = _finite(curvature, "curvature")
+    if inktrap_len is not None:
+        current["inktrap_len"] = _finite(inktrap_len, "inktrap_len")
+    package.smartCornerParameters = dict(current)  # the binding accepts a dict
+    return smart_corner_parameters(package)
 
 
 def _node_position(shape: Any, node: Any) -> tuple[int, int] | None:

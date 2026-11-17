@@ -32,7 +32,11 @@ this_file: TODO.md
 - [ ] In FontLab 9, check writes after save, close and reopen.
 
 - [ ] Qualify all four current-glyph Scripts demos and stroke plans in FontLab: geometry, Output measurements, one-step Undo/Redo, every master and save/reopen on a disposable font.
-- [ ] Verify stroke nib rotation persistence (fl#8627) and expanded-outline join round-trip through VFJ (fl#8654) when FontLab fixes them.
+- [ ] Recheck the expanded-outline join round-trip (live bevel, saved round, reopened and Redo miter) when FontLab fixes fl#8654 / fl#8630.
+- [ ] Use `restoreHistoryState` for scripted Undo only after fl#8665 is fixed; until then rely on the app's Undo.
+- [ ] Verify nib rotation through Copy/Paste Style (fl#8627) by hand; scripts must not drive Paste.
+- [ ] Check whether `set_smart_corner_parameters` should also update existing smart-corner builders and other masters, once FontLab documents fl#8628 behavior.
+- [ ] Native smoke of `smart_corner_parameters` / `set_smart_corner_parameters` from the installed release (v1.0.14).
 
 - [ ] Qualify the source-reviewed service-layer experiment against the exact current native source/runtime/parent cohort with fresh owned-fixture and operation admission, independent actual-initial-state approval, constructor/lifetime, flags5 A-to-B-to-C persistence and full preservation/history/Undo/Redo/UI/SDK/retirement checks; keep ordinary/canonical adoption separate and all original 2,151 registry rows, four 615-layer inventories and 15 extensions counted. Separately qualify matching Proteus source/provider/SDK/build identities, the already-upstream shutdown guard and draft PR12's residual lifecycle-test teardown; keep native compilation/linking/full-suite execution and lifetime/exit0 gates held until separately admitted.
 - [ ] Specify and independently review real-mask getMaskLayer(True) association/flags13 and original-body preservation, then close measured encoded size and the remaining notification/history, state-carrying dependency, layer-bound native fast-path, actual UI-pixel and normal same-handle retirement source contracts; retain every native acceptance gate.

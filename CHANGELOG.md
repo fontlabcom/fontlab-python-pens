@@ -2,6 +2,23 @@
 this_file: CHANGELOG.md
 ---
 
+## 2026-11-17 — Smart-corner defaults API and native follow-up checks (issue 253, task 4)
+
+- New `smart_corner_parameters(font)` and `set_smart_corner_parameters(font, *,
+  curvature=None, inktrap_len=None)` read and set `flPackage.smartCornerParameters`
+  (curvature and ink-trap length). The setter validates finite values before any
+  write, writes one dict and returns the values read back. Hosts without
+  `inktrap_len` raise `UnsupportedStroke` (fl#8628).
+- Native checks in FontLab 9.1.9813 on a copy of a test font: nib rotation 45 from
+  `new_stroke` survived VFJ save and reopen (fl#8627); an ink trap (-20) on four
+  corners kept its radii; the package write 0.5 / 7 was saved on the key master
+  and read back after reopen. The new functions, loaded from source in
+  FontLab, read 0.5 / 7, set 3 and 0.6 with read-back, refused an infinite value
+  without writing, refused a glyph with `TypeError` and restored the old values.
+- Reported fl#8665: `restoreHistoryState` returns True and moves the counter but
+  leaves the outline. Added a native repro of the expanded-outline join flip to
+  fl#8654.
+
 ## 2026-11-17 — Per-node smart corners fix and native Undo/save checks (issue 251, R2)
 
 - `add_smart_corners(..., nodes=...)` now rounds every requested corner. The first

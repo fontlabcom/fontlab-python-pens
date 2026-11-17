@@ -120,7 +120,7 @@ counts = apply_plan(glyph, plan, source=source)
 `new_stroke(style, drawing, expand=False)` creates a stroked element from points
 alone, and `add_smart_corners(shape, radius)` adds smart corners; both worked live
 in FontLab 9.1.9813. Full strokes and expansion need the native [`penParameters` / `expandStroke`](https://github.com/Fontlab/fl/issues/8626). `apply_stroke` writes the join as an integer, because FontLab misreads join names ([fl#8630](https://github.com/Fontlab/fl/issues/8630)). It also writes both caps explicitly, applies the native parameters before the QPen so a refusal leaves the shape unchanged, and `expand_stroke` raises `PenError` when FontLab reports a failed expansion.
-Variants retain rotation; [native persistence](https://github.com/Fontlab/fl/issues/8627) remains unresolved.
+Variants retain rotation, and FontLab 9.1.9813 keeps it across VFJ save and reopen ([fl#8627](https://github.com/Fontlab/fl/issues/8627); Copy/Paste Style is untested). `smart_corner_parameters(font)` and `set_smart_corner_parameters(font, curvature=..., inktrap_len=...)` read and set the font's smart-corner defaults.
 Percentage rounding loses finer precision. Live Undo/Redo and save/reopen acceptance remain open.
 
 ## FontLab notes
