@@ -6,6 +6,8 @@ this_file: README.md
 
 The fontTools Pen and PointPen protocol for FontLab 9, with no dependencies.
 
+Documentation: <https://code.fontlab.com/fontlab-python-pens/>
+
 For the selected APIs listed below, protocol-compatible callers use the same
 class names and calls as `fontTools.pens`, with parity tests comparing recordings.
 This package does not implement every fontTools pen API. Inside FontLab you do

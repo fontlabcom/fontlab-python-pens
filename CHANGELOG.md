@@ -2,6 +2,15 @@
 this_file: CHANGELOG.md
 ---
 
+## Unreleased
+
+- Documentation website at https://code.fontlab.com/fontlab-python-pens/, built
+  like the GrabLab site: ProperDocs + MaterialX with the light fltheme26 theme,
+  sources in `src_docs/`, generated output in `docs/` (Pages serves `main:/docs`).
+  Pages: installation, using pens, FontLab targets, strokes, scripts,
+  development and limits, licence. `.github/workflows/docs.yml` rebuilds and
+  checks the output on every main commit; `tests_docs/` holds 36 site tests.
+
 ## 1.0.8 (2026-11-16)
 
 - `install.vfpy` is now the short fontlab-instamix stub. It installs
