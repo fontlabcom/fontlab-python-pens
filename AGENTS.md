@@ -16,7 +16,6 @@ Record deferred checks and known limits plainly. Do not call untested native, in
 
 Choose the next substantial useful feature or shared fix and carry its affected providers and consumers together. Timebox supporting investigation; once focused checks establish a usable increment, continue functionality work. Queue detailed testing for a later pass with its concrete remaining checks instead of letting test infrastructure displace product delivery.
 
-
 - **Zero runtime dependencies.** `src/` imports only the standard library and
   `fontlab_pens`. fontTools, fontPens and ufoLib2 are test-only oracles.
 - **User-facing scripts.** `Scripts/` and runnable documentation examples use

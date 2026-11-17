@@ -20,6 +20,12 @@ Source-only candidate: independent review, full hooked gates, current-main integ
 
 # Current round — Issue 255 post-release reconciliation
 
+## 2026-11-14 — Functional work order documented
+
+Updated AGENTS, PLAN and TODO to prioritize useful functional changes and compatible package boundaries, with detailed testing deferred. Existing backlog and prior records are retained. Documentation preservation and policy consistency were checked; no runtime, installed or native checks ran in this documentation-only pass.
+
+Next: address the next reproduced pen or Scripts defect across explicit layer/element targets and affected Fly/App/Glyport consumers with focused geometry checks before the detailed native/history pass.
+
 [fontlab-python-pens v1.0.5](https://github.com/fontlabcom/fontlab-python-pens/releases/tag/v1.0.5) is qualified at `e80672ff2d51e2fec77f4b73f0c7e01d93b9a37f`.
 
 All 12 Scripts and runnable README examples use Fly while the Pens library stays dependency-free.

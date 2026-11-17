@@ -16,6 +16,12 @@ Integrate and release the reviewed shared installer and explicit source-archive 
 
 # Plan
 
+## Functional work order — 2026-11-14
+
+Prioritize concrete reader/writer and Scripts behavior with explicit layer or element targets and live commit boundaries. Keep the library dependency-free and reconcile Fly/App/Glyport consumers with the same pen protocols; retain native notification, history and upstream-binding holds.
+
+Use small smoke checks and focused regressions for changed behavior and package boundaries. Keep the existing detailed acceptance tasks for a later testing pass; mandatory delivery hooks and current holds remain in force.
+
 fontlab-python-pens is a dependency-free package (`fontlab_pens`) that
 implements the fontTools Pen and PointPen protocols and reads and writes
 FontLab outlines through the native `fontgate` and `fontlab` bindings.

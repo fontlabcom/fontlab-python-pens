@@ -12,7 +12,7 @@ this_file: TODO.md
 - [ ] Integrate and release the reviewed shared installer and source-archive input; verify downloaded installer bytes, actual installed provider versions and the coherent Pens/Fly cohort before admitted root installation.
 - [ ] Qualify the shared installer's false-marker sibling staging correction across the cohort; keep native installation and existing Pens acceptance checks open.
 
-
+- [ ] Address the next reproduced pen or Scripts defect across explicit layer/element targets and affected Fly/App/Glyport consumers with focused geometry checks before the detailed native/history pass.
 
 - [ ] Issue 255: After explicit D43 recovery and admission, qualify all 12 Scripts against the released installed Fly/Pens cohort in FontLab, retaining native geometry, complete history/Undo/Redo and saved/reopened font evidence.
 

@@ -24,7 +24,10 @@ Focused checks: 7 passed in 0.55s. This qualifies the local source candidate onl
 - Include the standalone `install.vfpy` in source archives. The actual archive regression reproduces its omission before the allowlist change and checks exact installer bytes and genuine PKG-INFO version afterward; all seven focused package/archive checks pass.
 - This qualifies the local source candidate only. Release, installed-provider/cohort and native acceptance are separate; shared false-marker sibling staging remains open.
 
+## 2026-11-14 — Functional work order documented
 
+- Added the owner's functional-progress-first guidance and repository-specific priorities, including cross-package compatibility and a later detailed testing pass. Existing mandatory hooks, holds and unfinished work remain in force.
+- This change updates guidance and planning only; it establishes no new runtime, installed, native or release result.
 
 ## 2026-11-13 — Issue 255 verified release qualification
 
