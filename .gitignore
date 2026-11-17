@@ -221,3 +221,4 @@ __marimo__/
 .superpowers/
 .omc/
 src/fontlab_pens/__version__.py
+.DS_Store
