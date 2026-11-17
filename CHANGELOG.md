@@ -2,6 +2,22 @@
 this_file: CHANGELOG.md
 ---
 
+## 2026-11-17 — Per-node smart corners fix and native Undo/save checks (issue 251, R2)
+
+- `add_smart_corners(..., nodes=...)` now rounds every requested corner. The first
+  corner makes FontLab clone the outline into a smart-corner source, so the other
+  node objects went stale and were refused; each node is now found again by
+  contour and node index in `smartCornerSource()`. Only `True` results count; a
+  `None` result from `addSmartCorners` counts as zero.
+- Verified live in FontLab 9.1.9813: per-node corners 0 and 2 (radius 30) and an
+  ink trap (-20) on corner 1 in both masters of glyph I; the app's Undo and Redo
+  stepped through stroke creation and expansion, pen parameters included; a
+  saved and reopened copy kept the stroke's pen parameters (thickness, contrast,
+  rotation, round join, round/square caps) and smart-corner radii 40.
+- Known limits: the saved `stroke.join` of an expanded outline can differ from the
+  live value (fl#8654, fl#8630); glyph `restoreHistoryState` moved the counter but
+  not the outline.
+
 ## 2026-11-17 — Strokes and smart corners from zero (issue 251)
 
 - `new_stroke(style, drawing, *, expand=False, native=None)` creates a detached,

@@ -637,16 +637,57 @@ def test_apply_stroke_when_thickness_zero_on_solid_pen_then_no_pen():
     assert shape.pen.style() == native.Qt.NoPen, "zero thickness must not leave a cosmetic pen"
 
 
-def smart_corner_shape_type():
+class CornerNode:
+    def __init__(self, contour, index, name):
+        self.contour, self.index, self.name = contour, index, name
+
+
+class CornerContour:
+    def __init__(self, contour_id, names):
+        self.id = contour_id
+        self._nodes = [CornerNode(self, i, n) for i, n in enumerate(names)]
+
+    def nodes(self):
+        return list(self._nodes)
+
+
+def smart_corner_shape_type(native_all=4):
+    """A shape that, like FontLab, moves cloned contours into a source on the first corner."""
+
     def add_all(self, radius, smooth):
         self.corners = ("all", radius, smooth)
-        return 4
+        return native_all
+
+    def source(self):
+        return self._source if self._source is not None else self
 
     def add_one(self, node, radius, smooth):
-        self.corners = (*getattr(self, "corners", ()), (node, radius, smooth))
-        return node != "refused"
+        live = [n for c in source(self).contours for n in c.nodes()]
+        if node not in live:  # FontLab checks the current source before cloning
+            return False
+        if self._source is None:  # first corner: clone into a new source, old nodes go stale
+            self._source = type(self)()
+            self._source.contours = [
+                CornerContour(c.id, [n.name for n in c.nodes()]) for c in self.contours
+            ]
+        self.corners = (*getattr(self, "corners", ()), (node.name, radius, smooth))
+        return node.name != "refused"
 
-    return type("flShape", (flShape,), {"addSmartCorners": add_all, "addSmartCorner": add_one})
+    def init(self):
+        flShape.__init__(self)
+        self._source = None
+        self.contours = [CornerContour(7, ["a", "refused", "b", "c"])]
+
+    return type(
+        "flShape",
+        (flShape,),
+        {
+            "__init__": init,
+            "addSmartCorners": add_all,
+            "addSmartCorner": add_one,
+            "smartCornerSource": source,
+        },
+    )
 
 
 def centerline(pen):
@@ -695,11 +736,29 @@ def test_add_smart_corners_when_all_then_native_count_returned():
     assert shape.corners == ("all", 40.0, False), "radius and smooth must reach the host"
 
 
-def test_add_smart_corners_when_nodes_then_each_node_tried():
+def test_add_smart_corners_when_nodes_then_each_node_found_again_in_source():
     shape = smart_corner_shape_type()()
-    count = add_smart_corners(shape, -5, smooth=True, nodes=["a", "refused", "b"])
-    assert count == 2, "refused nodes must not be counted"
+    a, refused, b, _c = shape.contours[0].nodes()
+    count = add_smart_corners(shape, -5, smooth=True, nodes=[a, refused, b])
+    assert count == 2, (
+        "nodes after the first must be found again in the new source; refused not counted"
+    )
     assert shape.corners[0] == ("a", -5.0, True), "negative radius (ink trap) must pass through"
+    assert [c[0] for c in shape.corners] == ["a", "refused", "b"], (
+        "each requested corner must reach the host"
+    )
+
+
+def test_add_smart_corners_when_node_not_in_source_then_skipped():
+    shape = smart_corner_shape_type()()
+    stranger = CornerContour(99, ["x"]).nodes()[0]
+    far = CornerNode(shape.contours[0], 9, "far")
+    assert add_smart_corners(shape, 10, nodes=[stranger, far]) == 0, "unknown nodes must be skipped"
+
+
+def test_add_smart_corners_when_native_returns_none_then_zero():
+    shape = smart_corner_shape_type(native_all=None)()
+    assert add_smart_corners(shape, 10) == 0, "a None native result must count as zero"
 
 
 def test_add_smart_corners_when_host_lacks_binding_then_unsupported():
@@ -707,7 +766,7 @@ def test_add_smart_corners_when_host_lacks_binding_then_unsupported():
         add_smart_corners(flShape(), 10)
     assert caught.value.issue.endswith("8628"), "error must link the smart corner issue"
     with pytest.raises(UnsupportedStroke):
-        add_smart_corners(flShape(), 10, nodes=["a"])
+        add_smart_corners(flShape(), 10, nodes=[])
 
 
 def test_add_smart_corners_when_not_shape_then_type_error():

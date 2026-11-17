@@ -38,6 +38,7 @@ __all__ = [
 ]
 
 _ISSUE = "https://github.com/Fontlab/fl/issues/8626"
+# Smart corners Python API issue (SmartCornerParameters; the add* bindings came in 9.1.9813).
 _SMART_CORNER_ISSUE = "https://github.com/Fontlab/fl/issues/8628"
 
 
@@ -329,23 +330,51 @@ def add_smart_corners(
 
     With ``nodes`` (``flNode`` objects of ``shape``), only those corners get one;
     otherwise every eligible corner does. A negative radius makes an ink trap.
-    Node objects are invalid afterwards: reacquire them from the shape. Wrap a
-    live element's edit in the layer's history step. Needs the native
-    ``flShape.addSmartCorners`` binding; older hosts raise ``UnsupportedStroke``.
+    The first corner on a plain outline makes FontLab move a copy of the
+    contours into a Smart Corners source, so the given nodes go stale; each
+    node is therefore found again by contour and node index in
+    ``shape.smartCornerSource()``. Node objects are invalid afterwards:
+    reacquire them from the shape. Wrap a live element's edit in the layer's
+    history step. Needs the native ``flShape.addSmartCorners`` binding
+    (FontLab 9.1.9813 and later); older hosts raise ``UnsupportedStroke``.
     """
     _shape(shape)
     radius = _finite(radius, "radius")
     if nodes is None:
         if "addSmartCorners" not in dir(type(shape)):
             raise UnsupportedStroke(("smart_corners",), _SMART_CORNER_ISSUE)
-        return int(shape.addSmartCorners(radius, bool(smooth)))
+        return int(shape.addSmartCorners(radius, bool(smooth)) or 0)
     if "addSmartCorner" not in dir(type(shape)):
         raise UnsupportedStroke(("smart_corner",), _SMART_CORNER_ISSUE)
     count = 0
-    for node in list(nodes):
-        if shape.addSmartCorner(node, radius, bool(smooth)) is not False:
+    for where in [_node_position(shape, node) for node in nodes]:
+        node = _source_node(shape, where)
+        if node is not None and shape.addSmartCorner(node, radius, bool(smooth)) is True:
             count += 1
     return count
+
+
+def _node_position(shape: Any, node: Any) -> tuple[int, int] | None:
+    """Return (contour index, node index) of ``node`` in the shape's corner source."""
+    source = shape.smartCornerSource()
+    contour_id = node.contour.id
+    for index, contour in enumerate(source.contours if source is not None else ()):
+        if contour.id == contour_id:
+            return index, int(node.index)
+    return None
+
+
+def _source_node(shape: Any, where: tuple[int, int] | None) -> Any:
+    """Return the current source node at ``where``, or None when it is gone."""
+    source = shape.smartCornerSource() if where is not None else None
+    if source is None:
+        return None
+    contour_index, node_index = where
+    contours = source.contours
+    if contour_index >= len(contours):
+        return None
+    found = contours[contour_index].nodes()
+    return found[node_index] if node_index < len(found) else None
 
 
 @dataclass(frozen=True)

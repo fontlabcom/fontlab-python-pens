@@ -47,7 +47,18 @@ fl.flItems.notifyChangesApplied("Strokes from zero", [*masters, glyph])
 Pass `expand=True` to outline each stroke: equal centerlines give compatible
 outlines in every master. In FontLab 9.1.9813 the strokes were created, expanded
 to compatible outlines (one 19-point contour per master) and given smart corners
-on a live font; Undo/Redo and save-and-reopen were not checked.
+on a live font. The app's Undo and Redo stepped back and forward through both
+the creation and the expansion, pen parameters included. A saved and reopened
+copy kept the stroke's pen parameters and the smart-corner radii.
+
+To round only some corners, pass `nodes`. The first corner makes FontLab move
+the outline into a smart-corner source, so `add_smart_corners` finds each later
+node again by contour and node index:
+
+```python
+nodes = shape.contours[0].nodes()
+add_smart_corners(shape, 30, nodes=[nodes[0], nodes[2]])
+```
 
 ## What FontLab supports today
 
@@ -61,4 +72,5 @@ on a live font; Undo/Redo and save-and-reopen were not checked.
 - `add_smart_corners` needs `flShape.addSmartCorners` / `addSmartCorner` (present in 9.1.9813; [fl#8628](https://github.com/Fontlab/fl/issues/8628)); older builds raise `UnsupportedStroke`.
 - Variants keep their rotation, but [native persistence](https://github.com/Fontlab/fl/issues/8627) is unresolved.
 - Percentage rounding loses finer precision.
-- Live Undo/Redo and save-and-reopen acceptance have not been verified.
+- An expanded outline's saved `stroke.join` can disagree with the live value, so do not rely on join round-trips through VFJ ([fl#8654](https://github.com/Fontlab/fl/issues/8654), [fl#8630](https://github.com/Fontlab/fl/issues/8630)).
+- `restoreHistoryState` on a glyph changed the history counter but not the outline in 9.1.9813; use the app's Undo.
