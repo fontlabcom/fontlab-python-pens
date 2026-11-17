@@ -64,13 +64,19 @@ add_smart_corners(shape, 30, nodes=[nodes[0], nodes[2]])
 
 Each font stores a smart-corner curvature and ink-trap length. Read them with
 `smart_corner_parameters` and change them with `set_smart_corner_parameters`;
-omitted fields keep their value and the function returns what FontLab reads back.
+omitted fields keep their value and the function returns what FontLab stored.
+Pass an `fgFont` such as `fl.CurrentFont()` or an `flPackage`; an `fgFont` is
+wrapped with `fl.flPackage(font)`, which in 9.1.9813 resolves to the same open
+font. `curvature` must be within 0 to 1 and `inktrap_len` must not be negative.
+FontLab itself stores any value, so these bounds are the package's own. Bools and
+non-numbers raise `TypeError`, other bad values `ValueError`, before any write;
+if FontLab stores something other than the request, `PenError` is raised.
 
 ```python
 from fly import fl
 from fly.pens import set_smart_corner_parameters, smart_corner_parameters
 
-font = fl.flPackage(fl.CurrentFont())
+font = fl.CurrentFont()  # an fgFont; an flPackage works too
 print(smart_corner_parameters(font))  # {'curvature': 0.67, 'inktrap_len': 2.0}
 set_smart_corner_parameters(font, inktrap_len=7)
 ```

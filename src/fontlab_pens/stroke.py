@@ -43,6 +43,8 @@ _ISSUE = "https://github.com/Fontlab/fl/issues/8626"
 # Smart corners Python API issue: SmartCornerParameters lacked inktrap_len before
 # 9.1.9813, and builds before 9813 have no flShape.addSmartCorner(s) binding either.
 _SMART_CORNER_ISSUE = "https://github.com/Fontlab/fl/issues/8628"
+_CORNER_FIELDS = ("curvature", "inktrap_len")
+_CURVATURE_RANGE = (0.0, 1.0)  # package policy: FontLab 9.1.9813 stores any value
 
 
 class CapType(IntEnum):
@@ -357,46 +359,109 @@ def add_smart_corners(
     return count
 
 
-_CORNER_FIELDS = ("curvature", "inktrap_len")
+def _load_font_types() -> Any:
+    """Return the ``fontlab`` module inside FontLab, or None outside it."""
+    try:
+        import fontlab
+    except ImportError:
+        return None
+    return fontlab
 
 
-def _package(package: Any) -> None:
-    if type(package).__name__ != "flPackage":
-        raise TypeError(f"Expected flPackage font, got {type(package).__name__}")
+def _package(font: Any, native: Any = None) -> Any:
+    """Return the ``flPackage`` for ``font`` (an ``flPackage`` or an ``fgFont``).
+
+    Inside FontLab the check is ``isinstance(font, fontlab.flPackage)``, and an
+    ``fgFont`` such as ``fl.CurrentFont()`` is wrapped with ``flPackage(font)``
+    (one argument, proven in Proteus ``pyflPackageImpl`` and live in 9.1.9813: it
+    resolves to the same open font). Without the native module only the class
+    names are compared. A host whose package lacks ``smartCornerParameters``
+    raises ``UnsupportedStroke``.
+    """
+    native = _load_font_types() if native is None else native
+    kind = type(font).__name__
+    if native is not None and isinstance(font, native.flPackage):
+        package = font
+    elif native is not None and kind == "fgFont":
+        package = native.flPackage(font)
+    elif native is None and kind == "flPackage":
+        package = font
+    else:
+        raise TypeError(f"Expected flPackage or fgFont, got {kind}")
     if "smartCornerParameters" not in dir(type(package)):
         raise UnsupportedStroke(("smart_corner_parameters",), _SMART_CORNER_ISSUE)
+    return package
 
 
-def smart_corner_parameters(package: Any) -> dict[str, float]:
-    """Return the font's smart-corner defaults: ``curvature`` and ``inktrap_len``.
-
-    Reads ``flPackage.smartCornerParameters``. Hosts whose structure lacks
-    ``inktrap_len`` (before FontLab 9.1.9813) raise ``UnsupportedStroke``.
-    """
-    _package(package)
+def _read_corners(package: Any) -> dict[str, float]:
     value = package.smartCornerParameters
     if not all(hasattr(value, field) for field in _CORNER_FIELDS):
         raise UnsupportedStroke(_CORNER_FIELDS, _SMART_CORNER_ISSUE)
     return {field: float(getattr(value, field)) for field in _CORNER_FIELDS}
 
 
-def set_smart_corner_parameters(
-    package: Any, *, curvature: float | None = None, inktrap_len: float | None = None
-) -> dict[str, float]:
-    """Set the font's smart-corner defaults and return the values read back.
+def _corner_value(value: Any, field: str) -> float:
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise TypeError(f"{field} must be a number, got {type(value).__name__}")
+    result = float(value)
+    if not math.isfinite(result):
+        raise ValueError(f"{field} must be a finite number")
+    if field == "curvature" and not _CURVATURE_RANGE[0] <= result <= _CURVATURE_RANGE[1]:
+        raise ValueError(f"curvature must be between 0 and 1, got {result}")
+    if field == "inktrap_len" and result < 0:
+        raise ValueError(f"inktrap_len must not be negative, got {result}")
+    return result
 
-    Omitted fields keep their current value. FontLab stores them on the key
-    master and rebuilds smart corners on the key layer only; existing corners on
-    other layers keep the values saved in their own builder. The change makes no
-    Undo step. Verified in FontLab 9.1.9813, including VFJ save and reopen.
+
+def smart_corner_parameters(font: Any, *, native: Any = None) -> dict[str, float]:
+    """Return the font's smart-corner defaults: ``curvature`` and ``inktrap_len``.
+
+    ``font`` is an ``flPackage`` or an ``fgFont`` (``fl.CurrentFont()``). Reads
+    ``flPackage.smartCornerParameters``. Hosts whose structure lacks
+    ``inktrap_len`` (before FontLab 9.1.9813) raise ``UnsupportedStroke``.
     """
-    current = smart_corner_parameters(package)
-    if curvature is not None:
-        current["curvature"] = _finite(curvature, "curvature")
-    if inktrap_len is not None:
-        current["inktrap_len"] = _finite(inktrap_len, "inktrap_len")
-    package.smartCornerParameters = dict(current)  # the binding accepts a dict
-    return smart_corner_parameters(package)
+    return _read_corners(_package(font, native))
+
+
+def set_smart_corner_parameters(
+    font: Any,
+    *,
+    curvature: float | None = None,
+    inktrap_len: float | None = None,
+    native: Any = None,
+) -> dict[str, float]:
+    """Set the font's smart-corner defaults and return the values FontLab stored.
+
+    ``font`` is an ``flPackage`` or an ``fgFont``. Omitted fields keep their
+    value; a call with neither field writes nothing. ``curvature`` must be within
+    0..1 and ``inktrap_len`` must not be negative (FontLab itself stores any
+    value). Bools and non-numbers raise ``TypeError``, non-finite or out-of-range
+    numbers ``ValueError``, all before any write. If FontLab stores a different
+    value, ``PenError`` is raised after the write.
+
+    FontLab stores the values on the key master and rebuilds smart corners on the
+    key layer only; existing corners keep the values saved in their own builder.
+    The change makes no Undo step. Verified in FontLab 9.1.9813, including VFJ
+    save and reopen.
+    """
+    package = _package(font, native)
+    current = _read_corners(package)
+    request = {
+        field: _corner_value(value, field)
+        for field, value in (("curvature", curvature), ("inktrap_len", inktrap_len))
+        if value is not None
+    }
+    if not request:
+        return current
+    package.smartCornerParameters = {**current, **request}  # the binding accepts a dict
+    stored = _read_corners(package)
+    wrong = {
+        f: stored[f] for f, v in request.items() if not math.isclose(stored[f], v, abs_tol=1e-6)
+    }
+    if wrong:
+        detail = ", ".join(f"{f} {request[f]} -> {v}" for f, v in wrong.items())
+        raise PenError(f"FontLab stored other smart-corner values: {detail}")
+    return stored
 
 
 def _node_position(shape: Any, node: Any) -> tuple[int, int] | None:

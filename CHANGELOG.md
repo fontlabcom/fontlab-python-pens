@@ -2,6 +2,22 @@
 this_file: CHANGELOG.md
 ---
 
+## 2026-11-17 — Smart-corner defaults: font argument and stricter checks (issue 253, task 4 round 2)
+
+- `smart_corner_parameters(font)` and `set_smart_corner_parameters(font, ...)` now take
+  an `fgFont` (`fl.CurrentFont()`) or an `flPackage`; inside FontLab the check is
+  `isinstance(font, fontlab.flPackage)` and an `fgFont` is wrapped with
+  `flPackage(font)`. Verified in FontLab 9.1.9813: the wrapper has the same
+  `fgId` and object id as the current package, and a write through it reaches it.
+- The setter rejects bools and non-numbers (`TypeError`) and non-finite values,
+  curvature outside 0 to 1 and negative ink-trap length (`ValueError`) before any
+  write. A call without fields writes nothing. After the write it compares the
+  stored values with the request and raises `PenError` on a mismatch. FontLab
+  9.1.9813 itself stores -0.5, 1.5 and -3 unchanged, so the bounds are the
+  package's own.
+- Formatting only: `ruff format` applied to the 18 files that `ruff format --check`
+  reported (separate commit).
+
 ## 2026-11-17 — Smart-corner defaults API and native follow-up checks (issue 253, task 4)
 
 - New `smart_corner_parameters(font)` and `set_smart_corner_parameters(font, *,

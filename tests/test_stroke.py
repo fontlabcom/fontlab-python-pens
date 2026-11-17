@@ -784,17 +784,19 @@ class SmartCornerParameters:
         self.inktrap_len = inktrap_len
 
 
-def package_type():
+def package_type(clamp=None):
+    """A fake flPackage; ``clamp`` mimics a host that stores something else."""
+
     def get(self):
         return self._scp
 
     def put(self, value):
         self.writes.append(value)
-        self._scp = SmartCornerParameters(**value)
+        self._scp = SmartCornerParameters(**(clamp(value) if clamp else value))
 
-    def init(self):
-        self._scp = SmartCornerParameters()
-        self.writes = []
+    def init(self, font=None):
+        self._scp = font._scp if font is not None else SmartCornerParameters()
+        self.writes = font.writes if font is not None else []
 
     return type("flPackage", (), {"__init__": init, "smartCornerParameters": property(get, put)})
 
@@ -804,34 +806,83 @@ def test_smart_corner_parameters_when_host_has_fields_then_floats():
 
 
 def test_set_smart_corner_parameters_when_one_field_then_other_kept():
-    package = package_type()()
-    result = set_smart_corner_parameters(package, inktrap_len=7)
+    font = package_type()()
+    result = set_smart_corner_parameters(font, inktrap_len=7)
     assert result == {"curvature": 0.67, "inktrap_len": 7.0}, "omitted field must be kept"
-    assert package.writes == [{"curvature": 0.67, "inktrap_len": 7.0}], "one dict write expected"
-    result = set_smart_corner_parameters(package, curvature=0.5)
+    assert font.writes == [{"curvature": 0.67, "inktrap_len": 7.0}], "one dict write expected"
+    result = set_smart_corner_parameters(font, curvature=0.5)
     assert result == {"curvature": 0.5, "inktrap_len": 7.0}, "values must be read back"
 
 
-def test_set_smart_corner_parameters_when_not_finite_then_value_error_before_write():
-    package = package_type()()
-    with pytest.raises(ValueError, match="inktrap_len"):
-        set_smart_corner_parameters(package, inktrap_len=float("nan"))
-    assert package.writes == [], "nothing may be written for a bad value"
+def test_set_smart_corner_parameters_when_no_fields_then_no_write():
+    font = package_type()()
+    assert set_smart_corner_parameters(font) == {"curvature": 0.67, "inktrap_len": 2.0}
+    assert font.writes == [], "a call without fields must not write"
+
+
+@pytest.mark.parametrize(
+    ("fields", "error", "match"),
+    [
+        ({"inktrap_len": float("nan")}, ValueError, "inktrap_len.*finite"),
+        ({"curvature": float("inf")}, ValueError, "curvature.*finite"),
+        ({"curvature": "0.5"}, TypeError, "curvature.*number"),
+        ({"inktrap_len": True}, TypeError, "inktrap_len.*number"),
+        ({"curvature": -0.1}, ValueError, "curvature.*0 and 1"),
+        ({"curvature": 1.5}, ValueError, "curvature.*0 and 1"),
+        ({"inktrap_len": -1}, ValueError, "inktrap_len.*not be negative"),
+    ],
+)
+def test_set_smart_corner_parameters_when_bad_value_then_error_before_write(fields, error, match):
+    font = package_type()()
+    with pytest.raises(error, match=match):
+        set_smart_corner_parameters(font, **fields)
+    assert font.writes == [], "nothing may be written for a bad value"
+
+
+def test_set_smart_corner_parameters_when_bounds_then_accepted():
+    font = package_type()()
+    assert set_smart_corner_parameters(font, curvature=0, inktrap_len=0) == {
+        "curvature": 0.0,
+        "inktrap_len": 0.0,
+    }
+    assert set_smart_corner_parameters(font, curvature=1)["curvature"] == 1.0
+
+
+def test_set_smart_corner_parameters_when_host_stores_other_value_then_pen_error():
+    font = package_type(clamp=lambda value: {**value, "inktrap_len": 5.0})()
+    with pytest.raises(PenError, match="inktrap_len.*5"):
+        set_smart_corner_parameters(font, inktrap_len=7)
 
 
 def test_smart_corner_parameters_when_old_structure_then_unsupported():
-    package = package_type()()
-    package._scp = SimpleNamespace(curvature=0.67)  # before 9.1.9813: no inktrap_len
+    font = package_type()()
+    font._scp = SimpleNamespace(curvature=0.67)  # before 9.1.9813: no inktrap_len
     with pytest.raises(UnsupportedStroke) as caught:
-        smart_corner_parameters(package)
+        smart_corner_parameters(font)
     assert caught.value.issue.endswith("8628"), "error must link the smart corner issue"
     with pytest.raises(UnsupportedStroke):
-        set_smart_corner_parameters(package, curvature=0.5)
-    assert package.writes == [], "nothing may be written on an old host"
+        set_smart_corner_parameters(font, curvature=0.5)
+    assert font.writes == [], "nothing may be written on an old host"
 
 
-def test_smart_corner_parameters_when_no_binding_or_not_package_then_errors():
+def test_smart_corner_parameters_when_no_binding_or_not_font_then_errors():
     with pytest.raises(UnsupportedStroke):
         smart_corner_parameters(type("flPackage", (), {})())
-    with pytest.raises(TypeError, match="flPackage"):
+    with pytest.raises(TypeError, match="flPackage or fgFont"):
         smart_corner_parameters(flLayer())
+
+
+def test_smart_corner_parameters_when_native_then_isinstance_and_fgfont_wrapped():
+    package = package_type()
+    subclass = type("Wrapped", (package,), {})  # isinstance, not the class name
+    native = SimpleNamespace(flPackage=package)
+    assert smart_corner_parameters(subclass(), native=native)["curvature"] == 0.67
+    font = type("fgFont", (), {})()  # what fl.CurrentFont() returns
+    font._scp, font.writes = SmartCornerParameters(0.3, 1.0), []
+    assert set_smart_corner_parameters(font, inktrap_len=4, native=native) == {
+        "curvature": 0.3,
+        "inktrap_len": 4.0,
+    }, "an fgFont must be wrapped with flPackage(font) and written through"
+    assert font.writes == [{"curvature": 0.3, "inktrap_len": 4.0}]
+    with pytest.raises(TypeError, match="flPackage or fgFont"):
+        smart_corner_parameters(type("flPackage", (), {})(), native=native)
