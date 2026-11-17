@@ -6,9 +6,13 @@ import importlib
 import io
 import json
 import os
+import re
 import shutil
+import ssl
+import subprocess
 import sys
 import tempfile
+import urllib.error
 import urllib.request
 import zipfile
 from email.parser import BytesParser
@@ -18,6 +22,8 @@ HERE = Path(__file__).resolve().parent
 PKG = "fontlab_instamix"
 PYPI = "https://pypi.org/pypi/fontlab-python-instamix/json"
 SELF_INSTALL = False
+# Oldest instamix that sets up uv and reinstalls correctly on Windows.
+MINIMUM = (1, 0, 13)
 
 
 def site():
@@ -39,6 +45,30 @@ def site():
     return target
 
 
+def fetch(url, timeout):
+    try:
+        with urllib.request.urlopen(url, timeout=timeout) as response:
+            return response.read()
+    except urllib.error.URLError as error:
+        # FontLab's Python can lack root certificates; the system curl has them.
+        curl = {"win32": Path(os.environ.get("SystemRoot", r"C:\Windows"), "System32", "curl.exe"),
+                "darwin": Path("/usr/bin/curl")}.get(sys.platform)
+        if curl is None or not isinstance(error.reason, ssl.SSLCertVerificationError) or not curl.is_file():
+            raise
+        flags = getattr(subprocess, "CREATE_NO_WINDOW", 0)
+        # Without these, curl would be pointed back at the store that just failed.
+        clean = {k: v for k, v in os.environ.items() if k not in ("SSL_CERT_FILE", "SSL_CERT_DIR", "CURL_CA_BUNDLE")}
+        command = [str(curl), "-fsSL", "--proto", "=https", "--proto-redir", "=https", "--max-time", str(timeout), "--", url]
+        try:
+            done = subprocess.run(command, capture_output=True, stdin=subprocess.DEVNULL, creationflags=flags,
+                                  timeout=timeout + 30, env=clean)
+        except (OSError, subprocess.TimeoutExpired) as failure:
+            raise RuntimeError("curl could not download %s: %s" % (url, failure)) from failure
+        if done.returncode != 0:
+            raise RuntimeError("curl could not download %s: %s" % (url, done.stderr.decode("utf-8", "replace").strip())) from error
+        return done.stdout
+
+
 def download(target, url=PYPI):
     local = sorted([*HERE.glob("dist/fontlab_python_instamix-*-py3-none-any.whl"),
                     *(HERE.parent / "fontlab-python-instamix" / "dist").glob("fontlab_python_instamix-*-py3-none-any.whl")])
@@ -47,14 +77,12 @@ def download(target, url=PYPI):
     if local:
         blob = local[0].read_bytes()
     else:
-        with urllib.request.urlopen(url, timeout=60) as response:
-            info = json.load(response)
+        info = json.loads(fetch(url, 60))
         wheel = next((u for u in info["urls"] if u["packagetype"] == "bdist_wheel"
                       and u["filename"].endswith("-py3-none-any.whl")), None)
         if wheel is None:
             raise RuntimeError("no compatible fontlab-instamix wheel on PyPI")
-        with urllib.request.urlopen(wheel["url"], timeout=120) as response:
-            blob = response.read()
+        blob = fetch(wheel["url"], 120)
         if hashlib.sha256(blob).hexdigest() != wheel["digests"]["sha256"]:
             raise RuntimeError("fontlab-instamix wheel failed its sha256 check")
     with zipfile.ZipFile(io.BytesIO(blob)) as archive:
@@ -81,6 +109,31 @@ def download(target, url=PYPI):
         archive.extractall(target)
 
 
+def checkout(target):
+    """Copy instamix from the checkout this installer sits in; False when there is none."""
+    source = HERE / "src" / PKG
+    if not SELF_INSTALL or not (source / "__init__.py").is_file():
+        return False
+    # No build-time version file: the copy reports itself as a checkout ("0.0.0+checkout").
+    shutil.copytree(source, target / PKG, ignore=shutil.ignore_patterns("__pycache__", "__version__.py"))
+    return True
+
+
+def installed_version():
+    """Version from the installed metadata folder, for a package that states none."""
+    found = [info.name[len("fontlab_python_instamix-"):-len(".dist-info")]
+             for info in site().glob("fontlab_python_instamix-*.dist-info")]
+    return max(found, key=release, default="")
+
+
+def release(version):
+    """(major, minor, patch, final): a pre-release sorts before its final release."""
+    public = version.split("+")[0]
+    numbers = [int(n) for n in re.findall(r"\d+", public)[:3]]
+    final = not re.search(r"\d(a|b|rc|\.?dev)\d*", public)
+    return (*numbers, *[0] * (3 - len(numbers)), int(final))
+
+
 def remove(path):
     if path.is_symlink() or path.is_file():
         path.unlink()
@@ -102,7 +155,13 @@ def required_api():
     if not SELF_INSTALL:
         if not callable(getattr(bootstrap, "install_project", None)):
             raise ImportError("fontlab_instamix.bootstrap.install_project must be callable")
-    return importlib.import_module(PKG)
+    package = importlib.import_module(PKG)
+    version = str(getattr(package, "__version__", "")) or installed_version()
+    # A local version ("+...") or a linked folder is a checkout its developer chose.
+    if "+" not in version and release(version) < (*MINIMUM, 1) and not (site() / PKG).is_symlink():
+        raise ImportError(f"fontlab_instamix {version or 'of unknown version'} is older than "
+                          + ".".join(map(str, MINIMUM)))
+    return package
 
 
 def ensure(force=False):
@@ -121,7 +180,9 @@ def ensure(force=False):
     recovered = True
     try:
         stage.mkdir()
-        download(stage)
+        # A built wheel beside the installer wins over the checkout's source.
+        if list(HERE.glob("dist/fontlab_python_instamix-*-py3-none-any.whl")) or not checkout(stage):
+            download(stage)
         backup.mkdir()
         previous = [target / PKG, *target.glob("fontlab_python_instamix-*.dist-info")]
         for old in previous:

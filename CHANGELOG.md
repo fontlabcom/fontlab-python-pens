@@ -4,6 +4,10 @@ this_file: CHANGELOG.md
 
 ## Unreleased
 
+- `install.vfpy` is now the stub from fontlab-python-instamix 1.0.15. It replaces an
+  installed instamix older than 1.0.13 and puts the old copy back if the upgrade
+  fails; linked checkouts and local builds are kept. A download that fails for
+  lack of root certificates (FontLab 9 for macOS) is retried with the system curl.
 - `set_smart_corner_parameters` writes the previous values back before raising
   `PenError` when FontLab stores something other than the request.
 - The `native=` keyword of `smart_corner_parameters` and
