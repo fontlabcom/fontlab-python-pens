@@ -2,6 +2,14 @@
 this_file: CHANGELOG.md
 ---
 
+## Unreleased
+
+- `set_smart_corner_parameters` writes the previous values back before raising
+  `PenError` when FontLab stores something other than the request.
+- The `native=` keyword of `smart_corner_parameters` and
+  `set_smart_corner_parameters` is documented in their docstrings and on the
+  strokes page (issue 253, task 4 round 3).
+
 ## 2026-11-17 — Smart-corner defaults: font argument and stricter checks (issue 253, task 4 round 2)
 
 - `smart_corner_parameters(font)` and `set_smart_corner_parameters(font, ...)` now take

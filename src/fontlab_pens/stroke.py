@@ -419,6 +419,9 @@ def smart_corner_parameters(font: Any, *, native: Any = None) -> dict[str, float
     ``font`` is an ``flPackage`` or an ``fgFont`` (``fl.CurrentFont()``). Reads
     ``flPackage.smartCornerParameters``. Hosts whose structure lacks
     ``inktrap_len`` (before FontLab 9.1.9813) raise ``UnsupportedStroke``.
+    ``native`` is the ``fontlab`` module or a namespace with ``flPackage``
+    (imported from FontLab when omitted); outside FontLab only the class names
+    are checked.
     """
     return _read_corners(_package(font, native))
 
@@ -437,7 +440,10 @@ def set_smart_corner_parameters(
     0..1 and ``inktrap_len`` must not be negative (FontLab itself stores any
     value). Bools and non-numbers raise ``TypeError``, non-finite or out-of-range
     numbers ``ValueError``, all before any write. If FontLab stores a different
-    value, ``PenError`` is raised after the write.
+    value, the previous values are written back and ``PenError`` is raised.
+
+    ``native`` is the ``fontlab`` module or a namespace with ``flPackage``
+    (imported from FontLab when omitted), as for the pens.
 
     FontLab stores the values on the key master and rebuilds smart corners on the
     key layer only; existing corners keep the values saved in their own builder.
@@ -459,6 +465,7 @@ def set_smart_corner_parameters(
         f: stored[f] for f, v in request.items() if not math.isclose(stored[f], v, abs_tol=1e-6)
     }
     if wrong:
+        package.smartCornerParameters = current  # put the previous values back
         detail = ", ".join(f"{f} {request[f]} -> {v}" for f, v in wrong.items())
         raise PenError(f"FontLab stored other smart-corner values: {detail}")
     return stored

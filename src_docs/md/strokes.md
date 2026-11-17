@@ -70,7 +70,10 @@ wrapped with `fl.flPackage(font)`, which in 9.1.9813 resolves to the same open
 font. `curvature` must be within 0 to 1 and `inktrap_len` must not be negative.
 FontLab itself stores any value, so these bounds are the package's own. Bools and
 non-numbers raise `TypeError`, other bad values `ValueError`, before any write;
-if FontLab stores something other than the request, `PenError` is raised.
+if FontLab stores something other than the request, the previous values are
+written back and `PenError` is raised. Both functions take `native=`, the
+`fontlab` module or a namespace with `flPackage`, for wrappers and test doubles;
+it defaults to the FontLab module.
 
 ```python
 from fly import fl

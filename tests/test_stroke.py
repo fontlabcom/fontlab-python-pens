@@ -854,6 +854,19 @@ def test_set_smart_corner_parameters_when_host_stores_other_value_then_pen_error
         set_smart_corner_parameters(font, inktrap_len=7)
 
 
+def test_set_smart_corner_parameters_when_host_stores_other_value_then_previous_restored():
+    def clamp(value):
+        return {**value, "inktrap_len": 5.0} if value["inktrap_len"] == 7 else value
+
+    font = package_type(clamp=clamp)()
+    with pytest.raises(PenError):
+        set_smart_corner_parameters(font, inktrap_len=7)
+    assert smart_corner_parameters(font) == {"curvature": 0.67, "inktrap_len": 2.0}, (
+        "a rejected write must put the previous values back"
+    )
+    assert font.writes[-1] == {"curvature": 0.67, "inktrap_len": 2.0}
+
+
 def test_smart_corner_parameters_when_old_structure_then_unsupported():
     font = package_type()()
     font._scp = SimpleNamespace(curvature=0.67)  # before 9.1.9813: no inktrap_len
