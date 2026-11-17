@@ -75,10 +75,12 @@ from fontlab_pens.stroke import (
     StrokePlan,
     StrokeStyle,
     UnsupportedStroke,
+    add_smart_corners,
     apply_plan,
     apply_stroke,
     compatibility,
     expand_stroke,
+    new_stroke,
 )
 from fontlab_pens.transform import (
     Identity,
@@ -149,6 +151,7 @@ __all__ = [
     "TransformPointPen",
     "UnsupportedStroke",
     "__version__",
+    "add_smart_corners",
     "apply_plan",
     "apply_stroke",
     "compatibility",
@@ -160,6 +163,7 @@ __all__ = [
     "invert_transform",
     "layer_of",
     "lerpRecordings",
+    "new_stroke",
     "noRound",
     "otRound",
     "replayRecording",

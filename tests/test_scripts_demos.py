@@ -188,6 +188,25 @@ def test_stroke_plan_demo_when_source_closed_then_refuses_without_mutation():
     assert glyph.history == native.flItems.calls == [], "refusal must not notify"
 
 
+def test_new_stroke_demo_when_two_masters_then_one_stroke_each_in_one_step():
+    glyph, layer, native = make_glyph()
+    bold = glyph.layers[1]
+    widths = load_demo("New Stroke Demo").new_stroke_demo(glyph, native=native)
+    assert widths == {layer.name: 20.0, bold.name: 40.0}, "thicker stroke per master"
+    assert [len(target.shapes) for target in glyph.layers] == [2, 1], "one new element each"
+    assert bold.shapes[0].pen.widthF() == 40.0, "QPen width carries the thickness"
+    assert native.flItems.calls == [("New Stroke Demo", [layer, bold, glyph])], "notify once"
+
+
+def test_new_stroke_demo_when_no_masters_then_refuses_without_mutation():
+    glyph, _layer, native = make_glyph()
+    for target in glyph.layers:
+        target.isMasterLayer = False
+    with pytest.raises(ValueError, match="no master layers"):
+        load_demo("New Stroke Demo").new_stroke_demo(glyph, native=native)
+    assert native.flItems.calls == [], "refusal must not notify"
+
+
 @pytest.mark.parametrize("path", PATHS, ids=lambda path: path.stem)
 def test_main_when_glyph_open_then_operates_on_active_layer_and_prints(path, monkeypatch, capsys):
     glyph, layer, native = make_glyph(closed=path.stem != "Stroke Plan Demo")
@@ -203,7 +222,7 @@ def test_main_when_glyph_open_then_operates_on_active_layer_and_prints(path, mon
         assert len(native.flItems.calls) == 1, "main must notify once"
     else:
         assert len(layer.shapes) == 2 and len(native.flItems.calls) == 1, "main must draw"
-    if path.stem == "Stroke Plan Demo":
+    if path.stem in {"Stroke Plan Demo", "New Stroke Demo"}:
         assert "fl#8626" in output and "cap0" in output, "old-host limits must be printed"
 
 

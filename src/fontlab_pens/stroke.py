@@ -29,13 +29,16 @@ __all__ = [
     "StrokePlan",
     "StrokeStyle",
     "UnsupportedStroke",
+    "add_smart_corners",
     "apply_plan",
     "apply_stroke",
     "compatibility",
     "expand_stroke",
+    "new_stroke",
 ]
 
 _ISSUE = "https://github.com/Fontlab/fl/issues/8626"
+_SMART_CORNER_ISSUE = "https://github.com/Fontlab/fl/issues/8628"
 
 
 class CapType(IntEnum):
@@ -285,6 +288,64 @@ def expand_stroke(shape: Any) -> None:
         raise UnsupportedStroke(("expand",))
     if shape.expandStroke() is False:
         raise PenError("FontLab could not expand the stroke (no pen or failed makeStroke)")
+
+
+def new_stroke(
+    style: StrokeStyle, drawing: Any, *, expand: bool = False, native: Any = None
+) -> Any:
+    """Create a detached stroked ``flShape`` from nothing but points and a style.
+
+    ``drawing`` is a ``RecordingPointPen`` (or its ``value``) to replay, or a
+    callable that receives a point pen and draws the centerline. The element is
+    not attached to any layer: add it with ``layer.addShape(shape)`` inside the
+    layer's history step. Hosts without ``flShape.penParameters`` accept only
+    thickness, join and miter limit (see fl#8626). ``expand=True`` outlines the
+    stroke before returning it.
+    """
+    if not isinstance(style, StrokeStyle):
+        raise TypeError("style must be a StrokeStyle")
+    if isinstance(drawing, RecordingPointPen):
+        replay = drawing.replay
+    elif callable(drawing):
+        replay = drawing
+    else:
+        recording = RecordingPointPen()
+        recording.value.extend(drawing)
+        replay = recording.replay
+    native = _load_native() if native is None else native
+    shape = native.flShape()
+    with FlPointPen(shape, native=native) as pen:
+        replay(pen)
+    apply_stroke(shape, style, native=native)
+    if expand:
+        expand_stroke(shape)
+    return shape
+
+
+def add_smart_corners(
+    shape: Any, radius: float = 20.0, *, smooth: bool = False, nodes: Iterable[Any] | None = None
+) -> int:
+    """Add FontLab smart corners to an element and return how many were added.
+
+    With ``nodes`` (``flNode`` objects of ``shape``), only those corners get one;
+    otherwise every eligible corner does. A negative radius makes an ink trap.
+    Node objects are invalid afterwards: reacquire them from the shape. Wrap a
+    live element's edit in the layer's history step. Needs the native
+    ``flShape.addSmartCorners`` binding; older hosts raise ``UnsupportedStroke``.
+    """
+    _shape(shape)
+    radius = _finite(radius, "radius")
+    if nodes is None:
+        if "addSmartCorners" not in dir(type(shape)):
+            raise UnsupportedStroke(("smart_corners",), _SMART_CORNER_ISSUE)
+        return int(shape.addSmartCorners(radius, bool(smooth)))
+    if "addSmartCorner" not in dir(type(shape)):
+        raise UnsupportedStroke(("smart_corner",), _SMART_CORNER_ISSUE)
+    count = 0
+    for node in list(nodes):
+        if shape.addSmartCorner(node, radius, bool(smooth)) is not False:
+            count += 1
+    return count
 
 
 @dataclass(frozen=True)

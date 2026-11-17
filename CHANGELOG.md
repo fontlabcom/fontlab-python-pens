@@ -2,6 +2,22 @@
 this_file: CHANGELOG.md
 ---
 
+## 2026-11-17 — Strokes and smart corners from zero (issue 251)
+
+- `new_stroke(style, drawing, *, expand=False, native=None)` creates a detached,
+  stroked `flShape` from a point-pen drawing (callable, `RecordingPointPen` or its
+  value) and a `StrokeStyle`; nothing has to be copied from an existing pen.
+- `add_smart_corners(shape, radius=20, *, smooth=False, nodes=None)` adds FontLab
+  smart corners (negative radius: ink trap) and raises `UnsupportedStroke` (fl#8628)
+  on hosts without the binding.
+- New `Scripts/Contours/New Stroke Demo.py`: one centerline, a live stroke on every
+  master, thicker per master, with contrast, rotation and round caps where supported.
+- Verified live in FontLab 9.1.9813 (i2-lato, glyph H, two masters, edits removed):
+  a fresh `flShape` took full `penParameters` (thickness, contrast, rotation, join,
+  caps); `expandStroke()` produced compatible one-contour outlines in both masters;
+  `addSmartCorners(40)` added four corners to a from-zero rectangle. Not checked:
+  Undo/Redo, save-and-reopen, nib rotation persistence (fl#8627).
+
 ## 2026-11-17 — Guarded common installer source candidate
 
 Copied the exact canonical common template shipped with Instamix 1.0.11.

@@ -17,10 +17,12 @@ from fontlab_pens import (
     StrokePlan,
     StrokeStyle,
     UnsupportedStroke,
+    add_smart_corners,
     apply_plan,
     apply_stroke,
     compatibility,
     expand_stroke,
+    new_stroke,
 )
 from fontlab_pens.fontlab import draw_points
 from tests.fakes import flGlyph, flLayer, flShape, fontlab_native
@@ -633,3 +635,81 @@ def test_apply_stroke_when_thickness_zero_on_solid_pen_then_no_pen():
     shape.pen = pen
     apply_stroke(shape, StrokeStyle(thickness=0), native=native)
     assert shape.pen.style() == native.Qt.NoPen, "zero thickness must not leave a cosmetic pen"
+
+
+def smart_corner_shape_type():
+    def add_all(self, radius, smooth):
+        self.corners = ("all", radius, smooth)
+        return 4
+
+    def add_one(self, node, radius, smooth):
+        self.corners = (*getattr(self, "corners", ()), (node, radius, smooth))
+        return node != "refused"
+
+    return type("flShape", (flShape,), {"addSmartCorners": add_all, "addSmartCorner": add_one})
+
+
+def centerline(pen):
+    pen.beginPath()
+    pen.addPoint((1, 2), "move")
+    pen.addPoint((30, 40), "line")
+    pen.endPath()
+
+
+def test_new_stroke_when_callable_drawing_then_detached_stroked_shape():
+    native = fontlab_native()
+    shape = new_stroke(StrokeStyle(24, join=Join.ROUND), centerline, native=native)
+    assert type(shape).__name__ == "flShape", "a new element must be returned"
+    assert len(shape.contours) == 1, "the centerline contour must be drawn into the element"
+    assert shape.pen.widthF() == 24, "the stroke thickness must be applied"
+
+
+def test_new_stroke_when_recording_or_value_then_same_contours():
+    native = fontlab_native()
+    recording = RecordingPointPen()
+    centerline(recording)
+    for drawing in (recording, list(recording.value)):
+        shape = new_stroke(StrokeStyle(10), drawing, native=native)
+        copy = RecordingPointPen()
+        draw_points(shape, copy)
+        assert len(copy.value) == len(recording.value), "replayed drawing must match the source"
+
+
+def test_new_stroke_when_expand_then_native_expand_called():
+    native = fontlab_native()
+    native.flShape = extended_shape_type()
+    native.flShape.penParameters = None
+    shape = new_stroke(StrokeStyle(10, contrast=0.5), centerline, expand=True, native=native)
+    assert shape.expanded, "expand=True must call flShape.expandStroke"
+    assert shape.penParameters["contrast"] == 50, "pen parameters must be written natively"
+
+
+def test_new_stroke_when_wrong_style_then_type_error():
+    with pytest.raises(TypeError, match="StrokeStyle"):
+        new_stroke(20, centerline, native=fontlab_native())
+
+
+def test_add_smart_corners_when_all_then_native_count_returned():
+    shape = smart_corner_shape_type()()
+    assert add_smart_corners(shape, 40) == 4, "native count must be returned"
+    assert shape.corners == ("all", 40.0, False), "radius and smooth must reach the host"
+
+
+def test_add_smart_corners_when_nodes_then_each_node_tried():
+    shape = smart_corner_shape_type()()
+    count = add_smart_corners(shape, -5, smooth=True, nodes=["a", "refused", "b"])
+    assert count == 2, "refused nodes must not be counted"
+    assert shape.corners[0] == ("a", -5.0, True), "negative radius (ink trap) must pass through"
+
+
+def test_add_smart_corners_when_host_lacks_binding_then_unsupported():
+    with pytest.raises(UnsupportedStroke) as caught:
+        add_smart_corners(flShape(), 10)
+    assert caught.value.issue.endswith("8628"), "error must link the smart corner issue"
+    with pytest.raises(UnsupportedStroke):
+        add_smart_corners(flShape(), 10, nodes=["a"])
+
+
+def test_add_smart_corners_when_not_shape_then_type_error():
+    with pytest.raises(TypeError, match="flShape"):
+        add_smart_corners(flLayer(), 10)

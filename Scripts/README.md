@@ -36,6 +36,9 @@ and `fly.fl`; the Pens library itself has no runtime dependencies. The demos are
 - [Outline Measurements Demo](Reports/Outline%20Measurements%20Demo.py) prints
   bounds and signed area to the Output panel without changing the font. Signed
   area requires closed contours; empty layers report bounds `None` and area `0`.
+- [New Stroke Demo](Contours/New%20Stroke%20Demo.py) draws one open centerline from
+  nothing and adds it to every master as a live stroke, 20, 40, 60, … units wide,
+  with contrast, nib rotation and round caps where FontLab has `penParameters`.
 - [Stroke Plan Demo](Contours/Stroke%20Plan%20Demo.py) copies the active layer's
   open contours into every named glyph layer with widths 20, 40, 60, … and round
   joins. Closed contours are skipped; a source without open contours is refused.

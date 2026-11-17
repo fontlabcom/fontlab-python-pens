@@ -32,10 +32,11 @@ Open a glyph in a Glyph window, select its active layer, then run a demo from th
 | Recording Pen Demo | Contours | Appends a triangle. |
 | Transform Pen Demo | Contours | Appends a half-size copy of the visible contours, offset by (10, 20). Empty layers are refused. |
 | Outline Measurements Demo | Reports | Prints bounds and signed area without changing the font. Empty layers report bounds `None` and area `0`. |
+| New Stroke Demo | Contours | Draws one open centerline from nothing and adds it to every master as a live stroke, thicker on each master. |
 | Stroke Plan Demo | Contours | Copies the open contours into every named layer with widths 20, 40, 60, … and round joins. Closed contours are skipped. |
 
 Drawing demos append elements, keep existing outlines and enroll one undoable history step for the glyph; the stroke demo updates all target layers in that step. Native errors propagate. If a native write or notification fails, inspect the layer before you rerun, because partial changes may remain. Live FontLab acceptance and Undo verification remain open.
 
 ## Testing a demo without FontLab
 
-Load a script with `runpy.run_path(path)` and call its `recording_demo(layer)`, `transform_demo(layer)`, `measurements_demo(layer)` or `stroke_plan_demo(glyph, layer)` function with fake targets and `native=...`. The script's `main()` is the only part that touches the live font.
+Load a script with `runpy.run_path(path)` and call its `recording_demo(layer)`, `transform_demo(layer)`, `measurements_demo(layer)`, `stroke_plan_demo(glyph, layer)` or `new_stroke_demo(glyph)` function with fake targets and `native=...`. The script's `main()` is the only part that touches the live font.
