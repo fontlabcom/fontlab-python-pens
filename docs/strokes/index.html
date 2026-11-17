@@ -427,6 +427,17 @@
     <ul class="md-nav__list" data-md-component="toc">
       
         <li class="md-nav__item">
+  <a href="#strokes-from-zero" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Strokes from zero
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#what-fontlab-supports-today" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -564,6 +575,17 @@
     <ul class="md-nav__list" data-md-component="toc">
       
         <li class="md-nav__item">
+  <a href="#strokes-from-zero" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Strokes from zero
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#what-fontlab-supports-today" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -613,6 +635,34 @@
 <span class="n">counts</span> <span class="o">=</span> <span class="n">apply_plan</span><span class="p">(</span><span class="n">glyph</span><span class="p">,</span> <span class="n">plan</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">)</span>
 <span class="c1"># counts maps each target layer name to its new open-contour count</span>
 </code></pre></div>
+<h2 id="strokes-from-zero">Strokes from zero</h2>
+<p><code>new_stroke</code> builds a detached stroked element from points and a style. Nothing
+needs to be copied from an existing pen. Add the element to a layer inside its
+history step. <code>add_smart_corners</code> adds FontLab smart corners (a negative radius
+makes an ink trap).</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">fly</span><span class="w"> </span><span class="kn">import</span> <span class="n">fl</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fly.pens</span><span class="w"> </span><span class="kn">import</span> <span class="n">Cap</span><span class="p">,</span> <span class="n">CapType</span><span class="p">,</span> <span class="n">Join</span><span class="p">,</span> <span class="n">StrokeStyle</span><span class="p">,</span> <span class="n">add_smart_corners</span><span class="p">,</span> <span class="n">new_stroke</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">centerline</span><span class="p">(</span><span class="n">pen</span><span class="p">):</span>
+    <span class="n">pen</span><span class="o">.</span><span class="n">beginPath</span><span class="p">()</span>
+    <span class="n">pen</span><span class="o">.</span><span class="n">addPoint</span><span class="p">((</span><span class="mi">100</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="s2">"move"</span><span class="p">)</span>
+    <span class="n">pen</span><span class="o">.</span><span class="n">addPoint</span><span class="p">((</span><span class="mi">100</span><span class="p">,</span> <span class="mi">500</span><span class="p">),</span> <span class="s2">"line"</span><span class="p">)</span>
+    <span class="n">pen</span><span class="o">.</span><span class="n">endPath</span><span class="p">()</span>
+
+<span class="n">glyph</span> <span class="o">=</span> <span class="n">fl</span><span class="o">.</span><span class="n">flGlyph</span><span class="p">(</span><span class="n">fl</span><span class="o">.</span><span class="n">CurrentGlyph</span><span class="p">(),</span> <span class="n">fl</span><span class="o">.</span><span class="n">CurrentFont</span><span class="p">())</span>
+<span class="n">masters</span> <span class="o">=</span> <span class="p">[</span><span class="n">layer</span> <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="n">glyph</span><span class="o">.</span><span class="n">layers</span> <span class="k">if</span> <span class="n">layer</span><span class="o">.</span><span class="n">isMasterLayer</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="p">[</span><span class="o">*</span><span class="n">masters</span><span class="p">,</span> <span class="n">glyph</span><span class="p">]:</span>
+    <span class="n">item</span><span class="o">.</span><span class="n">checkInitHistoryState</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">layer</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">masters</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="n">style</span> <span class="o">=</span> <span class="n">StrokeStyle</span><span class="p">(</span><span class="n">thickness</span><span class="o">=</span><span class="mi">20</span> <span class="o">*</span> <span class="n">index</span><span class="p">,</span> <span class="n">contrast</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+                        <span class="n">join</span><span class="o">=</span><span class="n">Join</span><span class="o">.</span><span class="n">ROUND</span><span class="p">,</span> <span class="n">cap0</span><span class="o">=</span><span class="n">Cap</span><span class="p">(</span><span class="n">CapType</span><span class="o">.</span><span class="n">ROUND</span><span class="p">),</span> <span class="n">cap1</span><span class="o">=</span><span class="n">Cap</span><span class="p">(</span><span class="n">CapType</span><span class="o">.</span><span class="n">ROUND</span><span class="p">))</span>
+    <span class="n">layer</span><span class="o">.</span><span class="n">addShape</span><span class="p">(</span><span class="n">new_stroke</span><span class="p">(</span><span class="n">style</span><span class="p">,</span> <span class="n">centerline</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+<span class="n">fl</span><span class="o">.</span><span class="n">flItems</span><span class="o">.</span><span class="n">notifyChangesApplied</span><span class="p">(</span><span class="s2">"Strokes from zero"</span><span class="p">,</span> <span class="p">[</span><span class="o">*</span><span class="n">masters</span><span class="p">,</span> <span class="n">glyph</span><span class="p">])</span>
+</code></pre></div>
+<p>Pass <code>expand=True</code> to outline each stroke: equal centerlines give compatible
+outlines in every master. In FontLab 9.1.9813 the strokes were created, expanded
+to compatible outlines (one 19-point contour per master) and given smart corners
+on a live font; Undo/Redo and save-and-reopen were not checked.</p>
 <h2 id="what-fontlab-supports-today">What FontLab supports today</h2>
 <ul>
 <li>The default styles work with FontLab's QPen on current builds.</li>
@@ -621,7 +671,8 @@
 </ul>
 <h2 id="upstream-limits">Upstream limits</h2>
 <ul>
-<li>Cap, proportion, contrast, rotation and remove-overlap controls, and full expansion, need the upstream <code>penParameters</code> / <code>expandStroke</code> API (<a href="https://github.com/Fontlab/fl/issues/8626">fl#8626</a>).</li>
+<li>Cap, proportion, contrast, rotation and remove-overlap controls, and full expansion, need the native <code>penParameters</code> / <code>expandStroke</code> API (<a href="https://github.com/Fontlab/fl/issues/8626">fl#8626</a>). FontLab 9.1.9813 has it; older builds accept thickness, join and miter limit only.</li>
+<li><code>add_smart_corners</code> needs <code>flShape.addSmartCorners</code> / <code>addSmartCorner</code> (present in 9.1.9813; <a href="https://github.com/Fontlab/fl/issues/8628">fl#8628</a>); older builds raise <code>UnsupportedStroke</code>.</li>
 <li>Variants keep their rotation, but <a href="https://github.com/Fontlab/fl/issues/8627">native persistence</a> is unresolved.</li>
 <li>Percentage rounding loses finer precision.</li>
 <li>Live Undo/Redo and save-and-reopen acceptance have not been verified.</li>

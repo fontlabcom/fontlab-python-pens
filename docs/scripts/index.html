@@ -699,6 +699,11 @@
 <td>Prints bounds and signed area without changing the font. Empty layers report bounds <code>None</code> and area <code>0</code>.</td>
 </tr>
 <tr>
+<td>New Stroke Demo</td>
+<td>Contours</td>
+<td>Draws one open centerline from nothing and adds it to every master as a live stroke, thicker on each master.</td>
+</tr>
+<tr>
 <td>Stroke Plan Demo</td>
 <td>Contours</td>
 <td>Copies the open contours into every named layer with widths 20, 40, 60, … and round joins. Closed contours are skipped.</td>
@@ -707,7 +712,7 @@
 </table>
 <p>Drawing demos append elements, keep existing outlines and enroll one undoable history step for the glyph; the stroke demo updates all target layers in that step. Native errors propagate. If a native write or notification fails, inspect the layer before you rerun, because partial changes may remain. Live FontLab acceptance and Undo verification remain open.</p>
 <h2 id="testing-a-demo-without-fontlab">Testing a demo without FontLab</h2>
-<p>Load a script with <code>runpy.run_path(path)</code> and call its <code>recording_demo(layer)</code>, <code>transform_demo(layer)</code>, <code>measurements_demo(layer)</code> or <code>stroke_plan_demo(glyph, layer)</code> function with fake targets and <code>native=...</code>. The script's <code>main()</code> is the only part that touches the live font.</p>
+<p>Load a script with <code>runpy.run_path(path)</code> and call its <code>recording_demo(layer)</code>, <code>transform_demo(layer)</code>, <code>measurements_demo(layer)</code>, <code>stroke_plan_demo(glyph, layer)</code> or <code>new_stroke_demo(glyph)</code> function with fake targets and <code>native=...</code>. The script's <code>main()</code> is the only part that touches the live font.</p>
 
 
 
