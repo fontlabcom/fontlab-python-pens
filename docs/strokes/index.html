@@ -438,6 +438,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#smart-corner-defaults" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Smart-corner defaults
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#what-fontlab-supports-today" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -586,6 +597,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#smart-corner-defaults" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Smart-corner defaults
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#what-fontlab-supports-today" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -671,6 +693,23 @@ node again by contour and node index:</p>
 <div class="highlight"><pre><span></span><code><span class="n">nodes</span> <span class="o">=</span> <span class="n">shape</span><span class="o">.</span><span class="n">contours</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">nodes</span><span class="p">()</span>
 <span class="n">add_smart_corners</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="n">nodes</span><span class="o">=</span><span class="p">[</span><span class="n">nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">nodes</span><span class="p">[</span><span class="mi">2</span><span class="p">]])</span>
 </code></pre></div>
+<h2 id="smart-corner-defaults">Smart-corner defaults</h2>
+<p>Each font stores a smart-corner curvature and ink-trap length. Read them with
+<code>smart_corner_parameters</code> and change them with <code>set_smart_corner_parameters</code>;
+omitted fields keep their value and the function returns what FontLab reads back.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">fly</span><span class="w"> </span><span class="kn">import</span> <span class="n">fl</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fly.pens</span><span class="w"> </span><span class="kn">import</span> <span class="n">set_smart_corner_parameters</span><span class="p">,</span> <span class="n">smart_corner_parameters</span>
+
+<span class="n">font</span> <span class="o">=</span> <span class="n">fl</span><span class="o">.</span><span class="n">flPackage</span><span class="p">(</span><span class="n">fl</span><span class="o">.</span><span class="n">CurrentFont</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">smart_corner_parameters</span><span class="p">(</span><span class="n">font</span><span class="p">))</span>  <span class="c1"># {'curvature': 0.67, 'inktrap_len': 2.0}</span>
+<span class="n">set_smart_corner_parameters</span><span class="p">(</span><span class="n">font</span><span class="p">,</span> <span class="n">inktrap_len</span><span class="o">=</span><span class="mi">7</span><span class="p">)</span>
+</code></pre></div>
+<p>In FontLab 9.1.9813 a written curvature of 0.5 and ink-trap length of 7 were
+saved on the key master and read back after reopening the VFJ. FontLab stores
+them on the key master and rebuilds smart corners on the key layer only. Smart
+corners that already exist keep the values saved with them. Hosts without
+<code>inktrap_len</code> raise <code>UnsupportedStroke</code>
+(<a href="https://github.com/Fontlab/fl/issues/8628">fl#8628</a>).</p>
 <h2 id="what-fontlab-supports-today">What FontLab supports today</h2>
 <ul>
 <li>The default styles work with FontLab's QPen on current builds.</li>
@@ -681,10 +720,11 @@ node again by contour and node index:</p>
 <ul>
 <li>Cap, proportion, contrast, rotation and remove-overlap controls, and full expansion, need the native <code>penParameters</code> / <code>expandStroke</code> API (<a href="https://github.com/Fontlab/fl/issues/8626">fl#8626</a>). FontLab 9.1.9813 has it; older builds accept thickness, join and miter limit only.</li>
 <li><code>add_smart_corners</code> needs <code>flShape.addSmartCorners</code> / <code>addSmartCorner</code> (present in 9.1.9813; <a href="https://github.com/Fontlab/fl/issues/8628">fl#8628</a>); older builds raise <code>UnsupportedStroke</code>.</li>
-<li>Variants keep their rotation, but <a href="https://github.com/Fontlab/fl/issues/8627">native persistence</a> is unresolved.</li>
+<li>Nib rotation survives VFJ save and reopen in 9.1.9813 (<a href="https://github.com/Fontlab/fl/issues/8627">fl#8627</a>); Copy/Paste Style is untested.</li>
 <li>Percentage rounding loses finer precision.</li>
 <li>An expanded outline's saved <code>stroke.join</code> can disagree with the live value, so do not rely on join round-trips through VFJ (<a href="https://github.com/Fontlab/fl/issues/8654">fl#8654</a>, <a href="https://github.com/Fontlab/fl/issues/8630">fl#8630</a>).</li>
-<li><code>restoreHistoryState</code> on a glyph changed the history counter but not the outline in 9.1.9813; use the app's Undo.</li>
+<li><code>restoreHistoryState</code> on a glyph, layer or element changes the history counter but not the outline in 9.1.9813 (<a href="https://github.com/Fontlab/fl/issues/8665">fl#8665</a>); use the app's Undo.</li>
+<li><code>set_smart_corner_parameters</code> makes no Undo step and changes only the key master; existing smart corners keep their own builder values.</li>
 </ul>
 
 
