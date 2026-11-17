@@ -119,8 +119,16 @@ DRAWINGS = {
     "components": draw_components,
     "two_contours": draw_two_contours,
 }
-CLOSED = ["lines", "cubics", "super_bezier", "qcurve_multi_off", "qcurve_single_off",
-          "truetype_off_only", "closing_line_onto_start", "two_contours"]
+CLOSED = [
+    "lines",
+    "cubics",
+    "super_bezier",
+    "qcurve_multi_off",
+    "qcurve_single_off",
+    "truetype_off_only",
+    "closing_line_onto_start",
+    "two_contours",
+]
 CONTOURS = [name for name in DRAWINGS if name != "components"]
 
 
@@ -287,9 +295,7 @@ def test_filter_pen_when_passing_through_then_recording_matches_fonttools(name):
 
 @pytest.mark.parametrize("name", DRAWINGS)
 @pytest.mark.parametrize("guess", [False, True])
-def test_segment_to_point_pen_when_converting_then_point_recording_matches_fonttools(
-    name, guess
-):
+def test_segment_to_point_pen_when_converting_then_point_recording_matches_fonttools(name, guess):
     def build(ns):
         rec = ns.RecordingPointPen()
         DRAWINGS[name](ns.SegmentToPointPen(rec, guessSmooth=guess))
@@ -301,9 +307,7 @@ def test_segment_to_point_pen_when_converting_then_point_recording_matches_fontt
 
 @pytest.mark.parametrize("name", DRAWINGS)
 @pytest.mark.parametrize("implied", [False, True])
-def test_point_to_segment_pen_when_round_tripping_then_recording_matches_fonttools(
-    name, implied
-):
+def test_point_to_segment_pen_when_round_tripping_then_recording_matches_fonttools(name, implied):
     def build(ns):
         rec = ns.RecordingPen()
         DRAWINGS[name](ns.SegmentToPointPen(ns.PointToSegmentPen(rec, implied)))

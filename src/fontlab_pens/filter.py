@@ -104,9 +104,7 @@ class FilterPointPen(_PassThruComponentsMixin, AbstractPointPen):
     def endPath(self):
         self._outPen.endPath()
 
-    def addPoint(
-        self, pt, segmentType=None, smooth=False, name=None, identifier=None, **kwargs
-    ):
+    def addPoint(self, pt, segmentType=None, smooth=False, name=None, identifier=None, **kwargs):
         kwargs = dict(kwargs)
         if identifier is not None:
             kwargs["identifier"] = identifier
@@ -153,9 +151,7 @@ class ContourFilterPointPen(_PassThruComponentsMixin, AbstractPointPen):
         """Override: modify the point list in place or return a new one."""
         return
 
-    def addPoint(
-        self, pt, segmentType=None, smooth=False, name=None, identifier=None, **kwargs
-    ):
+    def addPoint(self, pt, segmentType=None, smooth=False, name=None, identifier=None, **kwargs):
         if self.currentContour is None:
             raise ValueError("Path not begun")
         kwargs = dict(kwargs)

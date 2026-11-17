@@ -117,9 +117,10 @@ def test_notify_when_layer_then_layer_and_glyph_are_notified():
 def test_notify_when_element_then_refused_before_mutation():
     native = fontlab_native()
     shape = flShape()
-    with pytest.raises(PenError, match="owning layer"), FlPointPen(
-        shape, native=native, notify="Draw"
-    ) as pen:
+    with (
+        pytest.raises(PenError, match="owning layer"),
+        FlPointPen(shape, native=native, notify="Draw") as pen,
+    ):
         play(DRAWINGS["open_lines"], pen)
     assert shape.contours == [], "unsupported notify target must not be written"
     assert native.flItems.calls == [], "bare elements must not be notified"
@@ -431,7 +432,9 @@ def test_point_pen_when_smooth_setter_moves_handles_then_raw_flag_preserves_geom
     assert [(n.x, n.y) for n in nodes] == [(0, 0), (25, 45), (65, 55), (100, 0), (160, -40)], (
         "smooth metadata must not move an endpoint or neighboring control"
     )
-    assert [n.type for n in nodes] == ["on", "curve", "curve", "on", "on"], "native node types changed"
+    assert [n.type for n in nodes] == ["on", "curve", "curve", "on", "on"], (
+        "native node types changed"
+    )
     assert [n.name for n in nodes] == ["entry", "", "handle", "exit", ""], "node names changed"
     assert [n.smooth for n in nodes] == [False, False, False, True, False], "smooth flags changed"
     assert [n.nodeState for n in nodes] == [0x8051, 0x8054, 0x8054, 0x8059, 0x8051], (

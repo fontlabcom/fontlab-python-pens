@@ -87,9 +87,7 @@ class BasePenTest(unittest.TestCase):
         pen.moveTo((0.0, 0.0))
         pen.curveTo((1.0, 1.1), (2.0, 2.1), (3.0, 3.1), (4.0, 4.1))
         self.assertEqual(
-            "0.0 0.0 moveto "
-            "1.0 1.1 1.5 1.6 2.0 2.1 curveto "
-            "2.5 2.6 3.0 3.1 4.0 4.1 curveto",
+            "0.0 0.0 moveto 1.0 1.1 1.5 1.6 2.0 2.1 curveto 2.5 2.6 3.0 3.1 4.0 4.1 curveto",
             repr(pen),
         )
         self.assertEqual((4.0, 4.1), pen.getCurrentPoint())
@@ -173,9 +171,7 @@ class DecomposeSegmentTest(unittest.TestCase):
         self.assertRaises(AssertionError, decompose, [])
         self.assertRaises(AssertionError, decompose, [(0, 0)])
         self.assertRaises(AssertionError, decompose, [(0, 0), (1, 1)])
-        self.assertEqual(
-            [((0, 0), (1, 1), (2, 2))], decompose([(0, 0), (1, 1), (2, 2)])
-        )
+        self.assertEqual([((0, 0), (1, 1), (2, 2))], decompose([(0, 0), (1, 1), (2, 2)]))
         self.assertEqual(
             [((0, 0), (2, -2), (4, 0)), ((6, 2), (8, 8), (12, -12))],
             decompose([(0, 0), (4, -4), (8, 8), (12, -12)]),

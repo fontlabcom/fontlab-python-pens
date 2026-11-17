@@ -59,9 +59,7 @@ class RecordingPen(AbstractPen):
     def addComponent(self, glyphName, transformation):
         self.value.append(("addComponent", (glyphName, transformation)))
 
-    def addVarComponent(
-        self, glyphName, transformation, location, *, resetUnspecifiedAxes=False
-    ):
+    def addVarComponent(self, glyphName, transformation, location, *, resetUnspecifiedAxes=False):
         entry: tuple = ("addVarComponent", (glyphName, transformation, location))
         if resetUnspecifiedAxes:
             entry += ({"resetUnspecifiedAxes": True},)
@@ -97,9 +95,7 @@ class RecordingPointPen(AbstractPointPen):
     def endPath(self):
         self.value.append(("endPath", (), {}))
 
-    def addPoint(
-        self, pt, segmentType=None, smooth=False, name=None, identifier=None, **kwargs
-    ):
+    def addPoint(self, pt, segmentType=None, smooth=False, name=None, identifier=None, **kwargs):
         if identifier is not None:
             kwargs["identifier"] = identifier
         self.value.append(("addPoint", (pt, segmentType, smooth, name), kwargs))
@@ -109,14 +105,10 @@ class RecordingPointPen(AbstractPointPen):
             kwargs["identifier"] = identifier
         self.value.append(("addComponent", (baseGlyphName, transformation), kwargs))
 
-    def addVarComponent(
-        self, baseGlyphName, transformation, location, identifier=None, **kwargs
-    ):
+    def addVarComponent(self, baseGlyphName, transformation, location, identifier=None, **kwargs):
         if identifier is not None:
             kwargs["identifier"] = identifier
-        self.value.append(
-            ("addVarComponent", (baseGlyphName, transformation, location), kwargs)
-        )
+        self.value.append(("addVarComponent", (baseGlyphName, transformation, location), kwargs))
 
     def replay(self, pointPen: Any) -> None:
         for operator, args, kwargs in self.value:
@@ -144,9 +136,7 @@ def lerpRecordings(
     Raises `ValueError` for mismatched lengths, operators or components.
     """
     if len(recording1) != len(recording2):
-        raise ValueError(
-            f"Mismatched lengths: {len(recording1)} and {len(recording2)}"
-        )
+        raise ValueError(f"Mismatched lengths: {len(recording1)} and {len(recording2)}")
     for (op1, args1), (op2, args2) in zip(recording1, recording2, strict=True):
         if op1 != op2:
             raise ValueError(f"Mismatched operations: {op1}, {op2}")

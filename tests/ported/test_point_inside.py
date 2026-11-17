@@ -18,12 +18,12 @@ class PointInsidePenTest(unittest.TestCase):
             pen.closePath()
 
         self.assertEqual(
-            " *********" "   **    *" "     **  *" "       * *" "         *",
+            " *********   **    *     **  *       * *         *",
             self.render(draw_triangles, even_odd=True),
         )
 
         self.assertEqual(
-            " *********" "   *******" "     *****" "       ***" "         *",
+            " *********   *******     *****       ***         *",
             self.render(draw_triangles, even_odd=False),
         )
 
@@ -36,12 +36,12 @@ class PointInsidePenTest(unittest.TestCase):
             pen.closePath()
 
         self.assertEqual(
-            "***    ***" "****  ****" "***    ***" "****  ****" "***    ***",
+            "***    *******  *******    *******  *******    ***",
             self.render(draw_curves, even_odd=True),
         )
 
         self.assertEqual(
-            "***    ***" "**********" "**********" "**********" "***    ***",
+            "***    ************************************    ***",
             self.render(draw_curves, even_odd=False),
         )
 
@@ -54,12 +54,12 @@ class PointInsidePenTest(unittest.TestCase):
             pen.closePath()
 
         self.assertEqual(
-            "***     **" "****   ***" "***    ***" "***   ****" "**     ***",
+            "***     ******   ******    ******   ******     ***",
             self.render(draw_qCurves, even_odd=True),
         )
 
         self.assertEqual(
-            "***     **" "**********" "**********" "**********" "**     ***",
+            "***     **********************************     ***",
             self.render(draw_qCurves, even_odd=False),
         )
 
@@ -183,9 +183,7 @@ class PointInsidePenTest(unittest.TestCase):
                 (555.796875, 783.140625),
             )
             pen.lineTo((717.96875, 783.140625))
-            pen.curveTo(
-                (738.890625, 783.140625), (748.796875, 711.5), (727.546875, 697.0)
-            )
+            pen.curveTo((738.890625, 783.140625), (748.796875, 711.5), (727.546875, 697.0))
             pen.closePath()
 
         piPen = PointInsidePen(None, (416.625, 783.140625))  # this point is outside

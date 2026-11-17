@@ -87,9 +87,7 @@ class RoundingPointPen(FilterPointPen):
         self.roundFunc = roundFunc
         self.transformRoundFunc = transformRoundFunc
 
-    def addPoint(
-        self, pt, segmentType=None, smooth=False, name=None, identifier=None, **kwargs
-    ):
+    def addPoint(self, pt, segmentType=None, smooth=False, name=None, identifier=None, **kwargs):
         self._outPen.addPoint(
             (self.roundFunc(pt[0]), self.roundFunc(pt[1])),
             segmentType=segmentType,

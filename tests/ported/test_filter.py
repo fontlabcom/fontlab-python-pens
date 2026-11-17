@@ -207,9 +207,7 @@ class SimpleGlyphStartingWithOffCurve:
         pen.endPath()
 
 
-@pytest.mark.parametrize(
-    "reverseFlipped", [True, ReverseFlipped.KEEP_START, "keep_start"]
-)
+@pytest.mark.parametrize("reverseFlipped", [True, ReverseFlipped.KEEP_START, "keep_start"])
 def test_decomposing_filter_point_pen_reverse_flipped_keep_start(reverseFlipped):
     """Test DecomposingPointPen (via DecomposingRecordingPointPen) with reverseFlipped='keep_start' enum value"""
 
@@ -227,9 +225,7 @@ def test_decomposing_filter_point_pen_reverse_flipped_keep_start(reverseFlipped)
     assert first_point[1][:2] == ((200, 0), None)
 
 
-@pytest.mark.parametrize(
-    "reverseFlipped", [ReverseFlipped.ON_CURVE_FIRST, "on_curve_first"]
-)
+@pytest.mark.parametrize("reverseFlipped", [ReverseFlipped.ON_CURVE_FIRST, "on_curve_first"])
 def test_decomposing_filter_point_pen_reverse_flipped_on_curve_first(reverseFlipped):
     """Test DecomposingPointPen (via DecomposingRecordingPointPen) with reverseFlipped='on_curve_first' enum value"""
 

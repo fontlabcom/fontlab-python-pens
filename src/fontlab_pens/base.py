@@ -125,9 +125,7 @@ class NullPen(AbstractPen):
     def addComponent(self, glyphName, transformation):
         pass
 
-    def addVarComponent(
-        self, glyphName, transformation, location, *, resetUnspecifiedAxes=False
-    ):
+    def addVarComponent(self, glyphName, transformation, location, *, resetUnspecifiedAxes=False):
         pass
 
 
@@ -185,9 +183,7 @@ class DecomposingPen(_LogMixin, AbstractPen):
                     pen = ReverseContourPen(pen)
             glyph.draw(pen)
 
-    def addVarComponent(
-        self, glyphName, transformation, location, *, resetUnspecifiedAxes=False
-    ):
+    def addVarComponent(self, glyphName, transformation, location, *, resetUnspecifiedAxes=False):
         raise AttributeError
 
 

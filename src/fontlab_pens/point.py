@@ -157,9 +157,7 @@ class BasePointToSegmentPen(AbstractPointPen):
 
         self._flushContour(segments)
 
-    def addPoint(
-        self, pt, segmentType=None, smooth=False, name=None, identifier=None, **kwargs
-    ):
+    def addPoint(self, pt, segmentType=None, smooth=False, name=None, identifier=None, **kwargs):
         if self.currentPath is None:
             raise PenError("Path not begun")
         self.currentPath.append((pt, segmentType, smooth, name, kwargs))
@@ -207,12 +205,7 @@ class PointToSegmentPen(BasePointToSegmentPen):
                     raise PenError(f"Illegal line segment point count: {len(points)}")
                 pt = points[0]
                 # See https://github.com/googlefonts/fontmake/issues/572.
-                if (
-                    i + 1 != nSegments
-                    or outputImpliedClosingLine
-                    or not closed
-                    or pt == lastPt
-                ):
+                if i + 1 != nSegments or outputImpliedClosingLine or not closed or pt == lastPt:
                     pen.lineTo(pt)
                     lastPt = pt
             elif segmentType == "curve":
@@ -372,9 +365,7 @@ class GuessSmoothPointPen(AbstractPointPen):
         self._outPen.endPath()
         self._points = None
 
-    def addPoint(
-        self, pt, segmentType=None, smooth=False, name=None, identifier=None, **kwargs
-    ):
+    def addPoint(self, pt, segmentType=None, smooth=False, name=None, identifier=None, **kwargs):
         if self._points is None:
             raise PenError("Path not begun")
         if identifier is not None:
@@ -388,9 +379,7 @@ class GuessSmoothPointPen(AbstractPointPen):
             kwargs["identifier"] = identifier
         self._outPen.addComponent(glyphName, transformation, **kwargs)
 
-    def addVarComponent(
-        self, glyphName, transformation, location, identifier=None, **kwargs
-    ):
+    def addVarComponent(self, glyphName, transformation, location, identifier=None, **kwargs):
         if self._points is not None:
             raise PenError("VarComponents must be added before or after contours")
         if identifier is not None:
@@ -460,9 +449,7 @@ class ReverseContourPointPen(AbstractPointPen):
         self._flushContour()
         self.currentContour = None
 
-    def addPoint(
-        self, pt, segmentType=None, smooth=False, name=None, identifier=None, **kwargs
-    ):
+    def addPoint(self, pt, segmentType=None, smooth=False, name=None, identifier=None, **kwargs):
         if self.currentContour is None:
             raise PenError("Path not begun")
         if identifier is not None:
@@ -519,9 +506,7 @@ class DecomposingPointPen(_LogMixin, AbstractPointPen):
         except KeyError:
             if not self.skipMissingComponents:
                 raise MissingComponentError(baseGlyphName) from None
-            self.log.warning(
-                "glyph '%s' is missing from glyphSet; skipped", baseGlyphName
-            )
+            self.log.warning("glyph '%s' is missing from glyphSet; skipped", baseGlyphName)
         else:
             pen = self
             if transformation != Identity:

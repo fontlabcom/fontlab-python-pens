@@ -57,9 +57,7 @@ def reversedContour(
     closed = contourType == "closePath"
 
     firstType, firstPts = contour.pop(0)
-    assert firstType in ("moveTo", "qCurveTo"), (
-        f"invalid initial segment type: {firstType!r}"
-    )
+    assert firstType in ("moveTo", "qCurveTo"), f"invalid initial segment type: {firstType!r}"
     firstOnCurve = firstPts[-1]
     if firstType == "qCurveTo":
         # Off-curve-only TrueType contour.

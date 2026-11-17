@@ -140,9 +140,10 @@ def calcQuadraticBounds(pt1: Point, pt2: Point, pt3: Point) -> Rect:
         roots.append(-bx / ax2)
     if ay2 != 0:
         roots.append(-by / ay2)
-    points = [
-        (ax * t * t + bx * t + cx, ay * t * t + by * t + cy) for t in roots if 0 <= t < 1
-    ] + [pt1, pt3]
+    points = [(ax * t * t + bx * t + cx, ay * t * t + by * t + cy) for t in roots if 0 <= t < 1] + [
+        pt1,
+        pt3,
+    ]
     return _calcBounds(points)
 
 
@@ -176,7 +177,9 @@ class ControlBoundsPen(BasePen):
     With `ignoreSinglePoints`, lone moveTo points (e.g. anchors) are skipped.
     """
 
-    def __init__(self, glyphSet: Mapping[str, Any] | None, ignoreSinglePoints: bool = False) -> None:
+    def __init__(
+        self, glyphSet: Mapping[str, Any] | None, ignoreSinglePoints: bool = False
+    ) -> None:
         BasePen.__init__(self, glyphSet)
         self.ignoreSinglePoints = ignoreSinglePoints
         self.init()
@@ -224,9 +227,7 @@ class BoundsPen(ControlBoundsPen):
         self._addMoveTo()
         bounds = _updateBounds(self.bounds, pt)
         if not _pointInRect(bcp1, bounds) or not _pointInRect(bcp2, bounds):
-            bounds = _unionRect(
-                bounds, calcCubicBounds(self._getCurrentPoint(), bcp1, bcp2, pt)
-            )
+            bounds = _unionRect(bounds, calcCubicBounds(self._getCurrentPoint(), bcp1, bcp2, pt))
         self.bounds = bounds
 
     def _qCurveToOne(self, bcp, pt):

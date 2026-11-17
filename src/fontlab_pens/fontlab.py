@@ -194,8 +194,10 @@ class FlPointPen(StagingPointPen):
         return self
 
     def __exit__(
-        self, exc_type: type[BaseException] | None,
-        exc: BaseException | None, tb: TracebackType | None,
+        self,
+        exc_type: type[BaseException] | None,
+        exc: BaseException | None,
+        tb: TracebackType | None,
     ) -> None:
         if exc_type is None:
             self.close()
@@ -233,8 +235,10 @@ class FlPen(SegmentToPointPen):
         return self
 
     def __exit__(
-        self, exc_type: type[BaseException] | None,
-        exc: BaseException | None, tb: TracebackType | None,
+        self,
+        exc_type: type[BaseException] | None,
+        exc: BaseException | None,
+        tb: TracebackType | None,
     ) -> None:
         if exc_type is None:
             self.close()  # raises PenError on an unfinished contour

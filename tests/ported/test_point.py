@@ -68,9 +68,7 @@ class _TestPointPen(AbstractPointPen):
         items.extend(_reprKwargs(kwargs))
         self._commands.append("beginPath({!s})".format(", ".join(items)))
 
-    def addPoint(
-        self, pt, segmentType=None, smooth=False, name=None, identifier=None, **kwargs
-    ):
+    def addPoint(self, pt, segmentType=None, smooth=False, name=None, identifier=None, **kwargs):
         items = [f"{pt!s}"]
         if segmentType is not None:
             items.append(f"segmentType='{segmentType!s}'")
@@ -194,12 +192,7 @@ class PointToSegmentPenTest(unittest.TestCase):
         # regardless of the value of 'outputImpliedClosingLine', to disambiguate
         # the duplicate point from the implied closing line.
         self.assertEqual(
-            "0 651 moveto "
-            "0 101 lineto "
-            "0 101 lineto "
-            "0 651 lineto "
-            "0 651 lineto "
-            "closepath",
+            "0 651 moveto 0 101 lineto 0 101 lineto 0 651 lineto 0 651 lineto closepath",
             repr(tpen),
         )
 
@@ -229,9 +222,7 @@ class TestSegmentToPointPen(unittest.TestCase):
         pen = SegmentToPointPen(tpen)
         pen.moveTo((10, 10))
         pen.endPath()
-        self.assertEqual(
-            "beginPath() addPoint((10, 10), segmentType='move') endPath()", repr(tpen)
-        )
+        self.assertEqual("beginPath() addPoint((10, 10), segmentType='move') endPath()", repr(tpen))
 
     def test_poly(self):
         tpen = _TestPointPen()

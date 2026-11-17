@@ -204,7 +204,9 @@ def test_component_error_when_raised_then_is_pen_error():
 
 @pytest.mark.parametrize("glyph_type", ["fgGlyph", "flGlyph"])
 @pytest.mark.parametrize("kind", ["layer", "element"])
-def test_fontgate_point_pen_when_glyph_has_explicit_kind_then_refuses_without_probes(glyph_type, kind):
+def test_fontgate_point_pen_when_glyph_has_explicit_kind_then_refuses_without_probes(
+    glyph_type, kind
+):
     import subprocess
     import sys
     import textwrap

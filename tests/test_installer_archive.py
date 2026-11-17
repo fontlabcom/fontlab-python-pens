@@ -24,7 +24,9 @@ def canonical_stub() -> bytes | None:
 
 STUB_HEADER = b"#FLM: Install into FontLab with fontlab-instamix\n"
 STUB_SHA256 = "bdb98c7c23f9904e5f4c59332b0bbd8723f18e33c7bbfea1c526c9b0b0b9cb50"
-REVERSE_DNS = re.compile(r"^[a-z][a-z0-9-]*(\.[a-z0-9][a-z0-9-]*)+$")  # instamix manifest.ID_PATTERN
+REVERSE_DNS = re.compile(
+    r"^[a-z][a-z0-9-]*(\.[a-z0-9][a-z0-9-]*)+$"
+)  # instamix manifest.ID_PATTERN
 
 
 def test_installer_when_read_then_is_instamix_stub():
@@ -32,7 +34,9 @@ def test_installer_when_read_then_is_instamix_stub():
     source = (ROOT / "install.vfpy").read_bytes()
     assert source.startswith(STUB_HEADER), "install.vfpy must be the instamix stub"
     assert b"bootstrap.install_project(__file__)" in source, "stub must hand off to instamix"
-    assert hashlib.sha256(source).hexdigest() == STUB_SHA256, "installer must match the reviewed canonical template"
+    assert hashlib.sha256(source).hexdigest() == STUB_SHA256, (
+        "installer must match the reviewed canonical template"
+    )
     canonical = canonical_stub()
     if canonical is not None:
         assert source == canonical, "install.vfpy must match instamix's canonical stub"
@@ -50,14 +54,21 @@ def test_sdist_when_built_then_ships_stub_and_version(tmp_path):
     output = tmp_path / "dist"
     subprocess.run(
         ["uv", "build", "--sdist", "--out-dir", str(output), str(ROOT)],
-        check=True, capture_output=True, text=True, timeout=120,
+        check=True,
+        capture_output=True,
+        text=True,
+        timeout=120,
     )
     archives = list(output.glob("*.tar.gz"))
     assert len(archives) == 1, "build must produce one source archive"
     with tarfile.open(archives[0]) as archive:
         prefix = archive.getnames()[0].split("/")[0] + "/"
         read = lambda name: archive.extractfile(prefix + name).read()
-        installer, pkg_info, pyproject = read("install.vfpy"), read("PKG-INFO"), read("pyproject.toml")
+        installer, pkg_info, pyproject = (
+            read("install.vfpy"),
+            read("PKG-INFO"),
+            read("pyproject.toml"),
+        )
     assert installer == (ROOT / "install.vfpy").read_bytes(), "installer bytes differ"
     metadata = BytesParser().parsebytes(pkg_info)
     config = tomllib.loads(pyproject.decode("utf-8"))

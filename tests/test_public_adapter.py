@@ -41,7 +41,9 @@ def test_staged_node_kinds_when_valid_drawing_then_matches_writer(drawing):
     play(DRAWINGS[drawing], adapter)
     for points, contour in zip(DRAWINGS[drawing], layer.shapes[0].contours, strict=True):
         kinds = staged_node_kinds(points)
-        assert [FONTGATE_NODE_TYPES[kind] for kind in kinds] == [n.kind for n in contour.nodes], "public kinds match native emitter"
+        assert [FONTGATE_NODE_TYPES[kind] for kind in kinds] == [n.kind for n in contour.nodes], (
+            "public kinds match native emitter"
+        )
         kinds.append("changed")
         assert [FONTGATE_NODE_TYPES[kind] for kind in staged_node_kinds(points)] == [
             n.kind for n in contour.nodes
