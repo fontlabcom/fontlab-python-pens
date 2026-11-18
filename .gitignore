@@ -222,3 +222,11 @@ __marimo__/
 .omc/
 src/fontlab_pens/__version__.py
 .DS_Store
+
+# Python and macOS (pypitrust)
+*.py[cod]
+.venv/
+
+# Python and macOS (pypitrust)
+__version__.py
+_version.py
