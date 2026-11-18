@@ -2,6 +2,13 @@
 this_file: PLAN.md
 ---
 
+## Issue 271 installer qualification
+
+Integrate the independently reviewed generated installer through existing full
+repository/hook gates; verify exact-SHA CI and archives, then qualify native
+macOS/Windows use when the serialized guard is available. Preserve owner files.
+
+
 ## Guarded common installer: remaining qualification
 
 Independently review the canonical 1.0.11 template propagation and static oracle
