@@ -8,17 +8,22 @@ docs_dir: md
 site_dir: ../docs
 use_directory_urls: true
 theme:
-  name: materialx
+  name: fly-january
   language: en
-  custom_dir: overrides
   palette:
     scheme: default
   features:
     - search.highlight
     - content.code.copy
 plugins:
+  - fly
   - search:
       lang: [en]
+extra:
+  fly:
+    chrome: fontlab
+    chrome_options:
+      site-label: FontLab Pens
 markdown_extensions:
   - admonition
   - tables
@@ -35,10 +40,5 @@ nav:
   - Licence: licence.md
 extra_css:
   - stylesheets/local.css
-  - https://i.fontlab.com/fltheme26/1.0.0/components.css
-  - https://i.fontlab.com/fltheme26/1.0.0/theme.css
-extra_javascript:
-  - https://i.fontlab.com/fltheme26/1.0.0/basecoat.js
-  - https://i.fontlab.com/fltheme26/1.0.0/theme.js
 hooks:
   - english_search.py

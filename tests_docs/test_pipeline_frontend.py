@@ -51,7 +51,7 @@ class FrontendPayloadTests(unittest.TestCase):
         record = json.loads((ROOT / 'src_docs/md/assets/current-frontend-notices.json').read_text())
         self.assertEqual(record['scope'], 'Current English browser payload and exact retained notices; build dependencies and external services have separate provenance.')
         names = {row['name'] for row in record['components']}
-        self.assertTrue({'clipboard', 'tiny-emitter', 'select', 'good-listener', 'delegate', 'escape-html', 'focus-visible', 'rxjs', 'tslib', 'lunr', 'material-design-color', '@mdi/svg', '@fortawesome/fontawesome-free', '@primer/octicons', 'lucide-static'} <= names)
+        self.assertTrue({'fly-january', 'clipboard', 'tiny-emitter', 'select', 'good-listener', 'delegate', 'escape-html', 'focus-visible', 'rxjs', 'tslib', 'lunr', 'material-design-color', '@mdi/svg', '@fortawesome/fontawesome-free', '@primer/octicons', 'lucide-static'} <= names)
         page = (ROOT / 'src_docs/md/licence.md').read_text()
         count = 0
         for row in record['components']:
@@ -64,7 +64,7 @@ class FrontendPayloadTests(unittest.TestCase):
                 self.assertIn(notice['path'], page)
                 if row['name'] in ('select', 'good-listener', 'delegate'):
                     self.assertEqual(data.decode().strip(), '## License\n\n[MIT License](http://zenorocha.mit-license.org/) © Zeno Rocha')
-        self.assertEqual(count, 25)
+        self.assertEqual(count, 26)
 
     def test_current_source_map_identities_and_exact_embedded_sources_are_retained(self):
         record = json.loads((ROOT / 'src_docs/md/assets/current-frontend-notices.json').read_text())
@@ -98,7 +98,7 @@ class FrontendPayloadTests(unittest.TestCase):
         observed = set()
         for path in (ROOT / 'docs').rglob('*.html'):
             observed.update(icon_paths(path.read_text()))
-        css = '\n'.join(path.read_text() for path in (ROOT / 'docs/assets/stylesheets').glob('*.css'))
+        css = '\n'.join(path.read_text() for path in (ROOT / 'docs/assets').rglob('*.css'))
         for svg in re.findall(r'<svg\b.*?</svg>', unquote(css), re.S):
             observed.update(icon_paths(svg))
         self.assertTrue(observed)

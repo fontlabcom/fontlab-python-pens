@@ -208,6 +208,17 @@ install this checkout (the command uses `--with-editable`): pytest
 (`-I`) also ignores `PYTHONPATH`. Running pytest without that installation
 causes seven subprocess import failures; keep their isolation checks intact.
 
+### Build the documentation
+
+ProperDocs uses fly-january 0.1.1 for the FontLab menu and footer. Build the
+site into `docs/` with the same Python 3.13 dependencies as CI.
+
+```sh
+uv venv --python 3.13 .docs-venv
+uv pip install --python .docs-venv/bin/python --require-hashes -r src_docs/requirements.txt
+PATH="$PWD/.docs-venv/bin:$PATH" sh src_docs/build.sh
+```
+
 ## Licence
 
 Apache-2.0. Ported fontTools code stays under its MIT notice; see `NOTICE`.

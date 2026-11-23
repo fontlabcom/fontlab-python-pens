@@ -2,6 +2,19 @@
 this_file: WORK.md
 ---
 
+## 2026-11-23 — Documentation theme
+
+The documentation build reads `src_docs/mkdocs.yml` through `sh src_docs/build.sh`.
+Both CI jobs install the hash-locked dependencies from `src_docs/requirements.txt`.
+The strict build passed without warnings. All nine generated HTML pages include
+the FontLab Pens menu and footer. All 36 documentation tests passed, including
+the byte-for-byte rebuild and asset checks.
+
+On Python 3.11, `./test.sh` passed all 903 tests with 95.37% coverage when
+the test environment provided the matching Instamix 1.0.15 installer.
+The default run used a different sibling installer and failed its byte comparison
+(902 passed). Browser verification is reserved for the orchestrator.
+
 ## 2026-11-17 — Guarded common installer source candidate
 
 Copied the exact canonical common template shipped with Instamix 1.0.11.

@@ -1,5 +1,6 @@
 # this_file: tests_docs/test_pipeline_english.py
 """English-only output must reject configuration, reference and vendor drift."""
+import hashlib
 import importlib.metadata
 import json
 from pathlib import Path
@@ -7,6 +8,7 @@ import tempfile
 from types import SimpleNamespace
 import unittest
 
+from fly_january.assets import rescale_materialx
 from src_docs import english_search
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -22,14 +24,16 @@ class EnglishSearchTests(unittest.TestCase):
         for row in self.inventory['generated_vendor_assets']:
             source = row['installed_distribution_sources'][0]
             data = importlib.metadata.distribution(source['distribution']).locate_file(source['path']).read_bytes()
+            self.assertEqual(hashlib.sha256(data).hexdigest(), source.get('sha256', row['sha256']), row['path'])
             target = self.site / row['path']
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_bytes(data)
+        rescale_materialx(self.site)
         (self.site / 'search').mkdir()
         self.index = {'config': {'lang': ['en']}, 'docs': [{'location': 'index.html', 'title': 'Glyph tools', 'text': 'Meaningful complete search fixture'}]}
         (self.site / 'search/search_index.json').write_text(json.dumps(self.index))
         (self.site / 'index.html').write_text('<html><script src="assets/javascripts/bundle.fc193f93.min.js"></script></html>')
-        self.config = {'theme': {'language': 'en'}, 'plugins': {'materialx/search': SimpleNamespace(config={'lang': ['en']})}, 'docs_dir': str(ROOT / 'src_docs/md'), 'site_dir': str(self.site)}
+        self.config = {'theme': {'language': 'en'}, 'plugins': {'fly-january/search': SimpleNamespace(config={'lang': ['en']})}, 'docs_dir': str(ROOT / 'src_docs/md'), 'site_dir': str(self.site)}
 
     def test_exact_english_payload_omits_only_all_35_unused_helpers(self):
         self.assertIs(english_search.on_config(self.config), self.config)
@@ -44,7 +48,7 @@ class EnglishSearchTests(unittest.TestCase):
     def test_non_english_theme_or_search_configuration_is_rejected(self):
         for languages, theme in [(['fr'], 'en'), (['en', 'fr'], 'en'), (['en'], 'fr'), ([], 'en')]:
             with self.subTest(languages=languages, theme=theme):
-                self.config['plugins']['materialx/search'].config['lang'] = languages
+                self.config['plugins']['fly-january/search'].config['lang'] = languages
                 self.config['theme']['language'] = theme
                 with self.assertRaisesRegex(ValueError, 'English'):
                     english_search.on_config(self.config)
@@ -94,12 +98,12 @@ class EnglishSearchTests(unittest.TestCase):
         english_search.on_post_build(self.config)
         self.assertFalse((self.site / 'assets/javascripts/lunr/wordcut.js').exists())
 
-    def test_real_properdocs_materialx_configuration_uses_the_expected_search_plugin(self):
+    def test_real_properdocs_fly_configuration_uses_the_expected_search_plugin(self):
         import properdocs.replacement
         from properdocs.config import load_config
         config = load_config(str(ROOT / 'src_docs/mkdocs.yml'))
         self.assertIs(english_search.on_config(config), config)
-        self.assertEqual(config['plugins']['materialx/search'].config['lang'], ['en'])
+        self.assertEqual(config['plugins']['fly-january/search'].config['lang'], ['en'])
 
     def test_manifest_count_or_helper_boundary_drift_is_rejected(self):
         policy = json.loads((ROOT / 'src_docs/md/assets/english-search-omissions.json').read_text())

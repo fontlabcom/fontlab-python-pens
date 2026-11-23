@@ -4,6 +4,7 @@ this_file: CHANGELOG.md
 
 ## Unreleased
 
+- Site now uses the fly-january 0.1.1 theme (chrome: fontlab).
 - `install.vfpy` is now the stub from fontlab-python-instamix 1.0.15. It replaces an
   installed instamix older than 1.0.13 and puts the old copy back if the upgrade
   fails; linked checkouts and local builds are kept. A download that fails for
@@ -97,7 +98,7 @@ cohort/suite, release, installed and Windows/native gates remain open.
 
 ## Unreleased
 
-- Documentation website at https://code.fontlab.com/fontlab-python-pens/, built
+- Documentation website at https://code.fontlab.com/fontlab-python-pens/, initially built
   like the GrabLab site: ProperDocs + MaterialX with the light fltheme26 theme,
   sources in `src_docs/`, generated output in `docs/` (Pages serves `main:/docs`).
   Pages: installation, using pens, FontLab targets, strokes, scripts,

@@ -33,3 +33,8 @@ tests supply a Fly namespace double pointing at the real Pens modules.
 | `fontTools` | Parity oracle. The tests compare our recordings, bounds and areas with the fontTools pens of the same name, and use `floatToFixedToFloat` in one ported rounding test. `src/` imports it only optionally: when it is installed, `PenError` subclasses its `PenError`. |
 
 `fontPens` and `ufoLib2` are not used. `test.sh` installs the test packages unpinned through `uv run --with`.
+
+## Documentation only
+
+ProperDocs builds the site with the fly-january 0.1.1 theme. The Python 3.13
+docs environment installs its hash-locked packages from `src_docs/requirements.txt`.
