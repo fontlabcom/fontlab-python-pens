@@ -210,7 +210,7 @@ causes seven subprocess import failures; keep their isolation checks intact.
 
 ### Build the documentation
 
-ProperDocs uses fly-january 0.1.1 for the FontLab menu and footer. Build the
+ProperDocs uses fly-january 0.2.1 for the FontLab menu and footer. Build the
 site into `docs/` with the same Python 3.13 dependencies as CI.
 
 ```sh

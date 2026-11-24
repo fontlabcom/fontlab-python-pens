@@ -41,7 +41,7 @@ Choose the next substantial useful feature or shared fix and carry its affected 
   Fontlab/FontGate or Fontlab/Proteus.
 - **Tests.** Run `./test.sh` (Python 3.11 via `uv`, 80% coverage gate). New test
   names follow `test_function_when_condition_then_result` and carry assertion messages.
-- **Documentation.** Configure fly-january's FontLab chrome in `src_docs/mkdocs.yml`.
+- **Documentation.** Configure FontLab chrome for fly-january 0.2.1 in `src_docs/mkdocs.yml`.
   Run `sh src_docs/build.sh` in the locked Python 3.13 docs environment to
   regenerate `docs/`, then run `python -m unittest discover -s tests_docs -v`.
 - Python 3.11 syntax, type hints on public signatures, docstrings that say what

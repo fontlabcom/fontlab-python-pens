@@ -36,5 +36,5 @@ tests supply a Fly namespace double pointing at the real Pens modules.
 
 ## Documentation only
 
-ProperDocs builds the site with the fly-january 0.1.1 theme. The Python 3.13
+ProperDocs builds the site with the fly-january 0.2.1 theme. The Python 3.13
 docs environment installs its hash-locked packages from `src_docs/requirements.txt`.
