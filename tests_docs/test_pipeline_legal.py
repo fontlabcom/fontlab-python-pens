@@ -26,7 +26,7 @@ class LegalDistributionTests(unittest.TestCase):
             paths = {}
             policy = json.loads((ROOT / 'src_docs/md/assets/english-search-omissions.json').read_text())
             self.assertEqual(len(policy['omitted']), 35)
-            self.assertEqual(len(policy['retained']), 14)
+            self.assertEqual(len(policy['retained']), 9)
             for row in policy['omitted']:
                 self.assertFalse((ROOT / 'docs' / row['path']).exists(), row['path'])
             paths.update({Path('docs') / row['path']: row['sha256'] for row in policy['retained']})

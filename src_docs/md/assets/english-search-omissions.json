@@ -500,61 +500,6 @@
           "path": "material/templates/assets/stylesheets/palette.a45159b5.min.css.map"
         }
       ]
-    },
-    {
-      "path": "assets/fly/fly-bridge.js",
-      "sha256": "86c9984233daffdc756f6abd1f08f34adf072934d02f5a1299491991ff95b108",
-      "installed_distribution_sources": [
-        {
-          "distribution": "fly-january",
-          "version": "0.3.0",
-          "path": "fly_january/assets/fly/fly-bridge.js"
-        }
-      ]
-    },
-    {
-      "path": "assets/fly/fly-debug.js",
-      "sha256": "d0238887f0703ec875b61bab4777774a157eacf851e19b96607b01335c6812f1",
-      "installed_distribution_sources": [
-        {
-          "distribution": "fly-january",
-          "version": "0.3.0",
-          "path": "fly_january/assets/fly/fly-debug.js"
-        }
-      ]
-    },
-    {
-      "path": "assets/fly/fly-tokens.css",
-      "sha256": "dc2aa7bdae916177c3e2def79b639f24b9a3ffdd14f8dd4d169e2ceb3f559d5b",
-      "installed_distribution_sources": [
-        {
-          "distribution": "fly-january",
-          "version": "0.3.0",
-          "path": "fly_january/assets/fly/fly-tokens.css"
-        }
-      ]
-    },
-    {
-      "path": "assets/fly/fly.css",
-      "sha256": "c8fad7393497abadb452738b68da4b8dabead54530085cf9ff9166640c65a28b",
-      "installed_distribution_sources": [
-        {
-          "distribution": "fly-january",
-          "version": "0.3.0",
-          "path": "fly_january/assets/fly/fly.css"
-        }
-      ]
-    },
-    {
-      "path": "assets/fly/fly.js",
-      "sha256": "f51ac225265c69c21d841259742588e1909fac4e761fb07bb36bb9f17b6a889c",
-      "installed_distribution_sources": [
-        {
-          "distribution": "fly-january",
-          "version": "0.3.0",
-          "path": "fly_january/assets/fly/fly.js"
-        }
-      ]
     }
   ]
 }

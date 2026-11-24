@@ -12,6 +12,7 @@ Consumer integration, released archives and native execution remain separate che
 
 ## Unreleased
 
+- The documentation now uses fly-january 0.4.0 or later (remote theme assets).
 - The documentation theme now requires fly-january 0.3.0 or later.
 - PyPI Trusted Publishing: the project owner must configure or confirm the publisher for `fontlabcom/fontlab-python-pens`, workflow `release.yml`, environment `pypi`. Run `./publish.sh` to dispatch it.
 - Issue 271: v1.0.19 shipped from `5e187c3` (CI run `44411145065`, release run `44411613055`). The wheel and sdist matched across GitHub and PyPI. Both carried the tagged LICENSE and NOTICE, and the sdist contained the tagged installer byte-for-byte.
