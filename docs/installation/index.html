@@ -47,7 +47,7 @@
     
   <link rel="stylesheet" data-fly-photoswipe href="https://cdn.jsdelivr.net/npm/photoswipe@5.4.4/dist/photoswipe.css"
       integrity="sha384-IfxC36XL/toUyJ939C73PcgMuRzAZuIzZxE38drsmO5p6jD7ei+Zx/1oA/0l8ysE" crossorigin="anonymous">
-  <link rel="stylesheet" href="../assets/fly/fly.css?v=24c03d88bb">
+  <link rel="stylesheet" href="../assets/fly/fly.css?v=98850411df">
 
     
 
@@ -83,7 +83,7 @@
   <script>try{document.fonts.load('20px "Material Symbols Outlined"',"arrow_backarrow_forwarddark_modelight_mode").then(function(f){if(f.length)document.documentElement.classList.add("fly-msym")})}catch(e){}</script>
   <link rel="preconnect" href="https://use.typekit.net" crossorigin>
   <link rel="preconnect" href="https://p.typekit.net" crossorigin>
-  <link rel="stylesheet" href="https://use.typekit.net/cmv5add.css" data-fly-font>
+  <link rel="stylesheet" href="https://use.typekit.net/xht3uat.css" data-fly-font>
   <link rel="stylesheet" href="https://use.typekit.net/cna4jfp.css" data-fly-font>
   <link rel="stylesheet" href="https://use.typekit.net/wck5koo.css" data-fly-font>
   <script src="https://i.fontlab.com/menu/fontlab.js" defer></script>
@@ -646,7 +646,7 @@
 
 
 <h1 id="installation">Installation</h1>
-<p>FontLab Pens needs Python 3.11 or later and has no runtime dependencies. It is not on PyPI; install a tagged release from GitHub.</p>
+<p>FontLab Pens needs Python 3.11 or later and has no runtime dependencies.</p>
 <h2 id="into-fontlab-9">Into FontLab 9</h2>
 <ol>
 <li>Download or clone <a href="https://github.com/fontlabcom/fontlab-python-pens">fontlab-python-pens</a>.</li>
@@ -656,9 +656,10 @@
 <p><code>install.vfpy</code> is a short stub that hands the work to <a href="https://fontlabcom.github.io/fontlab-python-instamix/">FontLab Instamix</a>. If Instamix is missing, the stub installs it from PyPI first. Instamix then installs the package into FontLab's own <code>site-packages</code> and records it under the extension id <code>com.fontlab.pens</code>.</p>
 <p>The examples and Scripts also need FontLab Fly 1.3.0 or later, which provides the <code>fly.pens</code> and <code>fly.fl</code> aliases. Install Fly separately; older Fly releases without <code>fly.pens</code> cannot run them.</p>
 <h2 id="into-a-python-environment">Into a Python environment</h2>
-<div class="highlight"><pre><span></span><code>uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">"fontlab-python-pens @ git+https://github.com/fontlabcom/fontlab-python-pens@v1.0.9"</span>
+<p>Install the release from <a href="https://pypi.org/project/fontlab-python-pens/">PyPI</a>.</p>
+<div class="highlight"><pre><span></span><code>uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>fontlab-python-pens
 </code></pre></div>
-<p>Replace <code>v1.0.9</code> with the release you want. Outside FontLab the pure-Python pens work fully; the native pens need FontLab's <code>fontgate</code> or <code>fontlab</code> module and raise when you call them without it.</p>
+<p>Outside FontLab the pure-Python pens work fully; the native pens need FontLab's <code>fontgate</code> or <code>fontlab</code> module and raise when you call them without it.</p>
 <h2 id="check-the-install">Check the install</h2>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">fontlab_pens</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">fontlab_pens</span><span class="o">.</span><span class="n">__version__</span><span class="p">)</span>

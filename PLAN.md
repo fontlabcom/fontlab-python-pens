@@ -2,168 +2,35 @@
 this_file: PLAN.md
 ---
 
-## Issue 271 installer qualification
-
-Integrate the independently reviewed generated installer through existing full
-repository/hook gates; verify exact-SHA CI and archives, then qualify native
-macOS/Windows use when the serialized guard is available. Preserve owner files.
-
-
-## Guarded common installer: remaining qualification
-
-Independently review the canonical 1.0.11 template propagation and static oracle
-updates. After explicit admission, qualify the complete consumer cohort and
-ordinary hook/CI/artifact gates in a full checkout. Current sparse static checks
-do not qualify runtime, installation or native behavior. Consumer execution,
-owner recovery and delivery remain held; retain existing backlog and pauses.
-
-
-## Shared installer: remaining delivery qualification — 2026-11-15
-
-Review the exact shared-installer candidate against fresh main, run the required combined package gates, and qualify genuine release/archive/download inputs. Preserve the existing package-specific dependency and distribution contracts. Then qualify the coherent provider/consumer and Script/Extension cohort through the admitted root installer and native lane; source checks do not establish those outcomes. Keep every existing ownership, native, publication and paused-work limit.
-
-
-
-## Shared installer delivery
-
-Integrate and release the reviewed shared installer and explicit source-archive input. Qualify the actual release archive, installed Pens/Fly/provider cohort and root installer separately. Preserve zero Pens runtime dependencies; the shared installer's false-marker sibling staging limitation remains open. Native admission and all existing geometry/history/save-reopen checks remain separate.
-
-
-
 # Plan
 
-## Functional work order — 2026-11-14
+## Working constraints
 
-Prioritize concrete reader/writer and Scripts behavior with explicit layer or element targets and live commit boundaries. Keep the library dependency-free and reconcile Fly/App/Glyport consumers with the same pen protocols; retain native notification, history and upstream-binding holds.
+Keep the library dependency-free. Import `fontgate`, `fontlab` and `PythonQt` lazily. Match fontTools pen semantics and use fontTools as a test oracle. Native pens take a layer or an element. Recognise native types by name and avoid probing or formatting objects. Retain the MIT and BSD-3 notices for ports. Do not copy FontLab C++ or Python implementation bodies.
 
-Use small smoke checks and focused regressions for changed behavior and package boundaries. Keep the existing detailed acceptance tasks for a later testing pass; mandatory delivery hooks and current holds remain in force.
+Prioritise the next reproduced reader, writer or Scripts defect. Fix the affected Pens and Fly/App/Glyport paths together and run focused geometry and package checks. Fontport, Glyport and the App keep their path-editable Pens sources. Keep required delivery hooks, serialized native admission, owner recovery, the Issue 123 pause and private Pages hold.
 
-fontlab-python-pens is a dependency-free package (`fontlab_pens`) that
-implements the fontTools Pen and PointPen protocols and reads and writes
-FontLab outlines through the native `fontgate` and `fontlab` bindings.
-Releases v1.0.0, v1.0.1 and v1.0.3 are published (v1.0.2 is tag-only). This plan lists what is still open.
+## Installer and release
 
-## Constraints that stay
+- **Issue 271.** Check the independent installer review and pre-push hook results for released revision `5e187c3`.
+- **Installed cohort.** After admission, verify the released installer on macOS and Windows. Check provider versions, false-marker sibling staging, Script/Extension installation and owner-file preservation across the consumer cohort.
+- **Issue 254 (owner).** Run the App installer (App revision `5cac0d6` or later). After the owner restarts FontLab, confirm the installed Pens satisfies the App floor of 1.0.0 and exports `FONTGATE_NODE_TYPES`.
 
-- No runtime dependencies. `fontgate`, `fontlab` and `PythonQt` are imported
-  lazily, so `import fontlab_pens` works outside FontLab. fontTools is a
-  test-only oracle.
-- Pen semantics match fontTools: the same calls produce the same recording.
-- Native pens target a layer or an element, never a glyph. Callers resolve
-  the master or layer first.
-- Native objects are recognised by type name and never probed or formatted:
-  inspecting arbitrary native attributes can crash FontLab.
-- Ported fontTools (MIT) and fontPens (BSD-3) code keeps its notices in
-  `NOTICE`. FontLab's own C++ and Python sources are not copied here.
+## Documentation
 
-## Next
+The 0.2.1 release changes `fly-tokens.css` and `fly.css`. After the owner authorizes a provenance refresh, verify both stylesheets against the locked wheel and update the asset records. Rebuild the installation page with `sh src_docs/build.sh` and rerun the documentation suite.
 
-### 1. Release and consumers
+## Native Pens and Scripts
 
-- Releases are done (see CHANGELOG, 2026-11-11 and 2026-11-12).
-- Consumers (Fontport, Glyport, the FontLab App package) declare
-  `fontlab-python-pens>=1.0.0`. Owner decision (2026-11-11): they keep the
-  path-editable `[tool.uv.sources]` entry for pens, so their lock files record
-  an editable path and pin no pens version; there is no lock refresh against
-  the tag. Pending the reviewed `repos.sh` change and the Glyport and Fontport pushes, their gates will run this suite instead (tracked in their TODO); wiring it into the FontLab App gate is tracked below in Next, item 1.
+- Compare both readers with native node data for every master layer and element of an owned multi-master font, including transforms and components. Write through both point pens into a new element and an existing element on each master. Compare read-back and the saved/reopened font.
+- Check application Undo/Redo across several glyphs after notified writes, including geometry and timestamps on unrelated glyphs. Exercise first-contour publication and re-fetch failures and inspect partial writes before canonical adoption.
+- **Issue 255.** After D43 recovery and admission, run the 12 released Scripts with matching installed Fly (at least 1.3) and Pens in the same interpreter. For Recording, Transform and Stroke Plan, check geometry on each target master, one-step Undo/Redo and save/reopen. Check that Measurements prints bounds and signed area while preserving the layer.
+- **Strokes.** After upstream fixes for fontlab/fl#8654 and fontlab/fl#8630, compare the expanded outline’s join live, after reopen and after Redo. Use application Undo until a fixed fontlab/fl#8665 passes an outline comparison for scripted Undo. Verify nib rotation through Copy/Paste Style by hand (fontlab/fl#8627).
+- **Smart corners.** Smoke-test the getter and setter from the installed release containing the v1.0.14 API. Once fontlab/fl#8628 documents the contract, decide whether existing builders and other masters should change. For the parked rollback case, reproduce a restore that raises and one that silently stores a wrong value before deciding how to report each failure.
 
-### 2. Native checks inside FontLab
+## Service-layer experiment and shutdown
 
-The test suite runs on fake doubles. These cases still need checks in a
-running FontLab 9 on a disposable copy of a multi-master font:
-
-- Read every master layer and every element through the FontGate and FontLab
-  readers and compare the result with the native node data, including element
-  transforms and components.
-- Write through `FlPointPen` and `FontGatePointPen` into every master layer,
-  both as a new element and appended to an existing element; read back and
-  compare.
-- Undo and Redo after notified writes, across more than one glyph, and the
-  effect of notification on unrelated glyphs.
-- Writes followed by save, close and reopen.
-
-A passing check on one master does not cover the others.
-
-#### Upstream shutdown work: remaining native qualification
-
-Before relying on the upstream work, refresh actual Proteus master and the
-[PR12 draft](https://github.com/Fontlab/Proteus/pull/12) head and independently
-qualify the exact source/provider/runtime/parent and matching SDK/build cohort.
-New upstream commits do not automatically refresh the separate experiment's
-existing source/provider pins.
-
-Qualify the already-upstream destructor focus guard and PR12's residual
-package-close lifecycle-test teardown, retaining the distinct direct-quit
-regression contract. Guard presence and source-proposal publication do not
-prove that the PR merged or that the application is fixed. Native compilation,
-linking, full-suite/harness execution and lifetime/shutdown/exit0 gates remain
-held until separately admitted; never retry a blocked regression by inference.
-
-Use an independently approved owned real-session state and retain full-font
-preservation, history/Undo/Redo, UI and normal same-handle retirement evidence.
-Keep ordinary/canonical adoption separate. Continue the unfinished real-mask,
-source-contract and capacity work below; existing transport measurements do
-not establish real-mask capacity.
-
-### 3. Native fast path
-
-A fast path over the native `fgPen` is not implemented: that pen binds to a
-glyph's work shape, which conflicts with the layer/element rule. Revisit if
-FontGate gains a layer- or element-bound pen.
-
-### 4. Developer checks
-
-- Ruff lint debt was cleared and landed as 6d64c13 (`ruff check .` reports 0).
-  Qualify any source, settings or diagnostic drift separately.
-- Qualify native first-contour publication/re-fetch failure behavior and
-  canonical adoption separately; source tests supply no native failure proof.
-
-- Add this package's `test.sh` to the shared pre-push checks used by its
-  consumers.
-
-## Issue 255 remaining native acceptance
-
-After explicit D43 recovery and admission, qualify all 12 Scripts against the released installed Fly/Pens cohort in FontLab, retaining native geometry, complete history/Undo/Redo and saved/reopened font evidence. Source, genuine artifact, ordinary external-install and release/download qualification for v1.0.5 is recorded in CHANGELOG. Existing private Pages and Issue 123 holds remain. Consumer setup still requires separately installing matching Fly >=1.3 in the same interpreter. Provider source installers do not automatically supply or enforce this prerequisite; no reverse mandatory Fly dependency is claimed.
-
-## Scripts demo qualification
-
-Qualify all four current-glyph demos in a disposable FontLab font: inspect added
-geometry, one-step Undo/Redo, multi-master stroke results and save/reopen. Verify
-Measurements prints bounds and signed area without changing the layer. Offline
-fake-host checks do not establish native acceptance.
-
-Adopt and qualify upstream `penParameters` / `expandStroke` bindings (fl#8626),
-including cap variants and native expansion. Verify nib rotation persistence
-(fl#8627) separately. Keep these adoption and live acceptance tasks open.
-
-## Service-layer source experiment: remaining qualification
-
-A separately reviewed service-layer experiment has completed current-reference
-and bounded actual-client transport qualification at source scope; results are
-recorded in CHANGELOG.md. The experiment is separate from this package's test
-suite and runtime code. Do not repeat its completed reference-refresh or
-existing-mode transport work as future work.
-
-Before relying on it, qualify the exact current native source/runtime/parent
-cohort and separately qualify ordinary/canonical adoption. Retain fresh owned
-fixture and operation admission, independent approval of the actual initial
-state, constructor/wrapper lifetime, flags5 A-to-B-to-C persistence, full-font
-preservation, history/Undo/Redo, dependencies, UI, SDK/fast-path and normal
-retirement checks. All original 2,151 registry rows, four 615-layer phase
-inventories and 15 extension categories remain counted; the working 616-layer
-inventory is separate. Source completion neither renews native authority nor
-clears pending queues or fences.
-
-Before adding an operation or growing literal source, input data or owned
-paths, independently qualify the resulting complete request through the
-unchanged encoder at both transaction and actual client boundaries. Existing
-bounded cases establish no arbitrary-path or real-mask capacity. Preserve
-exact 32,768-byte admission, larger-payload refusal without dispatch, and all
-controller input, source, artifact and approval checks. No loader, source
-transformation, cap increase or operation removal follows.
-
-Real-mask setup still requires the stock getMaskLayer(True) association and
-flags13 contract, preservation of original bodies and independent encoded-size
-proof. Notification/history, state-carrying dependencies, a layer-bound native
-fast path, actual UI pixels and normal same-handle retirement remain source
-implementation gaps. Every original native acceptance gate remains open.
+- Refresh the exact experiment source, native provider, runtime and parent identities before admission. Obtain independent approval for the owned fixture and initial state. Check constructor/wrapper lifetime, flags5 A-to-B-to-C persistence, full-font preservation, dependencies, history/Undo/Redo, UI, SDK/fast-path behaviour and normal same-handle retirement. Qualify ordinary and canonical adoption separately. Retain all 2,151 registry rows, four 615-layer phase inventories and 15 extension categories. The working inventory has 616 layers.
+- Specify and independently review the stock `getMaskLayer(True)` association, flags13 and original-body preservation. Measure the complete real-mask request through the unchanged encoder at both transaction and actual-client boundaries. Repeat on growth of literal source, data or owned paths. Preserve the 32,768-byte limit, refusal before dispatch above it, and existing source, artifact, input and approval checks.
+- Complete the outstanding source contracts for notification/history, state-carrying dependencies, actual UI pixels and normal same-handle retirement. Revisit a native fast path only when the host exposes a layer- or element-bound pen. The existing `fgPen` binds to a glyph’s work shape.
+- Refresh Proteus master and Fontlab/Proteus#12, then match the source, provider, runtime, parent and SDK/build revisions. After separate admission, compile, link and run the suite and shutdown harness. Verify the upstream destructor focus guard, package-close teardown and distinct direct-quit regression through normal retirement and exit code 0.

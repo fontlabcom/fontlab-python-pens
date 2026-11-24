@@ -2,47 +2,22 @@
 this_file: TODO.md
 ---
 
-- [ ] Issue 271: independently review and integrate the generated installer through repository gates, verify exact-SHA CI/archives, and qualify macOS/Windows native execution after serialized admission.
-
-
-## Guarded common installer
-
-- [ ] Independently review the canonical 1.0.11 common-template source candidate and preserved metadata/archive/licence contracts.
-- [ ] After the existing holds are lifted, qualify the full checkout/cohort, ordinary hooks, exact-SHA CI/artifacts and installed/native/Windows behavior; no consumer execution or delivery is admitted by static checks.
-
-
-## Shared installer qualification — 2026-11-15
-
-- [ ] Review and deliver the shared-installer candidate through fresh-main reconciliation, required gates, exact-SHA CI and genuine release/download qualification.
-- [ ] After admission, verify installed provider/consumer identity and the applicable Script/Extension/native workflows without clearing existing holds by inference.
-
-
-
-- [ ] Integrate and release the reviewed shared installer and source-archive input; verify downloaded installer bytes, actual installed provider versions and the coherent Pens/Fly cohort before admitted root installation.
-- [ ] Qualify the shared installer's false-marker sibling staging correction across the cohort; keep native installation and existing Pens acceptance checks open.
-
-- [ ] Address the next reproduced pen or Scripts defect across explicit layer/element targets and affected Fly/App/Glyport consumers with focused geometry checks before the detailed native/history pass.
-
-- [ ] Issue 255: After explicit D43 recovery and admission, qualify all 12 Scripts against the released installed Fly/Pens cohort in FontLab, retaining native geometry, complete history/Undo/Redo and saved/reopened font evidence.
-
-# TODO
-
-
-- [ ] Qualify native first-contour publication/re-fetch failure behavior and canonical adoption separately; preserve all original native acceptance gates.
-- [ ] In FontLab 9, read every master layer and element through both readers and compare with native node data, including element transforms and components.
-- [ ] In FontLab 9, write through `FlPointPen` and `FontGatePointPen` into every master layer, as a new element and appended to an existing element, and read back.
-- [ ] In FontLab 9, check Undo and Redo after notified writes across several glyphs, and the effect of notification on unrelated glyphs.
-- [ ] In FontLab 9, check writes after save, close and reopen.
-
-- [ ] Qualify all four current-glyph Scripts demos and stroke plans in FontLab: geometry, Output measurements, one-step Undo/Redo, every master and save/reopen on a disposable font.
-- [ ] Recheck the expanded-outline join round-trip (live bevel, saved round, reopened and Redo miter) when FontLab fixes fl#8654 / fl#8630.
-- [ ] Use `restoreHistoryState` for scripted Undo only after fl#8665 is fixed; until then rely on the app's Undo.
-- [ ] Verify nib rotation through Copy/Paste Style (fl#8627) by hand; scripts must not drive Paste.
-- [ ] Check whether `set_smart_corner_parameters` should also update existing smart-corner builders and other masters, once FontLab documents fl#8628 behavior.
-- [ ] Native smoke of `smart_corner_parameters` / `set_smart_corner_parameters` from the installed release (v1.0.14).
-- [ ] (Low) In `set_smart_corner_parameters`, if the restore write after a read-back mismatch raises, that exception replaces the `PenError`, and a wrong value stored by the restore goes undetected; consider chaining the errors and re-reading after the restore.
-
-- [ ] Qualify the source-reviewed service-layer experiment against the exact current native source/runtime/parent cohort with fresh owned-fixture and operation admission, independent actual-initial-state approval, constructor/lifetime, flags5 A-to-B-to-C persistence and full preservation/history/Undo/Redo/UI/SDK/retirement checks; keep ordinary/canonical adoption separate and all original 2,151 registry rows, four 615-layer inventories and 15 extensions counted. Separately qualify matching Proteus source/provider/SDK/build identities, the already-upstream shutdown guard and draft PR12's residual lifecycle-test teardown; keep native compilation/linking/full-suite execution and lifetime/exit0 gates held until separately admitted.
-- [ ] Specify and independently review real-mask getMaskLayer(True) association/flags13 and original-body preservation, then close measured encoded size and the remaining notification/history, state-carrying dependency, layer-bound native fast-path, actual UI-pixel and normal same-handle retirement source contracts; retain every native acceptance gate.
-
-- [ ] Issue 254 native check (owner): run the App `install.vfpy` (main at or after 5cac0d6), restart FontLab, and confirm `import fontlab_pens` resolves the installed pens with `FONTGATE_NODE_TYPES` (floor `>=1.0.0`; FontLab site-packages held pens 0.1.0 metadata on 2026-11-11).
+- [ ] Issue 271: check independent review and pre-push hook results for `5e187c3`.
+- [ ] After admission, qualify macOS/Windows installation, actual provider versions, false-marker sibling staging, Script/Extension workflows and owner-file preservation across the consumer cohort.
+- [ ] Issue 254 (owner): run the App installer, restart FontLab and check the installed Pens version and `FONTGATE_NODE_TYPES` export.
+- [ ] After an authorized refresh of the two Fly stylesheet hashes and their provenance, rebuild the site and rerun the documentation tests.
+- [ ] Compare both readers with native data on every master and element, including transforms and components.
+- [ ] Write new and appended elements with both point pens on each master and compare read-back and saved/reopened geometry.
+- [ ] Verify notified Undo/Redo across glyphs and inspect unrelated glyphs for changes.
+- [ ] Verify first-contour publication and re-fetch failure behaviour before canonical adoption.
+- [ ] Issue 255: after D43 recovery and admission, qualify the 12 released Scripts with installed Fly/Pens, including demo geometry, history, save/reopen and read-only Measurements output.
+- [ ] After fontlab/fl#8654 and fontlab/fl#8630 are fixed, retest the expanded outline’s join live, after reopen and after Redo.
+- [ ] Retest scripted Undo against outline geometry after fontlab/fl#8665 is fixed.
+- [ ] Verify nib rotation through Copy/Paste Style by hand (fontlab/fl#8627).
+- [ ] Smoke-test smart-corner defaults from the installed release containing the v1.0.14 API.
+- [ ] Once fontlab/fl#8628 documents the behaviour, decide whether setting defaults should update existing builders or other masters.
+- [ ] Reproduce a raising restore and a silent restore mismatch in `set_smart_corner_parameters` before deciding how to report those failures.
+- [ ] Qualify the service-layer experiment on the exact admitted native cohort and owned fixture, including lifetime, flags5 persistence, preservation, dependencies, history, UI and retirement. Verify ordinary and canonical adoption separately.
+- [ ] Review the real-mask association, flags13 and original bodies, then measure the complete request at transaction and actual-client boundaries.
+- [ ] Complete the remaining history, dependency, UI and retirement source contracts. Revisit the native fast path when a layer- or element-bound pen exists.
+- [ ] After separate admission, qualify Proteus master and Fontlab/Proteus#12 on matching source/provider/SDK builds for package-close, direct-quit and exit code 0.

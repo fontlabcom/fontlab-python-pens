@@ -17,10 +17,10 @@ FontGate and `fontlab` layers import the native modules lazily, so
 
 ## Install
 
-The package is not on PyPI. Install a tagged release from GitHub:
+Install FontLab Pens from [PyPI](https://pypi.org/project/fontlab-python-pens/) into your Python environment.
 
 ```sh
-uv pip install "fontlab-python-pens @ git+https://github.com/fontlabcom/fontlab-python-pens@v1.0.3"
+uv pip install fontlab-python-pens
 ```
 
 To use it inside FontLab 9, open `install.vfpy` from a checkout in FontLab
@@ -218,6 +218,14 @@ uv venv --python 3.13 .docs-venv
 uv pip install --python .docs-venv/bin/python --require-hashes -r src_docs/requirements.txt
 PATH="$PWD/.docs-venv/bin:$PATH" sh src_docs/build.sh
 ```
+
+### Publish a release
+
+Run `./publish.sh` from the branch you intend to release. It runs `./release.sh`
+to commit pending changes, tag, push and build, then dispatches
+`.github/workflows/release.yml`. The workflow builds the wheel and source archive
+from the tag, attaches both to the GitHub release and uploads them to PyPI using
+Trusted Publishing. The script waits for the workflow and checks the version on PyPI.
 
 ## Licence
 

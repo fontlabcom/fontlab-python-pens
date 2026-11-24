@@ -12,6 +12,11 @@ Consumer integration, released archives and native execution remain separate che
 
 ## Unreleased
 
+- PyPI Trusted Publishing: the project owner must configure or confirm the publisher for `fontlabcom/fontlab-python-pens`, workflow `release.yml`, environment `pypi`. Run `./publish.sh` to dispatch it.
+- Issue 271: v1.0.19 shipped from `5e187c3` (CI run `44411145065`, release run `44411613055`). The wheel and sdist matched across GitHub and PyPI. Both carried the tagged LICENSE and NOTICE, and the sdist contained the tagged installer byte-for-byte.
+- The Fontport, Glyport and App pre-push gates each ran all 857 Pens tests at 95.76% coverage (consumer revisions `54ffe80` and `87f39f4`, App gate recorded in `89611c4`).
+- In FontLab 9.1.9813, native stroke expansion produced one contour on each of two masters, and round/square caps survived save and reopen (`4c44bb6`, `a5cb73a`).
+- A 45° nib rotation survived VFJ save and reopen (`a750eaf`). Copy/Paste Style still needs a manual check.
 - Site now uses the fly-january 0.2.1 theme (chrome: fontlab).
 - `install.vfpy` is now the stub from fontlab-python-instamix 1.0.15. It replaces an
   installed instamix older than 1.0.13 and puts the old copy back if the upgrade

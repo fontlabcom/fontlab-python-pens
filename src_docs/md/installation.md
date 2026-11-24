@@ -4,7 +4,7 @@ this_file: src_docs/md/installation.md
 
 # Installation
 
-FontLab Pens needs Python 3.11 or later and has no runtime dependencies. It is not on PyPI; install a tagged release from GitHub.
+FontLab Pens needs Python 3.11 or later and has no runtime dependencies.
 
 ## Into FontLab 9
 
@@ -18,11 +18,13 @@ The examples and Scripts also need FontLab Fly 1.3.0 or later, which provides th
 
 ## Into a Python environment
 
+Install the release from [PyPI](https://pypi.org/project/fontlab-python-pens/).
+
 ```sh
-uv pip install "fontlab-python-pens @ git+https://github.com/fontlabcom/fontlab-python-pens@v1.0.9"
+uv pip install fontlab-python-pens
 ```
 
-Replace `v1.0.9` with the release you want. Outside FontLab the pure-Python pens work fully; the native pens need FontLab's `fontgate` or `fontlab` module and raise when you call them without it.
+Outside FontLab the pure-Python pens work fully; the native pens need FontLab's `fontgate` or `fontlab` module and raise when you call them without it.
 
 ## Check the install
 

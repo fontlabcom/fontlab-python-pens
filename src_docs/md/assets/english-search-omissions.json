@@ -507,7 +507,7 @@
       "installed_distribution_sources": [
         {
           "distribution": "fly-january",
-          "version": "0.1.1",
+          "version": "0.2.1",
           "path": "fly_january/assets/fly/fly-bridge.js"
         }
       ]
@@ -518,29 +518,29 @@
       "installed_distribution_sources": [
         {
           "distribution": "fly-january",
-          "version": "0.1.1",
+          "version": "0.2.1",
           "path": "fly_january/assets/fly/fly-debug.js"
         }
       ]
     },
     {
       "path": "assets/fly/fly-tokens.css",
-      "sha256": "ba1aaf2de7ca7d95f0b53fceb42390d0228b14edfa89a6e57f40fdf66d8bad39",
+      "sha256": "83b42868dc8301fe0db0de26c9240f195821306370586307e54d92c1eae38391",
       "installed_distribution_sources": [
         {
           "distribution": "fly-january",
-          "version": "0.1.1",
+          "version": "0.2.1",
           "path": "fly_january/assets/fly/fly-tokens.css"
         }
       ]
     },
     {
       "path": "assets/fly/fly.css",
-      "sha256": "24c03d88bb3c3a3d4347a344f7be06b7561544075a3919af69991d3dd69a7f8d",
+      "sha256": "98850411df91084c9c436e219e47921d88ef8674006fdc91efc817eb0cf1ed25",
       "installed_distribution_sources": [
         {
           "distribution": "fly-january",
-          "version": "0.1.1",
+          "version": "0.2.1",
           "path": "fly_january/assets/fly/fly.css"
         }
       ]
@@ -551,7 +551,7 @@
       "installed_distribution_sources": [
         {
           "distribution": "fly-january",
-          "version": "0.1.1",
+          "version": "0.2.1",
           "path": "fly_january/assets/fly/fly.js"
         }
       ]
