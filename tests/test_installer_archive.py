@@ -23,7 +23,7 @@ def canonical_stub() -> bytes | None:
 
 
 STUB_HEADER = b"#FLM: Install into FontLab with fontlab-instamix\n"
-STUB_SHA256 = "52752283d8a1f8242f7701337ce7c52ab96c593ea90b2a28229830aa7ff6b7de"
+STUB_SHA256 = "3b8428286c2e76ff20db208b7bf498cb6a34c9e68aa5d6828d9e4c034ec5ad18"
 REVERSE_DNS = re.compile(
     r"^[a-z][a-z0-9-]*(\.[a-z0-9][a-z0-9-]*)+$"
 )  # instamix manifest.ID_PATTERN

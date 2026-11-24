@@ -15,6 +15,14 @@ the test environment provided the matching Instamix 1.0.15 installer.
 The default run used a different sibling installer and failed its byte comparison
 (902 passed). Browser verification is reserved for the orchestrator.
 
+## 2026-11-18 — Issue 271 generated installer candidate
+
+Regenerated `install.vfpy` with Instamix 1.0.18, preserving project declarations and
+runtime source. Exact reviewed-template byte parity and import-sentinel/wheel-order smoke checks pass. Existing focused installer tests pass (exit 0, 0.63 seconds).
+Task-owned graph impact/change analysis cannot resolve an index; structural caller
+checks supplement this unavailable evidence. Full repository delivery gates,
+independent cohort review and native qualification remain pending. No owner install ran.
+
 ## 2026-11-17 — Guarded common installer source candidate
 
 Copied the exact canonical common template shipped with Instamix 1.0.11.
