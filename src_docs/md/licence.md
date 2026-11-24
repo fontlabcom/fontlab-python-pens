@@ -13,7 +13,7 @@ The pens ported from fontTools keep their MIT licence and copyright notice, list
 
 ## Current English browser payload
 
-The build pins fly-january 0.2.1. The [browser-component record](assets/current-frontend-notices.json) covers the previously qualified Fly assets and MaterialX 10.1.8, with exact upstream notices, package archives and source maps.
+The build requires fly-january 0.3.0 or later. The [browser-component record](assets/current-frontend-notices.json) covers the previously qualified Fly assets and MaterialX 10.1.8, with exact upstream notices, package archives and source maps.
 
 The [English-only omission manifest](assets/english-search-omissions.json) binds all 35 unused lunr-languages 1.20.0 helpers, including Wordcut and TinySegmenter. The build rejects theme/search-language, corpus, vendor-set/hash and local HTML-reference drift before removing them. Seven MaterialX assets retain their upstream bytes. Fly rescales rem lengths in two MaterialX stylesheets. The manifest records their original and generated hashes and the hashes of five local Fly assets. Historical complete outputs remain recovery evidence; omitted helpers are not represented as currently distributed or relicensed.
 
@@ -25,7 +25,7 @@ The site loads FontLab’s menu and footer from i.fontlab.com, fonts from Adobe 
 
 | Component / retained terms | Version | Exact full notice or upstream README licence section |
 | --- | --- | --- |
-| fly-january | 0.2.1 | [Apache 2.0 licence](assets/LICENSE) |
+| fly-january | 0.3.0 or later | [Apache 2.0 licence](assets/LICENSE) |
 | clipboard | 2.0.11 | [LICENSE.txt](assets/current-frontend/clipboard/LICENSE.txt) |
 | tiny-emitter | 2.1.0 | [LICENSE.txt](assets/current-frontend/tiny-emitter/LICENSE.txt) |
 | escape-html | 1.0.3 | [LICENSE.txt](assets/current-frontend/escape-html/LICENSE.txt) |
